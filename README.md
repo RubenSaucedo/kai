@@ -37,9 +37,9 @@ what's missing — it never silently pretends the capability is present.
 
 ## Status
 
-`v0.14.0` — **54 agents and 38 skills**. This release adds **voice presets** to
+`v0.15.0` — **54 agents and 38 skills**. This release adds **voice presets** to
 the narrated-audio path: `generate-audio` gains a `-Voice` option
-(`emprendedor` | `latino` | `intermedio`), and the default Spanish narration is
+(`espana` | `latino` | `intermedio`), and the default Spanish narration is
 now a warm, measured, Castilian read suited to study content. It builds on the
 prior release, which wired **lectoria** as a git dependency built on install, so
 the `generate-audio` skill and the instructor-* audio path work from a fresh

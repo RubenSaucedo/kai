@@ -4,6 +4,21 @@ All notable changes to the **kai** plugin are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Being pre-1.0,
 minor bumps (`0.x`) carry features and patch bumps carry fixes.
 
+## [0.15.0] - 2026-07-30
+
+**Voice-preset tuning.** Refreshes the pinned `lectoria` to the release that
+renames the default narration preset and retunes pacing. No roster change —
+still **54 agents and 38 skills**.
+
+### Changed
+- Renamed the default voice preset **`emprendedor` → `espana`** (peninsular
+  Castilian). The `generate-audio` `-Voice` set is now
+  `espana | latino | intermedio`, and unset still uses lectoria's default
+  (`espana`).
+- Bumped the pinned `lectoria` git dependency to pick up the rename plus a
+  faster **`latino`** preset (Mexican voices sped to +5%/+7% so they no longer
+  feel slow next to `espana`).
+
 ## [0.14.0] - 2026-07-29
 
 **Voice presets for narrated audio.** Refreshes the pinned `lectoria` to the
