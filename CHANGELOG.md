@@ -9,7 +9,7 @@ minor bumps (`0.x`) carry features and patch bumps carry fixes.
 ### Added
 
 - `examples/proactive-runner/runner.mjs` — the delivery-side logic the scheduled
-  runner calls, dependency-free Node ESM with a 28-check fixture suite wired into
+  runner calls, dependency-free Node ESM with a 33-check fixture suite wired into
   `npm test`. Three commands: `plan` (decide `deliver` / `skip` / `fail`),
   `retain` (apply the retention policy, idempotently), and `redact` (a diagnostic
   carrying no personal content).
@@ -23,10 +23,16 @@ minor bumps (`0.x`) carry features and patch bumps carry fixes.
   in `COPILOT_GITHUB_TOKEN`. The built-in Actions `GITHUB_TOKEN` does not carry
   Copilot permissions.
 - Redacted failure diagnostics uploaded as an artifact — status, signal counts by
-  kind and state, and gap reasons, with signal summaries, item paths, workspace
-  labels, and root ids omitted by policy.
-- A retention policy: an acked payload is deleted and the outbox is pruned to the
-  five most recent, because the ledger and not the outbox is the durable record.
+  kind and state, and gap reasons **classified** to `unreadable` / `invalid` /
+  `unspecified`. Gap reasons are model-authored free text that can name a file,
+  and a CI artifact is readable by anyone with Actions read access, so they are
+  classified rather than copied. Signal summaries, item paths, workspace labels,
+  and root ids are omitted by policy.
+- A retention policy: an **acked** payload is deleted and the outbox is pruned to
+  the five most recent, because the ledger and not the outbox is the durable
+  record. Deletion is gated on the ack rather than the delivery: ack can fail
+  after a successful send, and a payload whose ledger entry never advanced will
+  be needed again on the next run.
 - `check-syntax` now parses `examples/` as well as `scripts/`. Shipped examples
   are copied verbatim into consumer repos, so their executable helpers earn the
   same gate.
@@ -49,6 +55,13 @@ minor bumps (`0.x`) carry features and patch bumps carry fixes.
 - A misconfigured channel no longer resembles a quiet week: broken configuration
   and a scan `status: error` exit non-zero, while "nothing to send" and "no
   consent" exit zero.
+- **Scan-derived values were interpolated into `run:` blocks with `${{ }}`.**
+  That substitutes the raw string before the shell parses it, so a model-authored
+  gap reason containing `$(...)` would have executed on the runner. Every such
+  value now reaches the shell through `env:`.
+- A signal-bearing status carrying an empty `signals` array now skips instead of
+  delivering a hollow notification.
+- A `#` inside a quoted yaml value is no longer stripped as a comment.
 
 ## [0.31.0] - 2026-08-08
 

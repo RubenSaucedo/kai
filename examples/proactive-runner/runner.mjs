@@ -80,7 +80,10 @@ export function parseChannels(text) {
 }
 
 function stripComment(line) {
-  // A `#` starting the line, or preceded by whitespace, begins a comment.
+  // A `#` starting the line, or preceded by whitespace, begins a comment — but
+  // not inside a quoted value, where `#` is ordinary content.
+  const q = /^(\s*[A-Za-z_][A-Za-z0-9_]*:\s*)(["'])(.*?)\2/.exec(line);
+  if (q) return q[0];
   const i = line.search(/(^|\s)#/);
   return i === -1 ? line : line.slice(0, i === 0 ? 0 : i);
 }
@@ -95,6 +98,19 @@ function unquote(v) {
 
 const isTrue = (v) => v === 'true' || v === 'yes';
 const isFalse = (v) => v === 'false' || v === 'no';
+
+// ------------------------------------------------------------ gap reasons
+
+// A gap reason is authored by the scanning model, so it is free text that can
+// name a root or a path. Both the step output and the uploaded diagnostic are
+// readable by anyone with Actions read access, so classify to a closed
+// vocabulary rather than passing the model's words through.
+export function classifyGapReason(reason) {
+  const r = typeof reason === 'string' ? reason.toLowerCase() : '';
+  if (/unreadable|permission|denied|missing|not found|enoent/.test(r)) return 'unreadable';
+  if (/invalid|malformed|parse|schema/.test(r)) return 'invalid';
+  return 'unspecified';
+}
 
 // ---------------------------------------------------------------- decision
 
@@ -113,15 +129,22 @@ export function decide({ payload, channelsText, availableSecrets = [] }) {
   }
   if (status === 'error') {
     const why = Array.isArray(payload.gaps) && payload.gaps.length
-      ? payload.gaps.map((g) => g?.reason).filter(Boolean).join('; ')
-      : 'scan reported an error';
-    return fail(`scan status=error (${why})`, { status, notificationId });
+      ? [...new Set(payload.gaps.map((g) => classifyGapReason(g?.reason)))].join(', ')
+      : 'unspecified';
+    return fail(`scan status=error (${payload.gaps?.length ?? 0} gap(s): ${why}); see the workspace outbox for detail`, { status, notificationId });
   }
   if (!notificationId) {
     return fail('payload is missing notification_id; ack could not be made idempotent', { status, notificationId });
   }
   if (status === 'none') {
     return skip('scan found nothing newly actionable', { status, notificationId });
+  }
+  // Defense in depth: the scan is specified to report `none` when it found
+  // nothing, so a signal-bearing status with an empty list is a contradiction.
+  // Sending an empty notification is worse than sending none, so treat it as
+  // nothing to send rather than delivering a hollow alert.
+  if (!Array.isArray(payload.signals) || payload.signals.length === 0) {
+    return skip(`status=${status} but the payload carries no signals`, { status, notificationId });
   }
 
   const { channel, problems } = parseChannels(channelsText);
@@ -196,9 +219,11 @@ export function redact(payload) {
     signal_count: signals.length,
     by_kind: byKind,
     by_state: byState,
-    // Reasons describe why a root could not be read; they carry no signal content.
-    gap_reasons: (Array.isArray(payload?.gaps) ? payload.gaps : []).map((g) => g?.reason ?? 'unspecified'),
-    redacted: 'signal summaries, item paths, workspace labels, and root ids omitted by policy',
+    // Reasons are model-authored free text, so they are classified to a closed
+    // vocabulary rather than copied: a reason naming an unreadable file would
+    // otherwise carry a path into an artifact.
+    gap_reasons: (Array.isArray(payload?.gaps) ? payload.gaps : []).map((g) => classifyGapReason(g?.reason)),
+    redacted: 'signal summaries, item paths, workspace labels, root ids, and verbatim gap reasons omitted by policy',
   };
 }
 
@@ -373,14 +398,18 @@ function selfTest() {
   d = run(payloadWith({ status: 'none', signals: [] }), CONSENTED);
   ok('self-test: none skips without failing', d.decision === 'skip' && d.exitCode === 0, d.reason);
 
-  d = run(payloadWith({ status: 'error', gaps: [{ root: 'sel', reason: 'missing manifest' }] }), CONSENTED);
-  ok('self-test: error fails loudly and names the gap', d.decision === 'fail' && d.exitCode === 1 && /missing manifest/.test(d.reason), d.reason);
+  d = run(payloadWith({ status: 'error', gaps: [{ root: 'sel', reason: 'missing kai/coordination/items/pricing.md' }] }), CONSENTED);
+  ok('self-test: error fails loudly and reports the gap count', d.decision === 'fail' && d.exitCode === 1 && /1 gap\(s\)/.test(d.reason), d.reason);
+  ok('self-test: the error reason classifies the gap instead of quoting the model', /unreadable/.test(d.reason) && !/pricing\.md/.test(d.reason), d.reason);
 
   d = run(payloadWith({ status: 'weird' }), CONSENTED);
   ok('self-test: unexpected status fails', d.decision === 'fail', d.reason);
 
   d = run(payloadWith({ notification_id: '' }), CONSENTED);
   ok('self-test: missing notification_id fails (ack could not be idempotent)', d.decision === 'fail', d.reason);
+
+  d = run(payloadWith({ status: 'signals', signals: [] }), CONSENTED);
+  ok('self-test: a signal-bearing status with no signals skips rather than sending a hollow alert', d.decision === 'skip' && d.exitCode === 0, d.reason);
 
   // --- consent gating -----------------------------------------------------
   // The regression this whole module exists for: the prose in CONSENTED
@@ -425,7 +454,12 @@ function selfTest() {
   d = run(payloadWith(), '');
   ok('self-test: missing channels file cannot send', d.decision === 'fail', d.reason);
 
+  const hashed = parseChannels('```yaml\nchannel:\n  type: webhook\n  secret_ref: "KAI_NOTIFY_WEBHOOK" # the name, not the value\n  consent: yes\n  enabled: true\n```\n');
+  ok('self-test: a trailing comment is stripped without truncating a quoted value', hashed.channel?.secret_ref === 'KAI_NOTIFY_WEBHOOK', JSON.stringify(hashed));
+
   // --- redaction ----------------------------------------------------------
+  const leaky = redact(payloadWith({ gaps: [{ root: 'labora', reason: 'unreadable: kai/coordination/threads/pricing.md' }] }));
+  ok('self-test: a gap reason naming a path is classified, not copied', !JSON.stringify(leaky).includes('pricing.md') && leaky.gap_reasons[0] === 'unreadable', JSON.stringify(leaky.gap_reasons));
   const r = redact(payloadWith({ gaps: [{ root: 'other', reason: 'unreadable' }] }));
   const serialized = JSON.stringify(r);
   ok('self-test: redacted diagnostic drops signal summaries', !serialized.includes('Approve the pricing change'));

@@ -133,30 +133,46 @@ branch. The dedup ledger is all that needs to survive between runs.
 
 ## Retention
 
-The ledger, not the outbox, is the durable record — so once a payload is acked it
-has served its purpose. After a confirmed delivery the runner deletes the acked
-payload and prunes the outbox to the 5 most recent (`--keep`). Re-running
-retention with the same `notification_id` is a no-op, which is the normal
-consequence of a retried step.
+The ledger, not the outbox, is the durable record — so once a payload is **acked**
+it has served its purpose. After a confirmed ack the runner deletes that payload
+and prunes the outbox to the 5 most recent (`--keep`). Re-running retention with
+the same `notification_id` is a no-op, which is the normal consequence of a
+retried step.
+
+Deletion is gated on the **ack**, not on the delivery. Ack can fail after a
+successful send; if it does, the ledger has not advanced, so the next run will
+re-emit that signal and needs the payload still on disk. In that case only the
+`--keep` pruning runs.
 
 ## Failure diagnostics
 
 On failure the workflow uploads a **redacted** artifact: schema,
-`notification_id`, status, signal counts by kind and state, and gap *reasons*.
-Signal summaries, item paths, workspace labels, and root ids are omitted by
-policy, so a diagnostic is actionable without exposing what the notification
-said.
+`notification_id`, status, and signal counts by kind and state. Signal summaries,
+item paths, workspace labels, and root ids are omitted by policy.
+
+Gap reasons are model-authored free text that can name a file, so they are
+**classified** to `unreadable` / `invalid` / `unspecified` rather than copied —
+into the artifact and into the step output alike. A CI artifact is readable by
+anyone with Actions read access, so a diagnostic is actionable without exposing
+what the notification said.
+
+Every scan-derived value reaches the shell through `env:`, never through `${{ }}`
+interpolation into a `run:` block, because `${{ }}` substitutes the raw string
+before the shell parses it.
 
 ## What kai's tests do and do not prove
 
 `npm test` runs the runner's fixture suite, so the consent gate, status routing,
 secret binding, retention idempotency, and redaction are all covered
-automatically.
+automatically — including a fixture asserting that the naive grep this runner
+replaced *would* have been fooled by input the parser refuses.
 
 They cannot prove the **end-to-end cycle**: that needs a real Copilot PAT, a real
-workspace, and a real channel endpoint. Run it once with `workflow_dispatch`
-after copying it, and confirm you receive the notification. Everything up to the
-network boundary is tested; the network boundary itself is yours to verify.
+workspace, and a real channel endpoint. Nor do they exercise the workflow YAML,
+which never runs in this repository — it is an example for you to copy. Run it
+once with `workflow_dispatch` after copying it, and confirm you receive the
+notification. Everything up to the network boundary is tested; the network
+boundary itself is yours to verify.
 
 ## Two phases: scan, then ack
 
