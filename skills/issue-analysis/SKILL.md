@@ -78,6 +78,13 @@ anything, establish what already exists:
   related PRs.
 - Is there an adjacent owner whose lane this actually falls in?
 
+**Show the grounding, do not assert it.** Name the searches you ran and the
+nearest thing you found: *"searched for X, Y, Z; the closest is `<thing>`, which
+differs because …"* — or say plainly that nothing matched and what you looked
+under. "Nothing like this exists" with no visible search is the same
+unverified confidence this skill forbids one section later; the difference is
+only that it is harder to catch.
+
 The failure this prevents is real and repeats: **building a second thing that
 does what an existing thing already does**, because the issue described a problem
 in vocabulary the existing solution did not use.
@@ -98,7 +105,11 @@ Two rules make this trustworthy:
 
 - **Experiments are isolated.** Verify in a temp directory or scratch clone.
   Never mutate the target repository, its history, or anything shared in order to
-  satisfy curiosity.
+  satisfy curiosity. This does not conflict with the workspace-root rule you
+  inherit: **durable work state** belongs in the resolved workspace root, while a
+  **disposable experiment** belongs in a temp or scratch location and is never
+  promoted into state. If you want to keep what an experiment showed, report it —
+  do not leave the scratch directory behind as evidence.
 - **Time-box it.** Stop once the decisive uncertainty is resolved. This step is
   not permission for unbounded investigation.
 
@@ -139,6 +150,13 @@ criterion rather than with the conclusion.
 Include the options that are easy to forget: **do nothing**, **defer**, **a
 smaller first step**, and **close the issue**.
 
+When the deciding fact cannot be settled by a bounded, isolated experiment —
+because only a throwaway prototype in the real code would answer it — then
+**"run a time-boxed spike, owned by an implementing role" is itself a legitimate
+option to frame.** Say what the spike must answer and what would end it. That is
+a better outcome than declaring the issue blocked because the question was too
+expensive to answer from the outside.
+
 ## 5 — Stop at the authorized decision owner
 
 **Analysis ends in a decision request. It does not slide into implementation.**
@@ -166,7 +184,11 @@ Some issues should not be built. Reporting that is a **successful outcome**:
 - **wrong premise** — the behavior it describes is not what the code does;
 - **not the real problem** — it prescribes a solution to an unstated problem that
   has a better answer;
-- **several issues wearing one hat** — propose the split.
+- **several issues wearing one hat** — propose the split;
+- **not issue-shaped at all** — it is really an initiative, and belongs to
+  `workflow-initiative-init`; or it cannot be framed until someone has explored
+  the live product (`product-exploration`); or it carries a security or privacy
+  dimension that its owner should see before an approach is chosen.
 
 Recommending "close this" or "reframe this" is a legitimate result. Building
 something you believe is wrong because an issue asked for it is not diligence.

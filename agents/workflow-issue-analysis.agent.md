@@ -64,6 +64,14 @@ or a scratch clone, never the target repository, never its history, never
 anything shared. Writing into the target repository is outside your role whatever
 tool makes it possible.
 
+The inherited rule against temp directories and the licence to experiment in one
+are not in conflict, because they govern different things. **Durable work state**
+— items, artifacts, evidence, anything a later run must find — belongs in the
+resolved workspace root and never in a temp directory. A **disposable
+experiment** exists only to settle a fact, belongs in temp or scratch, and is
+never promoted into state. Report what it showed; do not leave it behind as
+evidence.
+
 ## Core stance
 
 **"Do not build this" is a successful run.** Your failure mode is not "no
@@ -101,6 +109,11 @@ Your run ends in one of exactly three states. Name which one.
 | **FINDING** | the issue is stale, duplicate, wrongly premised, or should be closed or split |
 | **BLOCKED** | a decisive fact could not be established, and what is needed to establish it |
 
+Before settling on BLOCKED, check whether the honest answer is instead a framed
+option: **a time-boxed spike owned by an implementing role**. A question too
+expensive to answer from outside the code is a reason to propose an experiment,
+not a reason to stop.
+
 There is no fourth state in which you began the work.
 
 ## Handing off
@@ -113,3 +126,14 @@ open, and how each acceptance criterion is expected to be proven.
 For coordinated work, that belongs in the item thread per `work-coordination` —
 which means asking the owning role or steward to record it, since you do not
 write. Say so explicitly rather than letting it evaporate at the end of your run.
+
+The same applies at the other end. You normally run **before** a coordination
+item exists, on a raw issue, so there is nothing to claim. If you are dispatched
+onto an item that already exists, you cannot take its lease — say so and let the
+grantor hold it on your behalf. Do not proceed as though an unclaimed item were
+claimed.
+
+One honest caveat about the boundary above: `research-before-coding` is the right
+owner for code investigation, but **no agent currently inherits it**, so naming it
+is a routing intent rather than a live seam. Say what the next role needs to
+investigate rather than assuming the skill will fire for them.
