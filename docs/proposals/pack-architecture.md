@@ -120,17 +120,52 @@ kai must supply the missing guarantees itself, and can only do so at prompt
 level — which is a strong convention, not a hard boundary. Three concrete
 consequences:
 
-### 1. Silent contract loss (blocking)
+### 1. Silent contract loss (blocking, but bounded by "core is required")
 
 An agent keeps its `**Inherits:** \`team-operating-rules\`` line while the
 runtime supplies nothing. It runs, looks healthy, and ignores workspace
 resolution, role boundaries, work claiming, and escalation.
 
-Mitigation: a uniquely named `kai-core-contract-v1` skill returning a rigid
-marker, invoked as a **fail-closed preflight** written into each pack agent's
-own body (not into an inherited skill — that would be circular), pinned
-byte-for-byte in CI the way `inherits-block.txt` already is. Honest label:
-best-effort. The model can skip it.
+**`kai-core` is a required dependency, not a choice.** It is never offered in
+the selector; it rides along with every selection. Core depends on nothing,
+everything depends on core. That makes core-missing an edge case rather than a
+normal state — the same pattern any package ecosystem uses for a required
+runtime.
+
+It is not unreachable, though: a user can run
+`copilot plugin install kai-engineering@kai-plugins` directly and bypass
+onboarding entirely. So the state must still be handled, just not designed
+around.
+
+Two mitigations, in order:
+
+1. A uniquely named `kai-core-contract-v1` skill returning a rigid marker,
+   invoked as a **fail-closed preflight** written into each pack agent's own
+   body (not into an inherited skill — that would be circular), pinned
+   byte-for-byte in CI the way `inherits-block.txt` already is. Honest label:
+   best-effort. The model can skip it.
+2. A degraded-mode block shipped in every pack for when the preflight fails.
+
+**The degraded block must be a refusal, not a fallback contract.** The
+temptation is to have it mirror core's rules so agents keep working. That
+recreates the duplication problem this whole design just escaped: a second copy
+of the operating contract, in N packs, drifting from core silently and
+invisibly, with the drift only surfacing as inconsistent behaviour.
+
+Instead it states the *absence* of the contract and nothing else — roughly:
+
+> You are running without `kai-core`. You have no coordination contract. Do
+> single-shot work only. Do not claim work, take leases, or write workspace
+> state. Tell the operator to install `kai-core`.
+
+Because it restates no rules, it has nothing to drift from. It stays correct
+for free as core evolves. And migration is trivial by construction: install
+core later, the preflight passes, full behaviour resumes, nothing to change.
+
+Precedent for the mechanics already exists in this repo — `inherits-block.txt`
+is a canonical source duplicated into all 56 agents with a byte-for-byte CI
+pin. The degraded block uses the same pattern: one canonical file under
+`scripts/lib/`, copied per pack, pinned by CI.
 
 ### 2. Legacy collision (blocking)
 
@@ -163,7 +198,7 @@ should ship as an optional `kai-orchestrator`.
 | Goal | Verdict |
 | --- | --- |
 | Different projects install different departments | **Yes** — a real benefit, now that packs stay small and share contracts. |
-| Core keeps communication consistent | **Conditionally** — only while core is present, the right copy resolves, versions are compatible, and every agent runs its preflight. Otherwise inconsistency is silent. It is a runtime invariant to verify, not a consequence of layout. |
+| Core keeps communication consistent | **Yes, given core is required.** Core is never optional and never in the selector, so the shared contract is present by construction. The residual risks are a direct install that bypasses onboarding, a version-incompatible core, and an agent skipping its preflight — all handled, none of them the normal path. |
 | Contribution is easier and less fragile | **Not yet proven.** Duplication is gone, which helps a lot. But cross-pack references, qualified agent IDs, contract compatibility, several marketplace entries, and supported-combination testing are all new. This holds only if tooling hides the mechanics. |
 
 ---
