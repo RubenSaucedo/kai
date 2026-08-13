@@ -14,7 +14,7 @@ The shortest path to one real, finished piece of work. Each step is copyable.
 
 ```text
 copilot plugin marketplace add RubenSaucedo/kai
-copilot plugin install kai@kai
+copilot plugin install kai@kai-plugins
 ```
 
 Start a **new** session afterwards — plugins load per session.
@@ -75,7 +75,7 @@ design sign-off on the net-new UI surface, an item correctly stuck at
 
 ### What you can ignore at first
 
-kai ships 54 agents and 40 skills, and you do not need to learn them. You need
+kai ships 56 agents and 49 skills, and you do not need to learn them. You need
 three things: **ask a front door for outcomes**, **let the work item be the
 source of truth**, and **remember that only you ship**. Everything else is
 reference material — read it when you hit the thing it describes.
@@ -98,17 +98,31 @@ support long-term. Nobody has to approve a listing for this to work.
 1. Register the marketplace, then install from it:
    ```powershell
    copilot plugin marketplace add RubenSaucedo/kai
-   copilot plugin install kai@kai
+   copilot plugin install kai@kai-plugins
    ```
 2. Confirm it loaded:
    ```powershell
    copilot plugin list
    ```
-   `kai@kai` should appear with the installed version. The agents and skills are
-   available in **new** sessions — start a fresh session to use them.
+   `kai@kai-plugins` should appear with the installed version. The agents and
+   skills are available in **new** sessions — start a fresh session to use them.
 
 An install is a full repository checkout, so `scripts/` ships with it and
 nothing needs cloning — that is what lets `fleet-observation` find the watcher.
+
+**Already installed the direct way?** Registering the marketplace does not move
+an existing install onto it: the installed plugin keeps the source it came
+from. To switch, uninstall and reinstall:
+
+```powershell
+copilot plugin uninstall kai
+copilot plugin marketplace add RubenSaucedo/kai
+copilot plugin install kai@kai-plugins
+```
+
+This touches only the plugin. Your workspace — `.kai/` and `kai/` — lives in
+your repository and is untouched by either command. Start a new session
+afterwards.
 
 **Install directly from GitHub (deprecated by the host):**
 
@@ -126,7 +140,7 @@ never becomes an incident; the warning is expected, not a sign of a broken
 install. Tracked in
 [#102](https://github.com/RubenSaucedo/kai/issues/102).
 
-**Install from a local checkout** (development or offline):
+**Load from a local checkout** (developing kai itself):
 
 ```powershell
 git clone https://github.com/RubenSaucedo/kai.git
@@ -134,9 +148,10 @@ cd kai
 copilot --plugin-dir .
 ```
 
-`--plugin-dir` loads the plugin from a source checkout without installing it,
-which is the fastest loop when changing kai itself. Agents are exposed as
-`kai:<name>`.
+This **loads** the plugin without installing it, so it is the fastest loop when
+changing kai — edits show up in the next session with no reinstall. It is not a
+persistent install: `--plugin-dir` has to be passed every time you start the
+CLI. Agents are exposed as `kai:<name>`.
 
 > Plugins are cached per session — changes appear only in new sessions. Run
 > `/plugin` anytime to list, enable, or update plugins.
@@ -154,20 +169,20 @@ degrade when a capability is absent.
 
 ## Updating
 
-To pull a new release:
+A marketplace install has **two** caches: the marketplace's catalog, and the
+plugin itself. Refresh the catalog first, or the update has nothing new to find:
 
 ```powershell
+copilot plugin marketplace update kai-plugins
 copilot plugin update kai
 ```
 
-Or `/plugin update kai` from inside the CLI. Plugins are cached per session —
-changes only appear in **new** sessions.
+Plugins are cached per session — changes only appear in **new** sessions.
 
-The host auto-updates plugins from its two built-in marketplaces at session
-start. A marketplace you added yourself, like kai's, can opt into the same
-behaviour with `autoUpdate: true` on its `extraKnownMarketplaces` entry in your
-user settings. That is the host's documented behaviour rather than something
-kai controls, and it is not verified here — `copilot plugin update kai` is.
+The host auto-updates plugins from its own two built-in marketplaces at session
+start. A marketplace you added yourself is documented to opt in via
+`autoUpdate: true`, but that setting **does not currently work** — it is an open
+bug in the CLI, so run the two commands above rather than relying on it.
 
 ## Upgrading a workspace after a plugin update
 

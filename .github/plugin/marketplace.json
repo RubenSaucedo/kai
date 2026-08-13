@@ -1,11 +1,11 @@
 {
-  "name": "kai",
+  "name": "kai-plugins",
   "owner": {
     "name": "RubenSaucedo",
     "url": "https://github.com/RubenSaucedo"
   },
   "metadata": {
-    "description": "The kai plugin, published from its own repository.",
+    "description": "Plugins published by RubenSaucedo. Currently one: kai.",
     "version": "0.50.0"
   },
   "plugins": [

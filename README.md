@@ -10,7 +10,7 @@ service. It contains no employer-specific knowledge and ships no MCP servers.
 
 ```text
 copilot plugin marketplace add RubenSaucedo/kai
-copilot plugin install kai@kai
+copilot plugin install kai@kai-plugins
 ```
 
 **[Get started →](docs/getting-started.md)** ·
@@ -42,7 +42,7 @@ kai publishes one for itself: no approval, no waiting.
 
 ```text
 copilot plugin marketplace add RubenSaucedo/kai
-copilot plugin install kai@kai
+copilot plugin install kai@kai-plugins
 ```
 
 A marketplace install was measured to be a **full repository checkout** — all
@@ -91,12 +91,12 @@ Release history and the reasoning behind each change live in
 
 ```text
 copilot plugin marketplace add RubenSaucedo/kai
-copilot plugin install kai@kai
+copilot plugin install kai@kai-plugins
 ```
 
 kai publishes its own marketplace index, because the host has deprecated direct
 `owner/repo` installs. The direct form still works today and prints a
-deprecation warning; see [Getting started](docs/getting-started.md#installing)
+deprecation warning; see [Getting started](docs/getting-started.md#install)
 for it and for the coding-agent path.
 
 **2. Initialize** the repo or durable folder you want kai to work in:
