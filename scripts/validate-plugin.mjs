@@ -532,6 +532,43 @@ if (!existsSync(pjPath)) {
         }
       }
     }
+
+    // The marketplace index is how kai is installed once the host removes
+    // direct installs, and it carries its own copy of the version, name and
+    // description. A stale entry does not fail an install -- it succeeds and
+    // reports the wrong version, which is worse than a broken one.
+    const MARKETPLACE_REL = '.github/plugin/marketplace.json';
+    const mktPath = join(ROOT, MARKETPLACE_REL);
+    if (!existsSync(mktPath)) {
+      err(MARKETPLACE_REL, 'missing — kai publishes itself as a marketplace so it can be installed without a deprecated direct install');
+    } else {
+      let mkt;
+      try { mkt = JSON.parse(readFileSync(mktPath, 'utf8')); }
+      catch (e) { err(MARKETPLACE_REL, `invalid JSON: ${e.message}`); }
+      if (mkt) {
+        if (!mkt.name) err(MARKETPLACE_REL, 'missing "name" (required by the host)');
+        if (!mkt.owner?.name) err(MARKETPLACE_REL, 'missing "owner.name" (the host refuses a marketplace without it)');
+        const entries = Array.isArray(mkt.plugins) ? mkt.plugins : null;
+        if (!entries) err(MARKETPLACE_REL, 'missing "plugins" array (required by the host)');
+        else {
+          const self = entries.find((p) => p?.name === pj.name);
+          if (!self) {
+            err(MARKETPLACE_REL, `no entry named "${pj.name}" — the index must list this plugin or \`plugin install ${pj.name}@${mkt.name ?? 'kai'}\` cannot resolve`);
+          } else {
+            if (!self.source) err(MARKETPLACE_REL, `entry "${pj.name}" is missing "source" (required by the host)`);
+            if (self.version !== pj.version) {
+              err(MARKETPLACE_REL, `entry "${pj.name}" version "${self.version ?? 'missing'}" must equal plugin.json version "${pj.version}" — a stale index installs fine and reports the wrong version`);
+            }
+            if (self.description !== pj.description) {
+              err(MARKETPLACE_REL, `entry "${pj.name}" description must match plugin.json — it is what \`marketplace browse\` shows before anyone installs`);
+            }
+          }
+        }
+        if (mkt.metadata && mkt.metadata.version && mkt.metadata.version !== pj.version) {
+          err(MARKETPLACE_REL, `metadata.version "${mkt.metadata.version}" must equal plugin.json version "${pj.version}"`);
+        }
+      }
+    }
   }
 }
 

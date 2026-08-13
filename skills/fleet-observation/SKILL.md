@@ -81,18 +81,25 @@ If someone asks you to "start the observer", they mean the watcher.
 ## Finding the scripts without a clone
 
 kai ships as a plugin, and a plugin install is a full repository checkout, so
-`scripts/` is always present. It is just not in the user's project.
+`scripts/` is always present. It is just not in the user's project. This was
+**measured for both install kinds**: a marketplace install ships `scripts/` and
+`hooks.json` exactly as a direct install does.
 
 Look in this order and use the first hit:
 
 1. `./scripts/observe-watch.mjs` — the user is working inside the kai repo.
 2. `$COPILOT_HOME/installed-plugins/**/scripts/observe-watch.mjs`, falling back
    to `~/.copilot/installed-plugins/**/` when `COPILOT_HOME` is unset. The
-   directory is named after the source, for example `_direct/RubenSaucedo--kai`.
+   directory is named after the source: `<marketplace>/<plugin>` for a
+   marketplace install, for example `kai/kai`, and `_direct/RubenSaucedo--kai`
+   for the deprecated direct form.
+3. The `--plugin-dir` argument of the running session, if you can see it — a
+   contributor may be running kai from a source checkout that is neither the
+   working directory nor an install.
 
 Search for the file rather than hardcoding the directory name: it changes with
-the install source, and a marketplace install will not look like a direct one.
-Never ask the user to clone the repository, and never install anything.
+the install source. Never ask the user to clone the repository, and never
+install anything.
 
 ## Turning it on
 

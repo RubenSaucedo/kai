@@ -4,7 +4,52 @@ All notable changes to the **kai** plugin are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Being pre-1.0,
 minor bumps (`0.x`) carry features and patch bumps carry fixes.
 
+## [0.50.0] - 2026-08-13
+
+### Added
+
+- **kai publishes its own marketplace index**, at
+  `.github/plugin/marketplace.json`. The host has deprecated direct
+  `owner/repo` installs — the form every instruction kai shipped used — and
+  announced no removal date, so the documented install path was scheduled to
+  break on someone else's clock, for new users, all at once. Installing is now:
+
+  ```
+  copilot plugin marketplace add RubenSaucedo/kai
+  copilot plugin install kai@kai
+  ```
+
+  A marketplace is just a repository containing that index, so this needs
+  nobody's approval and works today. The direct form is kept as a documented
+  fallback, with its warning explained, for as long as the host honours it.
+  (#102)
+
+- **A CI rule keeps the index honest.** The marketplace entry carries its own
+  copy of the version, name and description; a stale one does not fail an
+  install, it succeeds and reports the wrong version, which is worse than a
+  clean break. Validation now requires the entry to exist, to name a `source`,
+  and to match `plugin.json` on version and description.
+
+### Fixed
+
+- **`fleet-observation` no longer guesses at the install layout.** It said a
+  marketplace install "will not look like a direct one" without knowing how.
+  Both kinds were measured: a marketplace install **is** a full repository
+  checkout — 56 agents, `scripts/`, `hooks.json` — so the watcher is reachable
+  either way, which is the assumption that skill's central promise rests on.
+  The directory is `<marketplace>/<plugin>` (`kai/kai`) rather than
+  `_direct/RubenSaucedo--kai`. A `--plugin-dir` source checkout is now listed
+  as a third place to look, which contributors hit and the list had missed.
+
+### Changed
+
+- Install instructions in `README.md` and `docs/getting-started.md` lead with
+  the marketplace form. The local-checkout instructions now use
+  `copilot --plugin-dir .`, which is the loop contributors actually use, rather
+  than `/plugin install .` — itself a deprecated direct install.
+
 ## [0.49.3] - 2026-08-13
+
 
 ### Fixed
 
@@ -2240,6 +2285,7 @@ version pin is required.
   web-evaluation tracks, and the `workspace-conventions` + `workflow-workspace-init`
   workspace contract.
 
+[0.50.0]: https://github.com/RubenSaucedo/kai/compare/v0.49.3...v0.50.0
 [0.49.3]: https://github.com/RubenSaucedo/kai/compare/v0.49.2...v0.49.3
 [0.49.2]: https://github.com/RubenSaucedo/kai/compare/v0.49.1...v0.49.2
 [0.49.1]: https://github.com/RubenSaucedo/kai/compare/v0.49.0...v0.49.1

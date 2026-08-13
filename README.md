@@ -9,8 +9,8 @@ kai is **declarative**: agents and skills are markdown, not a framework or a
 service. It contains no employer-specific knowledge and ships no MCP servers.
 
 ```text
-copilot
-/plugin install RubenSaucedo/kai
+copilot plugin marketplace add RubenSaucedo/kai
+copilot plugin install kai@kai
 ```
 
 **[Get started →](docs/getting-started.md)** ·
@@ -31,10 +31,27 @@ Everything is indexed in **[docs/](docs/README.md)**.
 
 ## Status
 
-`v0.49.3` — **56 agents and 49 skills**, for the **Copilot CLI** and the
+`v0.50.0` — **56 agents and 49 skills**, for the **Copilot CLI** and the
 **Copilot coding agent** (cloud).
 
-A rendering fix, reported from a real macOS run.
+**kai now installs from its own marketplace.** The host has deprecated direct
+`owner/repo` installs — the form every instruction kai shipped used — with no
+removal date, so the documented path was scheduled to break on someone else's
+clock. A marketplace is just a repository with a `marketplace.json` index, so
+kai publishes one for itself: no approval, no waiting.
+
+```text
+copilot plugin marketplace add RubenSaucedo/kai
+copilot plugin install kai@kai
+```
+
+A marketplace install was measured to be a **full repository checkout** — all
+56 agents and `scripts/` — so the fleet observer stays reachable without a
+clone. The direct form remains documented as a fallback while the host honours
+it, and a CI rule keeps the index from drifting out of step with the version it
+claims to ship.
+
+Before that, a rendering fix reported from a real macOS run.
 
 The live fleet view scrolled instead of updating in place: it cleared the
 screen with `ESC[2J`, and macOS Terminal implements that by pushing the erased
@@ -73,8 +90,14 @@ Release history and the reasoning behind each change live in
 **1. Install**, then start a *new* session — plugins load per session:
 
 ```text
-/plugin install RubenSaucedo/kai
+copilot plugin marketplace add RubenSaucedo/kai
+copilot plugin install kai@kai
 ```
+
+kai publishes its own marketplace index, because the host has deprecated direct
+`owner/repo` installs. The direct form still works today and prints a
+deprecation warning; see [Getting started](docs/getting-started.md#installing)
+for it and for the coding-agent path.
 
 **2. Initialize** the repo or durable folder you want kai to work in:
 
