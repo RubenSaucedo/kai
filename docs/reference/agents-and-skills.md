@@ -217,7 +217,7 @@ Per-change discipline every `principal-swe-*` agent inherits.
 | [`pr-sizing`](../../skills/pr-sizing/SKILL.md) | PR sizing method. Use when planning a feature, large refactor, or multi-file change into independently shippable, reviewable increments. |
 | [`kai-core-pr-delivery`](../../skills/kai-core-pr-delivery/SKILL.md) | PR delivery hygiene contract. Use when a finished change needs branch naming, conventional-commit title, PR body, verification, and protection-safe handoff. |
 | [`onboard-to-codebase`](../../skills/onboard-to-codebase/SKILL.md) | Fast codebase onboarding report. Use when mapping an unfamiliar repo's stack, commands, architecture, conventions, patterns, and gotchas for future sessions. |
-| [`build-diagrams`](../../skills/build-diagrams/SKILL.md) | Shared diagram vocabulary and ASCII-first rules. Use when writing design, decision, or engineering docs that need system shape, data, flow, state, or topology diagrams. |
+| [`build-diagrams`](../../skills/build-diagrams/SKILL.md) | Shared diagram vocabulary and ASCII-first rules. Use when writing a design, decision, or engineering doc, or a README, needing system, data, flow, state, or topology diagrams. |
 
 ### Document review
 
