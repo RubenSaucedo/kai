@@ -147,14 +147,17 @@ See it for real in
 committed, CI-validated workspace carrying one feature from brief to production,
 with an adjacent idea deliberately routed to a proposal instead of being built.
 
-```
- you ─► director-chief-of-staff ─► PM (scope) ─► designer ─► engineering
-                                                                  │
-                    QA · security · SRE review, bound to a revision│
-                                                                  ▼
-              workflow-ship ─► release-ready + deploy steps ─► you deploy
-                                                                  ▼
-                              production verification ─► shipped
+```text
+  you ─► director-chief-of-staff ─► PM (scope) ─► designer ─► engineering
+                                                                   │
+   ┌───────────────────────────────────────────────────────────────┘
+   │  QA · security · SRE review, bound to a revision
+   ▼
+  workflow-ship ─► release-ready + deploy steps ─► you deploy
+                                                        │
+   ┌────────────────────────────────────────────────────┘
+   ▼
+  production verification ─► shipped
 ```
 
 **[Every flow and the full trigger table →](docs/how-kai-works.md)**
