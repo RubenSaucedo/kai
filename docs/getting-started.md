@@ -112,7 +112,8 @@ nothing needs cloning — that is what lets `fleet-observation` find the watcher
 
 **Already installed the direct way?** Registering the marketplace does not move
 an existing install onto it: the installed plugin keeps the source it came
-from. To switch, uninstall and reinstall:
+from. **Uninstall first** — installing over the top does not replace the old
+copy, it leaves you with *both* (`kai` and `kai@kai-plugins`) loaded at once:
 
 ```powershell
 copilot plugin uninstall kai
@@ -123,6 +124,10 @@ copilot plugin install kai@kai-plugins
 This touches only the plugin. Your workspace — `.kai/` and `kai/` — lives in
 your repository and is untouched by either command. Start a new session
 afterwards.
+
+If you already ended up with both, `copilot plugin uninstall kai` removes the
+direct one and leaves the marketplace install in place; `copilot plugin list`
+shows which you have.
 
 **Install directly from GitHub (deprecated by the host):**
 

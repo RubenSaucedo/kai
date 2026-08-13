@@ -49,7 +49,9 @@ A marketplace install was measured to be a **full repository checkout** — all
 56 agents and `scripts/` — so the fleet observer stays reachable without a
 clone. The direct form remains documented as a fallback while the host honours
 it, and a CI rule keeps the index from drifting out of step with the version it
-claims to ship.
+claims to ship. If you already installed the direct way, **uninstall first** —
+installing over the top leaves you with both copies; see
+[Getting started](docs/getting-started.md#install).
 
 Before that, a rendering fix reported from a real macOS run.
 
@@ -170,8 +172,10 @@ You do not need to learn them. Ask a front door for an outcome and it routes.
 
 See **[Getting started → Install](docs/getting-started.md#install)** for the
 Copilot CLI, the cloud coding agent, and the optional audio and browser-automation
-setup. To update an already-installed plugin, run `/plugin update kai` and start
-a new session; to migrate an existing workspace after an update, see
+setup. To update an already-installed plugin, refresh the catalog and then the
+plugin — `copilot plugin marketplace update kai-plugins` followed by
+`copilot plugin update kai` — and start a new session; to migrate an existing
+workspace after an update, see
 **[Upgrading a workspace](docs/getting-started.md#upgrading-a-workspace-after-a-plugin-update)**.
 
 ## Workspace

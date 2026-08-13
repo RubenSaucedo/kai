@@ -90,16 +90,17 @@ Look in this order and use the first hit:
 1. `./scripts/observe-watch.mjs` — the user is working inside the kai repo.
 2. `$COPILOT_HOME/installed-plugins/**/scripts/observe-watch.mjs`, falling back
    to `~/.copilot/installed-plugins/**/` when `COPILOT_HOME` is unset. The
-   directory is named after the source: `<marketplace>/<plugin>` for a
-   marketplace install, for example `kai/kai`, and `_direct/RubenSaucedo--kai`
-   for the deprecated direct form.
+   directory is named after the source. Two layouts have been observed:
+   `kai-plugins/kai` for a marketplace install and `_direct/RubenSaucedo--kai`
+   for the deprecated direct form. Treat those as examples, not as a contract —
+   the host has never documented the layout.
 3. The `--plugin-dir` argument of the running session, if you can see it — a
    contributor may be running kai from a source checkout that is neither the
    working directory nor an install.
 
-Search for the file rather than hardcoding the directory name: it changes with
-the install source. Never ask the user to clone the repository, and never
-install anything.
+**Always search for the file by name**; never build the path from the names
+above. They are what was seen on one machine, and the host is free to change
+them. Never ask the user to clone the repository, and never install anything.
 
 ## Turning it on
 
