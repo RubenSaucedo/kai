@@ -39,9 +39,10 @@ this format priority:
 
 3. **Embedded HTML/SVG — only when the artifact is itself HTML.** If the
    design deliverable is an HTML document (not a `.md`), embed the
-   diagram as inline SVG or HTML. Never emit a separate binary image
-   file as the diagram of record for a Markdown design — it doesn't diff
-   and it drifts from the text.
+   diagram as inline SVG or HTML, using `html-block-diagrams` for the
+   shapes and the stylesheet. Never emit a separate binary image file as
+   the diagram of record for a Markdown design — it doesn't diff and it
+   drifts from the text.
 
 Each diagram gets a **one-line caption above it** naming what it shows,
 and stays within ~80 columns. One concept per diagram — split rather

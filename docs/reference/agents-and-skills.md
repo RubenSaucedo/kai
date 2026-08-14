@@ -7,7 +7,7 @@
      scripts/generate-catalog.mjs. Regenerate with `npm run docs:generate`;
      `npm test` fails if this file drifts from the shipped surface. -->
 
-kai ships **56 agents** and **49 skills** (11 of the skills are directly user-invocable; the rest are inherited by the agents that need them).
+kai ships **56 agents** and **50 skills** (11 of the skills are directly user-invocable; the rest are inherited by the agents that need them).
 
 Each description below is the agent or skill's own shipped `description:` —
 the exact text the host reads when deciding whether to fire it. You do not
@@ -244,6 +244,7 @@ Design-system grounding and human-confirmable mockups, with the frontend seam.
 | ---- | ------------ |
 | [`kai-core-design-grounding`](../../skills/kai-core-design-grounding/SKILL.md) | Design-system grounding contract. Use when design, frontend, or brand work must consume, derive, or propose changes to an app's settled visual language. |
 | [`ui-mockup`](../../skills/ui-mockup/SKILL.md) | Provides human-confirmable UI mockup discipline. Use when pre-implementation design choices need ASCII or offline HTML options before a decision. |
+| [`html-block-diagrams`](../../skills/html-block-diagrams/SKILL.md) | Block-diagram vocabulary for HTML artifacts: five CSS arrangements and a self-contained palette. Use when an HTML artifact or an exported image needs a rich diagram. |
 
 ### Web & content
 
