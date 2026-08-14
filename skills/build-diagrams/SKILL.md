@@ -113,7 +113,7 @@ show what talks to what and where the boundary you're changing sits.
 
 ```text
         ┌─────────────┐   POST /orders   ┌──────────────┐
-  Web ─▶│  API gateway │ ───────────────▶ │ Order service│
+  Web ─►│  API gateway │ ───────────────► │ Order service│
         └─────────────┘                   └──────┬───────┘
                                                  │ writes
                                                  ▼
@@ -130,10 +130,10 @@ request/response ordering, event propagation, retries, and failure paths.
 ```text
   Client        API          Worker        Queue
     │  request    │             │            │
-    │────────────▶│  enqueue    │            │
-    │             │─────────────────────────▶│
+    │────────────►│  enqueue    │            │
+    │             │─────────────────────────►│
     │  202        │             │  dequeue   │
-    │◀────────────│             │◀───────────│
+    │◄────────────│             │◄───────────│
     │             │             │  process   │
 ```
 
@@ -157,7 +157,7 @@ States are nodes; labeled arrows are transitions. Use it for anything
 with a status field or a workflow lifecycle.
 
 ```text
-  [draft] ──submit──▶ [in-review] ──approve──▶ [released]
+  [draft] ──submit──► [in-review] ──approve──► [released]
      ▲                     │
      └──────reject─────────┘
 ```
@@ -170,7 +170,7 @@ subnets, availability zones, managed services, trust boundaries.
 ```text
   ┌── VPC ──────────────────────────────────────────┐
   │  ┌── public subnet ──┐   ┌── private subnet ──┐  │
-  │  │      ALB          │──▶│  app  x2 (ASG)      │  │
+  │  │      ALB          │──►│  app  x2 (ASG)      │  │
   │  └───────────────────┘   └─────────┬──────────┘  │
   │                                     ▼             │
   │                            ┌──────────────┐       │
@@ -199,9 +199,12 @@ call/ownership hierarchies.
 - **Boxes:** box-drawing `┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼`; plain `+-- | ` is an
   acceptable fallback where box-drawing is awkward. Don't mix both in one
   diagram.
-- **Arrows:** directed `──▶` / `─▶` / `▼ ▲ ◀`; a plain `───` line for an
+- **Arrows:** directed `──►` / `─►` / `▼ ▲ ◄`; a plain `───` line for an
   undirected association. Label the arrow with the call, event, or verb
-  when it isn't obvious.
+  when it isn't obvious. Use the *pointer* glyphs `U+25BA` / `U+25C4`,
+  not the triangles `U+25B6` / `U+25C0` — the triangles are emoji bases,
+  so some fonts and terminals render them double-width and every column
+  to their right shifts.
 - **Cardinality (ER):** put `1` and `*` at the ends of the connector
   (`1──*` one-to-many, `*──*` many-to-many).
 - **Emphasis:** a state or note rides beside a node as `state: selected`,
