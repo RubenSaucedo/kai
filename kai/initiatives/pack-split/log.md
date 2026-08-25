@@ -1767,3 +1767,94 @@ would only drift from the sanitized artifact. **Activity log not appended** — 
 writes via `scripts/activity.mjs` and there was no shell; per that skill a failed append is reported
 and dropped, never retried and never allowed to gate the work, so this entry was written by hand as
 prior runs on this initiative did.
+
+## 2026-08-25 — DoD gate: degraded-refusal RELEASE-READY (PR #158 open, awaiting the human merge and `v0.61.0`)
+
+`workflow-ship` ran **PREPARE** and the verdict is **RELEASE-READY** — all six dimensions **Clear**,
+none waived. Item **v8 -> v9, `in-review -> release-ready`**, lease `null`, `resume_state: null`,
+`next_role: workflow-ship -> "@operator"`, acceptance criteria **1–6 all ticked**. **It is NOT
+shipped.** kai merged nothing, tagged nothing, released nothing, published nothing and deployed
+nothing; the deploy steps belong to the operator. Ship record:
+`kai/library/releases/2026-08-25/03-ship-pack-split-degraded-refusal/ship-record.md` (written at
+`…/03-ship-pack-split-degraded-refusal.md`; its one-command move into that directory is deploy
+step 2, inside the same records commit, because this environment cannot create directories).
+
+**The one thing that closed since the security review is the one thing only CI could close.**
+`principal-security` explicitly predicted a DoD bounce on the unticked local-command and
+CI-green-on-the-pushed-PR criteria — correct when written, because no branch commit and no PR
+existed. Since then the operator committed **`75053e08551e6865df501e85d25888b19693af72`**, pushed
+`kai/feat/29-degraded-refusal` and opened **PR #158** — open, `draft: false`, `mergeable: true`,
+`mergeable_state: clean`, **1 commit**, **+2152/-100 across 17 files**, base
+`e679de9d41187614e9765e00ec3e20dafff9ec0c` = current local `main`, so exactly one commit ahead with
+no divergence — and check run `contract` **`97997128517`** (run **`32908330221`**) completed
+**`conclusion: success`** in **12s** at that exact head, with `total_count: 1`, so it is the *only*
+check on the head and no second red check hides behind it. **Read here from `api.github.com`, not
+accepted on report.** Its single annotation is a **warning** — the Node-20 runner deprecation on
+`actions/checkout@v4` / `setup-node@v4` — pre-existing, unrelated, and matching the `node-version`
+vs `engines` mismatch infra recorded and correctly did not route.
+
+**`change_ref` deliberately unchanged** at `8d3ef4844988f4974e6bec8f406a7723dee4e942`. Both required
+reviews bind that object and `change_ref` moves only when the implementation changes; the operator
+attests every implementation and release file at the PR head is byte-identical to it. **That
+attestation is not fully re-derivable here** — no shell, so the `git stash create` object cannot be
+decoded — and both reviewers bound conditionally on it, so it is converted into **deploy step 1**,
+a `git diff --exit-code` over the ten implementation/release paths that fails closed and voids both
+bindings if it is ever untrue. Partial corroboration was obtained: `scripts/lib/degraded-block.txt`
+read at the PR head via `raw.githubusercontent.com` is identical to the worktree copy both reviews
+were read from.
+
+**Scope was derived, not asserted.** The API reports 17 changed files; the list runs
+`.github/plugin/marketplace.json` -> `CHANGELOG.md` -> `README.md` -> `kai/coordination/ACTIVE.md`
+with **nothing between `README.md` and `kai/`** — so no `agents/`, `docs/`, `examples/` or
+`hooks.json` — and **terminates at `scripts/validate-plugin.mjs`** — so no `packs/`, `skills/` or
+`test/`. That leaves exactly 11 interior slots for the 11 remaining expected paths. Non-negotiables
+re-read on disk: `COMMITTED_PACKS = []` (`pack-plan.mjs:117`), no `packs/` tree, marketplace still
+**exactly one** plugin at `source: "."` with a version-only patch, groundwork still on `0.x`, all 56
+agents and 51 skills byte-unchanged, `0.61.0` coherent across all six version locations with the
+README stamp and a non-dangling `[0.61.0]` compare link (`v0.60.0` = `d5cd9590…` exists).
+`.github/workflows/validate.yml` was **declared in `touches` but not changed** — the workflow already
+runs `validate-plugin`, `--self-test` and `--check`, so **still no new CI step**.
+
+**The truth constraints the security review attached were honoured verbatim.** The ship record and
+the mandated release-note language claim **carriage, order, count and text** — every generated
+department agent **carries a pinned, correctly ordered refusal instruction that cannot drift from
+core** — and never that an agent *refuses*, *detects* contract loss, or *degrades gracefully*: the
+trigger is **model-evaluated self-report**, its effectiveness is **unmeasured**, and the CI pin is on
+the text being present, unique, ordered and unaltered, never on a model obeying it. `pack-preview
+--check` is recorded as passing and **explicitly not counted** as evidence of injection or pinning —
+it is vacuous while `COMMITTED_PACKS` is `[]` (`pack-preview.mjs:281-283`). Deploy step 6 further
+forbids the release note from saying "every pack" without "department", or implying any pack is
+generated, committed, published, or that the split is done.
+
+**Rollout and rollback, right-sized.** Big-bang is justified — a build-time gate has no runtime path,
+no cohort and no data, so a canary, a flag, a ring and a runbook were **not invented**; reversibility
+is total (`git revert` before tagging, or revert plus tag/release deletion after), and a rollback
+undoes nothing durable because nothing here reaches an installed agent body. The honest blast radius
+is this repo's CI, the next contributor who edits the block or its order, and
+`pack-split-ci-partition-checks`'s shared files.
+
+**Nothing was dropped.** **Six PROPOSALs** were parked in `kai/initiatives/pack-split/backlog.md` —
+**A1** (core agents carry no degraded coverage; security adds that core holds
+`director-chief-of-staff` and `workflow-workspace-init`, so the uncovered blast radius there is
+*larger* per agent) and **E1** (the northstar's "every pack" against a department-only ship, the same
+wording question as the CHANGELOG headline), both to `principal-product-manager`; the **§147/§157
+errata** as a rider on whatever item next edits that proposal; **P2-D1** into
+`pack-split-host-gates`; **P2-D2** and **P2-D3** onto whatever next reopens the canonical block. A
+seventh finding — **P2-S1/N1**, now gating *two* guarantees at `validate-plugin.mjs:443`, plus **N3**
+(`injectPreflight` surviving as an exported single-block affordance) — was recorded as a
+**blast-radius update on the proposal already parked** at the `preflight-compat` gate rather than
+duplicated. **No item was created; filing is the steward's.** Also carried forward honestly: the
+"restates no rule" guarantee is a **shape** check — architecture accepted the residual and corrected
+it as *wider* than reported — so a deliberately authored English clause inside the limits is caught
+by review, not by machine.
+
+**Milestone `dependency-guarantees` stays at 3 of 5 required items `shipped`** — `release-ready` is
+not `shipped`. **No dependent is cleared:** `pack-split-generated-pack-trees` requires this item at
+`shipped` and stays `proposed` at three of six met, outside `scope.current`;
+`pack-split-ci-partition-checks` remains dispatchable-but-undispatched and its touch-conflict check
+on `scripts/lib/pack-plan.mjs`, `scripts/validate-plugin.mjs` and `scripts/pack-preview.mjs` applies
+harder, not less, because those files moved again. **No dependent item record was edited.**
+
+**Activity log not appended** — `kai-core-work-activity` writes via `scripts/activity.mjs` and there
+was no shell; per that skill a failed append is reported and dropped, never retried and never allowed
+to gate the work, so this entry was written by hand as prior runs on this initiative did.

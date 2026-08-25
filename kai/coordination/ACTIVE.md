@@ -573,3 +573,54 @@ CI-green criteria is the correct mechanical outcome, not a security objection.
 `scripts/validate-plugin.mjs` and `scripts/pack-preview.mjs`, so its touch-conflict check at dispatch
 still applies. Nothing was committed, pushed, merged, tagged, released or published, and this review
 edited no implementation or release file.
+**DoD gate 2026-08-25-1554 (`workflow-ship`, PREPARE): `pack-split-degraded-refusal` is
+`in-review -> release-ready` — all six dimensions Clear, none waived.** Item **v8 -> v9**, lease
+`null`, `resume_state: null`, `next_role: workflow-ship -> "@operator"`, acceptance criteria **1–6
+all ticked**. **It is NOT shipped:** kai merged nothing, tagged nothing, released nothing, published
+nothing and deployed nothing — the deploy steps are the operator's. Ship record at
+`kai/library/releases/2026-08-25/03-ship-pack-split-degraded-refusal/ship-record.md`, promoted to
+its canonical path inside the same records
+commit (this environment cannot create directories). **The security review's predicted bounce did
+not happen, because the one thing only CI could close has closed:** the operator committed
+**`75053e08551e6865df501e85d25888b19693af72`**, pushed `kai/feat/29-degraded-refusal` and opened
+**PR #158** (open, `draft: false`, `mergeable: true`, `mergeable_state: clean`, 1 commit,
+**+2152/-100 across 17 files**, base `e679de9d…` = current local `main`, exactly one commit ahead
+with no divergence), and check run `contract` **`97997128517`** (run **`32908330221`**) concluded
+**`success`** in **12s** at that exact head with `total_count: 1` — the only check on the head, so no
+second red check hides behind it — **read from `api.github.com` here, not accepted on report**; its
+single annotation is the pre-existing Node-20 runner deprecation **warning**, not a failure.
+**`change_ref` deliberately unchanged** at `8d3ef4844988f4974e6bec8f406a7723dee4e942`: both reviews
+bind that object, `change_ref` moves only when the implementation changes, and head-vs-ref
+byte-identity — **operator-attested and not fully re-derivable here** (no shell, the `git stash
+create` object cannot be decoded) — is converted into **deploy step 1**, a `git diff --exit-code`
+that fails closed and voids both bindings if untrue; partial corroboration obtained by reading
+`scripts/lib/degraded-block.txt` at the PR head and matching the worktree copy both reviews used.
+**Scope was derived, not asserted:** the changed-file list runs `marketplace.json -> CHANGELOG.md ->
+README.md -> kai/coordination/ACTIVE.md` with **nothing between `README.md` and `kai/`** (no
+`agents/`, `docs/`, `examples/`, `hooks.json`) and **terminates at `scripts/validate-plugin.mjs`**
+(no `packs/`, `skills/`, `test/`), leaving exactly 11 interior slots for the 11 remaining expected
+paths; `COMMITTED_PACKS` still `[]`, no `packs/` tree, marketplace still **N=1** at `source: "."`,
+all 56 agents and 51 skills **byte-unchanged**, `0.61.0` coherent across all six version locations
+with a non-dangling `[0.61.0]` compare link, and `.github/workflows/validate.yml` declared but
+**not** changed — still no new CI step. **The security truth-binding is honoured verbatim:** the
+record and the mandated release-note language claim **carriage, order, count and text** — every
+generated **department** agent **carries a pinned, correctly ordered refusal instruction that cannot
+drift from core** — and never that an agent *refuses*, *detects* contract loss or *degrades
+gracefully*; the trigger is model-evaluated self-report and its effectiveness is **unmeasured**.
+`pack-preview --check` is recorded as passing and **explicitly not counted** as evidence of injection
+or pinning (vacuous at `pack-preview.mjs:281-283`). **Nothing dropped:** **six PROPOSALs** parked in
+`kai/initiatives/pack-split/backlog.md` — **A1** (core agents carry no degraded coverage; core holds
+`director-chief-of-staff` and `workflow-workspace-init`, so its uncovered blast radius is *larger*
+per agent) and **E1** (northstar "every pack" vs a department-only ship, the same wording question
+the CHANGELOG headline raises) to `principal-product-manager`; the **§147/§157 errata** as a rider;
+**P2-D1** into `pack-split-host-gates`; **P2-D2** and **P2-D3** onto whatever next reopens the
+canonical block — plus **P2-S1/N1 + N3** recorded as a **blast-radius update on the already-parked
+pin-pattern proposal** rather than duplicated. **No item was created; filing is the steward's.**
+**Milestone `dependency-guarantees` stays at 3 of 5 required items `shipped`** — `release-ready` is
+not `shipped`, so `pack-split-generated-pack-trees` is **not** cleared (still `proposed`, three of six
+met, outside `scope.current`) and `pack-split-ci-partition-checks` remains
+dispatchable-but-undispatched with its touch-conflict check on `scripts/lib/pack-plan.mjs`,
+`scripts/validate-plugin.mjs` and `scripts/pack-preview.mjs` applying **harder, not less**. No
+dependent item record was edited. **Next: `@operator`** — run deploy steps 1–6, then return the
+deployment evidence for `workflow-ship` CONFIRM-START and CONFIRM-COMPLETE. Do not mark the item
+`shipped` by hand.

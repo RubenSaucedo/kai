@@ -5,11 +5,11 @@ title: Canonical degraded-mode refusal block shipped in every pack, CI-pinned
 initiative: pack-split
 milestone: dependency-guarantees
 delivery_class: product-change
-state: in-review
+state: release-ready
 resume_state: null
 priority: 40
 owner: principal-swe-infra
-next_role: workflow-ship
+next_role: "@operator"
 target: pack-split degraded-mode refusal
 artifact_target: null
 context_artifacts:
@@ -19,6 +19,7 @@ context_artifacts:
   - scripts/lib/pack-plan.mjs
   - scripts/pack-preview.mjs
   - kai/library/releases/2026-08-24/01-ship-pack-split-generator-gates/ship-record.md
+  - kai/library/releases/2026-08-25/03-ship-pack-split-degraded-refusal/ship-record.md
 touches:
   - scripts/lib/degraded-block.txt
   - scripts/lib/pack-plan.mjs
@@ -60,9 +61,9 @@ completed_reviews:
     evidence: "kai/initiatives/pack-split/artifacts/security/pack-split-degraded-refusal.md"
     timestamp: 2026-08-25-1540
 change_ref: 8d3ef4844988f4974e6bec8f406a7723dee4e942
-version: 8
+version: 9
 lease: null
-updated: 2026-08-25-1540
+updated: 2026-08-25-1554
 ---
 
 ## Outcome
@@ -84,29 +85,49 @@ green" criterion is **split**, because that exact bundling bounced `generator-ga
 2026-08-24-2244 DoD gate — two claims with two different evidence sources cannot share one
 checkbox.*
 
-- [ ] `scripts/lib/degraded-block.txt` exists, restates no operating rules, and instructs single-shot
-      refusal + "install kai-core" only.
-- [ ] Every generated pack agent carries the verbatim block, copied in by the **authoritative
+- [x] `scripts/lib/degraded-block.txt` exists, restates no operating rules, and instructs single-shot
+      refusal + "install kai-core" only. — 840-byte canonical file on disk and byte-identical at PR
+      head `75053e08…`; `degradedBlockErrors()` (`scripts/lib/pack-plan.mjs:360-371`) is enforced by
+      `scripts/validate-plugin.mjs:428-437` and ran green in `npm test` (exit 0) and in CI run
+      `32908330221`.
+- [x] Every generated pack agent carries the verbatim block, copied in by the **authoritative
       generator path** (`materializePacks`), so a committed tree — not only a `--all` preview —
       carries it; `validate-plugin.mjs` pins it byte-for-byte from the canonical file, following
-      the existing `scripts/lib/inherits-block.txt` pin precedent.
-- [ ] A CI check asserts the block introduces no coordination rule (drift-proof by construction).
-- [ ] The block is present in every pack agent body produced by
-      `node scripts/pack-preview.mjs --all --out <dir>`.
-- [ ] `node scripts/pack-preview.mjs --self-test`, `node scripts/validate-plugin.mjs`, and
-      `npm test` pass **locally**.
-- [ ] The `validate` workflow runs **green on the pushed PR** (its own claim, its own evidence —
-      a workflow run, not an assertion).
+      the existing `scripts/lib/inherits-block.txt` pin precedent. — `materializePacks`
+      (`pack-plan.mjs:244-258`) injects `guaranteeBlocks()` (`:280`) via one `injectBlocks()` splice
+      (`:286`) into every non-core agent and neither block into a core agent;
+      `validate-plugin.mjs:440-482` pins exact bytes, exactly one copy, zero in core, and adjacency
+      after the preflight, **over real generator output**. Green in `npm test` and in CI.
+- [x] A CI check asserts the block introduces no coordination rule (drift-proof by construction).
+      — `validate-plugin.mjs:428-437` runs `degradedBlockErrors` on the canonical file inside the
+      existing `Validate plugin contract` step; `pack-preview --self-test` proves the failures by
+      name through mutation. No new CI step was needed or added.
+- [x] The block is present in every pack agent body produced by
+      `node scripts/pack-preview.mjs --all --out <dir>`. — the on-disk `--self-test` arms read every
+      agent a full `--all` build writes, in both directions (present in department, absent in core),
+      plus a drift arm that softens the refusal inside a generated tree and catches it on that exact
+      file; operator generated all five preview trees at 2026-08-25-1525.
+- [x] `node scripts/pack-preview.mjs --self-test`, `node scripts/validate-plugin.mjs`, and
+      `npm test` pass **locally**. — operator-attested, thread HANDOFF 2026-08-25-1525: full
+      `npm test` **exit 0**, which chains all three (`package.json` `test` script). `--check` also
+      passed but is **vacuous** for this item (`pack-preview.mjs:281-283`) and is not counted.
+- [x] The `validate` workflow runs **green on the pushed PR** (its own claim, its own evidence —
+      a workflow run, not an assertion). — check run `contract` **`97997128517`**, run
+      **`32908330221`**, `head_sha 75053e08551e6865df501e85d25888b19693af72`, **`conclusion:
+      success`**, 22:54:13Z -> 22:54:25Z (12s), the only check on that head (`total_count: 1`).
+      Read from `api.github.com` at the ship gate.
 - [x] Version bumped on `0.x` with CHANGELOG + README stamp. — `0.60.0 -> 0.61.0` in
       `plugin.json`, `package.json`, `package-lock.json` (top-level + `packages[""]`),
       `.github/plugin/marketplace.json` (`metadata.version` + the `kai` entry), a dated
       `## [0.61.0] - 2026-08-25` CHANGELOG section with its `[0.61.0]:` compare link, and the
       README `## Status` stamp at `v0.61.0`. File state, readable without running anything.
 
-*Criteria 1–4 are implemented but **unticked deliberately**: the code exists and was read, and
-no command was executed in the build session, so nothing about it is evidenced yet. Criteria 5
-and 6 are untouched. Ticking an implementation claim on an unrun check is what the 2026-08-24-2244
-DoD bounce was about.*
+*Criteria 1–4 were implemented but left unticked by the build session, which ran no commands;
+criteria 5–6 were untouched. **All six are now ticked at the ship gate 2026-08-25-1554**, each
+against its own evidence source: 1–4 on the pins that assert them running green (locally and in
+CI), 5 on the operator's attested `npm test` exit 0, and 6 on the workflow run itself. The
+2026-08-24-2244 DoD bounce was about ticking an implementation claim on an unrun check; no tick
+here rests on a read of the code alone.*
 
 ## Evidence
 
@@ -490,3 +511,59 @@ objection. Milestone `dependency-guarantees` stays at **3 of 5** required items 
   `owner: null`, review requirements, the `requires: shipped` dependency, and the `0.x`
   versioning rule. No architecture decision was made or re-opened; ratified WS#5 stands as
   written.
+
+## Ship gate — 2026-08-25-1554 (`workflow-ship`, PREPARE)
+
+**Verdict: RELEASE-READY. Not deploying, not shipped.** Item **v8 -> v9**,
+`in-review -> release-ready`, `resume_state: null`, lease `null`,
+`next_role: principal-security -> "@operator"`. Full record, with the deploy, abort, rollback and
+production-verification steps:
+`kai/library/releases/2026-08-25/03-ship-pack-split-degraded-refusal/ship-record.md`
+(promoted to its canonical path before merge).
+
+**All six DoD dimensions Clear; none waived.** 1 scope-true, 2 verified, 3 reviewed,
+4 shippable-safely (proportional), 5 documented, 6 coordination-closed.
+
+**What closed since the security review.** Exactly one thing, and only CI could close it.
+`principal-security` correctly predicted a DoD bounce on the unticked local-command and
+CI-green criteria — true when written, because no commit and no PR existed. The operator has
+since committed **`75053e08551e6865df501e85d25888b19693af72`**, pushed
+`kai/feat/29-degraded-refusal` and opened **PR #158** (open, `mergeable_state: clean`, 1 commit,
++2152/-100 across 17 files, base `e679de9d…` = current local `main`), and check run `contract`
+**`97997128517`** (run **`32908330221`**) completed **`conclusion: success`** in **12s** on that
+exact head — `total_count: 1`, so no second red check hides behind it. **Read here from
+`api.github.com`, not accepted on report.**
+
+**`change_ref` deliberately unchanged** at `8d3ef4844988f4974e6bec8f406a7723dee4e942` — both
+reviews bind that object, and `change_ref` moves only when the implementation changes. The
+operator attests every implementation and release file at PR head is byte-identical to it; that
+attestation is **not fully re-derivable here** (no shell — the stash object cannot be decoded),
+so it is converted into **deploy step 1**, a `git diff --exit-code` that fails closed and voids
+both bindings if it is ever untrue. Partial corroboration obtained:
+`scripts/lib/degraded-block.txt` read at the PR head is identical to the worktree copy both
+reviews were read from.
+
+**Truth constraints honoured.** Per the security review's extended `P2-S2`, this record and the
+release note claim **carriage, order, count and text** — every generated department agent
+**carries a pinned, correctly ordered refusal instruction that cannot drift from core** — and
+never that an agent *refuses*, *detects* contract loss, or *degrades gracefully*; the trigger is
+model-evaluated self-report and its effectiveness is unmeasured. `pack-preview --check` is
+recorded as passing and **explicitly not counted** as evidence of injection or pinning
+(vacuous while `COMMITTED_PACKS` is `[]` — `pack-preview.mjs:281-283`).
+
+**Nothing dropped.** Six PROPOSALs parked in `kai/initiatives/pack-split/backlog.md` at this
+gate — **A1** (core-only coverage) and **E1** (northstar "every pack" wording) to
+`principal-product-manager`; the **§147 errata** as a rider; **P2-D1** to `pack-split-host-gates`;
+**P2-D2** and **P2-D3** to `principal-swe-infra` — plus **P2-S1/N1 + N3** recorded as a
+blast-radius update on the pin-pattern proposal already parked there, rather than duplicated. No
+item was created — filing is the steward's.
+
+**Downstream unmoved.** Milestone `dependency-guarantees` stays at **3 of 5** required items
+`shipped` — `release-ready` is not `shipped`. `pack-split-generated-pack-trees` requires this
+item at `shipped` and is not cleared; `pack-split-ci-partition-checks` still overlaps it on
+`scripts/lib/pack-plan.mjs`, `scripts/validate-plugin.mjs` and `scripts/pack-preview.mjs`, so
+its touch-conflict check at dispatch applies harder, not less.
+
+**This gate merged nothing, tagged nothing, released nothing, published nothing and deployed
+nothing**, and edited no implementation or release file. Deployment is the operator's; return the
+evidence for CONFIRM-START and CONFIRM-COMPLETE.

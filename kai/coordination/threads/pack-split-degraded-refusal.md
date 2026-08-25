@@ -320,3 +320,96 @@ Append-only communication log mirroring
              not a ship. `pack-split-ci-partition-checks` still overlaps this item on
              `scripts/lib/pack-plan.mjs`, `scripts/validate-plugin.mjs` and
              `scripts/pack-preview.mjs`, so its touch-conflict check at dispatch still applies.
+
+## HANDOFF 2026-08-25-1554 — workflow-ship -> @operator
+
+- did:       **DoD gate run, all six dimensions — verdict RELEASE-READY.** Item **v8 -> v9**,
+             `in-review -> release-ready`, `resume_state: null`, lease `null`,
+             `next_role: workflow-ship -> "@operator"`; acceptance criteria **1–6 all ticked**,
+             each against its own evidence source. **Nothing was merged, tagged, released,
+             published or deployed, and no implementation or release file was edited.**
+             **The one thing that closed since the security review is the one thing only CI
+             could close.** `principal-security` correctly predicted a bounce on the unticked
+             local-command and CI-green criteria — true when written, because no commit and no
+             PR existed. The operator has since committed
+             **`75053e08551e6865df501e85d25888b19693af72`**, pushed the branch and opened
+             **PR #158** (open, `draft: false`, `mergeable: true`, `mergeable_state: clean`,
+             1 commit, +2152/-100 across **17** files, base `e679de9d…` = current local `main`,
+             so exactly one commit ahead with no divergence), and check run `contract`
+             **`97997128517`** (run **`32908330221`**) completed **`conclusion: success`** in
+             **12s** on that exact head, `total_count: 1` — the only check on the head, so no
+             second red check hides behind it. Read here from `api.github.com`, not accepted on
+             report. Its single annotation is a **warning** (Node-20 runner deprecation on
+             `actions/checkout@v4` / `setup-node@v4`) — pre-existing, not a failure.
+             **`change_ref` deliberately unchanged** at `8d3ef484…`: both reviews bind that
+             object and `change_ref` moves only when the implementation changes. Head-vs-ref
+             byte-identity is **operator-attested and not fully re-derivable here** (no shell —
+             the stash object cannot be decoded), so it is converted into **deploy step 1**, a
+             `git diff --exit-code` that fails closed; partial corroboration obtained by reading
+             `scripts/lib/degraded-block.txt` at the PR head and matching it to the worktree copy
+             both reviews were read from.
+             **Truth constraints honoured, verbatim.** The record and the release note claim
+             **carriage, order, count and text** — every generated department agent **carries a
+             pinned, correctly ordered refusal instruction that cannot drift from core** — and
+             never that an agent *refuses*, *detects* contract loss or *degrades gracefully*.
+             `--check` is recorded as passing and **explicitly not counted** as evidence of
+             injection or pinning (vacuous at `pack-preview.mjs:281-283`).
+             **Nothing dropped:** six PROPOSALs parked in the initiative backlog (A1, E1,
+             §147 errata, P2-D1, P2-D2, P2-D3), each with a named owner and reopen trigger,
+             plus P2-S1/N1 + N3 recorded as a blast-radius update on the pin-pattern proposal
+             already parked there rather than duplicated. **No item was created** — filing is
+             the steward's.
+- state:     release-ready
+- change_ref: `8d3ef4844988f4974e6bec8f406a7723dee4e942`
+- needs:     **Deployment, which is yours to run — kai does not deploy.** Exact steps, abort
+             criteria, rollback and the 8-check production verification are in the ship record.
+             In order: **(1)** `git diff --exit-code 8d3ef484… origin/kai/feat/29-degraded-refusal`
+             over the ten implementation/release paths (must exit 0 — that is the whole review
+             binding) and `git diff --name-only e679de9d… origin/kai/feat/29-degraded-refusal`
+             (must be exactly 17 paths, none under `agents/`, `skills/`, `packs/`, `docs/`,
+             `test/`, and no change to `.github/workflows/validate.yml`); **(2)** `mkdir -p` +
+             `git mv` the ship record into
+             `kai/library/releases/2026-08-25/03-ship-pack-split-degraded-refusal/ship-record.md`,
+             then commit the records — doing it in this commit avoids a post-ship reconciliation;
+             **(3)** push and confirm `contract` green on the **final** head (run `32908330221`
+             only proves `75053e08…`); **(4)** squash-merge PR #158 — **do not rebase**, it would
+             void both bindings and the CI evidence; **(5)** watch `validate` on `main`;
+             **(6)** tag `v0.61.0` and cut the release, with the release note constrained to
+             carriage-not-firing and to "every generated **department** agent"; **(7)** return the
+             deployment evidence here. Do not mark this item `shipped` by hand.
+- artifacts: kai/library/releases/2026-08-25/03-ship-pack-split-degraded-refusal.md (new — the
+             ship record, pending its one-command move to
+             `…/03-ship-pack-split-degraded-refusal/ship-record.md` in deploy step 2, because this
+             environment cannot create directories);
+             kai/coordination/items/pack-split-degraded-refusal.md (v9, `## Ship gate —
+             2026-08-25-1554`); kai/initiatives/pack-split/backlog.md (seven parked PROPOSALs);
+             kai/initiatives/pack-split/deliverables.md; kai/initiatives/pack-split/log.md;
+             kai/coordination/BOARD.md; kai/coordination/ACTIVE.md
+- evidence:  **No shell** — read / search / fetch / edit only. Re-derived read-only: PR #158
+             metadata and the `contract` check run, conclusion, timing and annotation
+             (`api.github.com`); the changed-file count with its first four and its last filename;
+             `scripts/lib/degraded-block.txt` at the PR head (`raw.githubusercontent.com`); local
+             refs and reflogs (`.git/HEAD`, `.git/refs/heads/**`, `.git/logs/refs/heads/**`,
+             `.git/packed-refs` — `v0.60.0` present, so the `[0.61.0]` compare link is not
+             dangling); and on disk `COMMITTED_PACKS = []` (`pack-plan.mjs:117`),
+             `guaranteeBlocks` (`:280`) / `injectBlocks` (`:286`) / `materializePacks` (`:248`),
+             the refusal pins (`validate-plugin.mjs:428-482`), all six version locations at
+             `0.61.0`, and the absence of `packs/`. **Not fully re-derived:** 11 of 17 filenames
+             rest on the count identity plus alphabetical boundaries — deploy step 1 converts that
+             into a mechanical check. **Operator-attested:** head-vs-ref byte-identity and the
+             local suite (`npm test` exit 0, `--check`, five preview trees) — re-checked at deploy
+             steps 1 and 3, both fail-closed.
+- questions: none blocking. Two open interpretations belong to `principal-product-manager` and are
+             parked, not resolved here: **E1** — the northstar's `dependency-guarantees` line reads
+             "shipped in **every pack**" while this ships in every **department** pack (4 of 5),
+             the same wording question the CHANGELOG headline raises; and **A1** — whether core
+             agents need their own second block once a core-only install becomes real. Neither
+             blocks this release: the item's own acceptance is met exactly, and the milestone is
+             not being declared met here.
+- next:      @operator — deploy, then return the evidence for `workflow-ship` CONFIRM-START and
+             CONFIRM-COMPLETE. Milestone `dependency-guarantees` stays at **3 of 5** required
+             items `shipped`; `release-ready` is not `shipped`, so
+             `pack-split-generated-pack-trees` is **not** cleared and
+             `pack-split-ci-partition-checks` still overlaps this item on
+             `scripts/lib/pack-plan.mjs`, `scripts/validate-plugin.mjs` and
+             `scripts/pack-preview.mjs`.
