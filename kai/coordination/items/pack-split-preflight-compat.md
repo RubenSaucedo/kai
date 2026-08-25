@@ -5,11 +5,11 @@ title: Combined fail-closed preflight + version-compat in each pack agent body, 
 initiative: pack-split
 milestone: dependency-guarantees
 delivery_class: product-change
-state: in-review
+state: release-ready
 resume_state: null
 priority: 10
 owner: principal-swe-infra
-next_role: workflow-ship
+next_role: "@operator"
 target: pack-split contract preflight + version compatibility
 artifact_target: null
 context_artifacts:
@@ -63,14 +63,14 @@ completed_reviews:
     evidence: "kai/initiatives/pack-split/artifacts/security/pack-split-preflight-compat.md"
     timestamp: 2026-08-25-1257
 change_ref: 3383d7f2476f6ccdec5b4d3077783a13fe47eeb7
-version: 12
+version: 14
 lease:
   holder: null
   token: null
   version_at_grant: null
   acquired: null
   expires: null
-updated: 2026-08-25-1257
+updated: 2026-08-25-1310
 ---
 
 ## Outcome
@@ -132,12 +132,21 @@ with two different evidence sources cannot share one checkbox.*
       56 agents / 51 skills. Full `npm test`: passed, which also carries the catalog check,
       host-contract self-test (inventory matches), release-guard self-test, and syntax check.
       The earlier "**Not run.** No shell." annotation is **superseded**.
-- [ ] The `validate` workflow runs **green on the pushed PR** (its own claim, its own
+- [x] The `validate` workflow runs **green on the pushed PR** (its own claim, its own
       evidence — a workflow run, not an assertion).
-      — **Still unticked, deliberately.** Nothing is committed, pushed, or opened as a PR. Branch
-      `kai/feat/29-preflight-compat` exists at `9d16e0751cc223f9bc9421cedbf0ac32b134b9c3` (main
-      after PR #153) with **no commit on it** — verified from the reflog, not asserted. Local
-      green is not remote green and does not pre-satisfy this.
+      — **DONE 2026-08-25-1310, ticked by `workflow-ship` with the run URL, not by assertion.**
+      The operator committed (`d4145eed69681e20d2443a4242e687a9036bf557`, the single commit on
+      `kai/feat/29-preflight-compat` off `9d16e075…`), pushed, and opened **PR #154**. GitHub
+      Actions run **32893764931** — workflow `validate`, event `pull_request`, `head_sha`
+      `d4145eed…`, `run_attempt: 1`, `status: completed`, **`conclusion: success`**; job
+      **`contract`** (`97951496629`) on `ubuntu-latest` / Node 20,
+      `2026-08-25T20:10:09Z -> 20:10:23Z` (**14s**), **all 11 substantive steps `success`**,
+      including step 4 `Validate plugin contract` (the new byte-pin), steps 8–9 the pack-generator
+      self-test and committed-tree check, and step 11 the `pull_request`-only **real**
+      `Release-guard --base --head` gate. Read directly from `api.github.com` by that run
+      (read-only). <https://github.com/RubenSaucedo/kai/actions/runs/32893764931/job/97951496629>
+      The prior "**Still unticked, deliberately** … no commit on it" annotation was true when
+      written and is **superseded**.
 - [x] Version bumped on `0.x` with CHANGELOG + README stamp.
       — `0.58.0 -> 0.59.0` in `plugin.json`, `package.json`, `package-lock.json` (both fields),
       `.github/plugin/marketplace.json` (`metadata.version` + the `plugins[]` entry), plus the
@@ -801,6 +810,48 @@ current ref, which is now true. The steward keeps the acceptance-criteria call a
 cheaply; expect the DoD gate to bounce on the unticked "`validate` green on the pushed PR"
 criterion, which is the correct mechanical outcome and **not** a security objection. Milestone
 `dependency-guarantees` remains **1 of 5 required items `shipped`**; nothing downstream moved.
+
+## Ship gate — DoD, 2026-08-25-1310 (`workflow-ship`, PREPARE)
+
+**Verdict: RELEASE-READY — all six dimensions Clear, none Waived.** State
+**`in-review -> release-ready`** (`resume_state` stays `null`). Lease self-granted at
+version 12 (token `wsh-2026-08-25-1310-pfc-dod`, `version_at_grant: 12`, holder/token/version
+re-read after grant), gate result written, lease **cleared**; version **12 -> 13 -> 14**.
+`next_role: workflow-ship -> "@operator"`. Ship record written:
+`kai/library/releases/2026-08-25/01-ship-pack-split-preflight-compat/ship-record.md`.
+The record was promoted to its canonical library home before merge; the move changed
+coordination records only.
+
+**kai did not merge, tag, release, or publish anything, and will not.** No implementation
+file, release-metadata file, or downstream-scope file was touched by this gate.
+
+| # | Dimension | Status | Evidence |
+|---|-----------|--------|----------|
+| 1 | scope-true | **Clear** | Diff = `touches` + release metadata + coordination records, inside `northstar.scope.current: [dependency-guarantees]`. `non_negotiable` re-read here, not asserted: `COMMITTED_PACKS = []` (`pack-plan.mjs:102`), **no `packs/` tree** (glob `packs/**` → no match), marketplace still **N=1** (`kai` at `source: "."`, version-only patch), root stays the single source of truth, groundwork on `0.x`. `.github/workflows/validate.yml` is a declared-but-untouched `touch` — deliberate, the workflow already runs every gate this change adds. **P2-S1 parked as a PROPOSAL** in `kai/initiatives/pack-split/backlog.md`; nothing dropped. |
+| 2 | verified | **Clear** | Run **32893764931** / job **`contract`** (`97951496629`), `ubuntu-latest`, **`conclusion: success`**, 14s, **11/11** substantive steps green at head `d4145eed…` — including the `pull_request`-only real release-guard gate. Verified against `api.github.com` read-only. Local `npm test` exit 0 + the full local arm list, operator-attested. **Design/QA-UI sub-gates not triggered** — developer-facing packaging, no user-facing surface; no waiver invented. |
+| 3 | reviewed | **Clear** | `principal-swe-architect` / `independent-architecture` **ratified** and `principal-security` / `independent-security` **clear**, both bound to `change_ref 3383d7f2…` = the item's current `change_ref`. A1, A2, N1 closed and re-read on disk (`validate-plugin.mjs:374–378`, `:416–425`; `preflight-block.txt` one literal; `README.md:168`). N2 decided-accepted; P2-S1/P2-S2/N3/N4/R1–R3 owned with named homes. Head-vs-ref byte-identity is operator-attested and re-checked at deploy step 1. |
+| 4 | shippable-safely | **Clear (proportional)** | `review-rollout-operability` applied — **Holds**. No runtime service, data, migration, external state or publication change; the block ships only into **generated** trees and none are committed, so the shipped 56 agents are byte-unaffected and consumers get one inert skill. Pre-merge reversibility total; post-merge one revert (tag/release deletion required only if already cut). Signals: `validate` on `main`, then the next PRs. Owner `principal-swe-infra`. |
+| 5 | documented | **Clear** | `CHANGELOG [0.59.0]` + compare link (its `v0.58.0` counterpart tag exists locally, so the link is not dangling), `README` `## Status` `v0.59.0` 56/51 agreeing with `:168`, catalog + host inventory at 51, ship record written and indexed in `deliverables.md`, `log.md` carries the **release-ready** entry. **Ship stamp deliberately withheld.** |
+| 6 | coordination-closed | **Clear** | This record (v14) current and truthful, criterion 6 ticked **with the run URL**; thread carries the deploy HANDOFF; `BOARD.md`/`ACTIVE.md` refreshed; `depends_on` satisfied at generator-gates v17; `waiting_on_questions: []`. **No dependent cleared** — `degraded-refusal` and `ci-partition-checks` need this item at `shipped`. |
+
+**Environment limits, stated rather than absorbed.** No shell. PR metadata, the workflow run
+and its job step list were read from `api.github.com`; local refs/reflog confirm branch and
+`origin/` branch at `d4145eed…`, `main`/`origin/main` at `9d16e075…`, exactly one commit on
+the branch. `api.github.com` then returned **403** (rate limit), so the PR *file list* and a
+`GET /contents/packs?ref=d4145eed…` 404 could not be re-derived at the head — those claims are
+read from the checked-out tree at that head and are re-verified on `main` at production
+verification. Byte-identity to `3383d7f2…` and local `npm test` remain **operator-attested**,
+and both are mechanically re-checked by deploy steps 1–2, which fail closed.
+
+**Promotion completed 2026-08-25.** The ship record now lives at
+`kai/library/releases/2026-08-25/01-ship-pack-split-preflight-compat/ship-record.md`.
+The move changed coordination records only; no implementation or release metadata changed.
+
+**What this gate does not do.** It does not make the item `shipped`; it does not merge, tag,
+release or publish; it does not clear any dependent; it does not accept residual risk R1–R3;
+and it does not license release-note language that claims pack agents *refuse* (security
+P2-S2 — the truthful claim is that they *carry a byte-pinned fail-closed instruction*).
+Milestone `dependency-guarantees` remains **1 of 5 required items `shipped`**.
 
 ## Notes
 

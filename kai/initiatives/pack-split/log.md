@@ -1023,3 +1023,94 @@ allowed to gate the work, so this log entry was written by hand as prior runs on
 **`.kai/runs/` deliberately not used:** that lane holds evidence that must not become durable, and
 this review produced none — public repo, no secrets, no PII, no private topology, no customer data.
 With nothing to segregate, a second copy would only drift from the artifact.
+
+## 2026-08-25 — DoD gate: preflight-compat RELEASE-READY (PR #154 open, awaiting the human merge and `v0.59.0`)
+
+`workflow-ship` ran the six-dimension DoD gate on `pack-split-preflight-compat` in
+PREPARE mode. **Verdict: RELEASE-READY — all six dimensions Clear, none Waived.**
+Item version 12 -> 13 -> 14 (lease self-granted at 12, token
+`wsh-2026-08-25-1310-pfc-dod`, cleared after the write); state **`in-review` ->
+`release-ready`**, `next_role: workflow-ship -> "@operator"`, `resume_state` stays
+`null`.
+
+**This is a readiness stamp, not a ship stamp.** PR #154 is open and unmerged, no
+tag exists and no release is cut. Nothing was committed, pushed, merged, tagged,
+released or published by kai, and kai will do none of those. The ship entry for
+this item will be written only when production verification passes and the item
+reaches `shipped`.
+
+**The one open criterion closed on evidence only CI could give — and the security
+review's predicted bounce is superseded, not waved away.** At 2026-08-25-1257
+nothing was committed and the branch sat at `9d16e075…`, so "`validate` green on
+the pushed PR" could not be satisfied and a bounce was the correct expectation.
+The operator then committed the single implementation commit
+`d4145eed69681e20d2443a4242e687a9036bf557`, pushed, and opened **PR #154**.
+GitHub Actions run **32893764931** — workflow `validate`, event `pull_request`,
+`head_sha d4145eed…`, base `main` `9d16e075…`, `run_attempt: 1`,
+**`conclusion: success`**; job **`contract`** (`97951496629`) on `ubuntu-latest` /
+Node 20, `20:10:09Z -> 20:10:23Z` (**14s**), **all 11 substantive steps `success`**,
+including step 4 `Validate plugin contract` (the new byte-pin), steps 8–9 the
+pack-generator self-test and committed-tree check, and step 11 the
+`pull_request`-only **real** `release-guard --base/--head` gate. Read from
+`api.github.com` by the gate run, read-only — not accepted on report.
+
+**Delivery held the binding.** Both required reviews bind `change_ref
+3383d7f2476f6ccdec5b4d3077783a13fe47eeb7` (architecture **ratified**
+2026-08-25-1248, security **clear** 2026-08-25-1257), and the operator attests the
+implementation and release files at the PR head are byte-identical to that object.
+Because the implementation did not change, `change_ref` deliberately **stays** at
+the reviewed object, so `completed_reviews.change_ref == change_ref` still matches
+exactly. That attestation is the one thing the gate could not re-derive (no shell),
+so it is re-checked mechanically as **deploy step 1** — a non-empty
+implementation/release diff voids both bindings and returns the item to the gate.
+
+**Non-negotiables re-read, not asserted.** `COMMITTED_PACKS = []` so `--write`
+still refuses; **no `packs/` tree exists**; `.github/plugin/marketplace.json` still
+lists exactly one plugin, `kai` at `source: "."`, patched version-only
+`0.58.0 -> 0.59.0`; root `agents/`/`skills/` remain the single source of truth and
+the shipped monolith injects no preflight; groundwork stays on `0.x`. Consumers who
+update receive one **inert** 51st skill — not `user-invocable`, inherited by nobody.
+
+**Rollout, rollback and verification are recorded** in the ship record at
+`kai/initiatives/pack-split/artifacts/docs/pack-split-preflight-compat-ship-record.md`
+(canonical library home
+`kai/library/releases/2026-08-25/01-ship-pack-split-preflight-compat/ship-record.md`
+— **promotion owed**; the gate run cannot create directories, so the `git mv` is
+deploy step 6, the same filing gap `generator-gates` hit and closed on 2026-08-25).
+Rollback is clean: pre-merge, do not merge; post-merge, one revert; post-tag, revert
+**plus** delete the `v0.59.0` tag and release. Nothing durable survives a rollback.
+
+**Language constraint carried forward from security P2-S2:** no release note may
+claim pack agents *refuse*. The truthful claim is that every generated department
+agent *carries a byte-pinned fail-closed instruction*, and that the preview's
+core-absent and version-skew arms print the exact `KAI-CORE-MISSING` token.
+
+**P2-S1 parked, not remembered.** The pin-coverage gap on
+`/^kai-[a-z]+\/agents\/.+\.agent\.md$/` is now a **PROPOSAL** in
+`kai/initiatives/pack-split/backlog.md`, owner `principal-swe-infra`, natural home
+`pack-split-ci-partition-checks`. The gate created no item — filing stays the
+steward's call. No residual risk (R1–R3) was accepted and nothing was waived.
+
+**Milestone `dependency-guarantees` is still OPEN — 1 of 5 required items
+`shipped`.** A readiness stamp moves nothing downstream: `pack-split-degraded-refusal`
+and `pack-split-ci-partition-checks` require this item at `shipped` and remain
+non-dispatchable, and `pack-split-crosspack-validator` still overlaps it on
+`scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs`, so the touch-conflict
+check at dispatch still applies.
+
+**Environment limits, stated rather than absorbed.** No shell. `api.github.com`
+began returning 403 (rate limit) partway through, so the PR *file list* and a
+`GET /contents/packs?ref=d4145eed…` 404 could not be re-derived at the head; those
+claims are read from the checked-out tree at that head and are re-verified on `main`
+at production verification. **Activity log not appended** — `kai-core-work-activity`
+writes via `scripts/activity.mjs` and there was no shell; per that skill a failed
+append is reported and dropped, never retried and never allowed to gate the work, so
+this entry was written by hand as prior runs on this item did.
+
+## 2026-08-25 — preflight release record promoted
+
+- Promoted the `pack-split-preflight-compat` release-ready record to
+  `kai/library/releases/2026-08-25/01-ship-pack-split-preflight-compat/ship-record.md`.
+- Updated current coordination and deliverables references. Historical thread and log
+  entries retain the pre-promotion path.
+- Coordination-only move: no implementation or release metadata changed.

@@ -601,3 +601,114 @@ current state.
 - **`.kai/runs/` not used, deliberately.** That lane holds evidence that must not become durable;
   this review produced none — public repo, no secrets, no PII, no topology, no customer data. With
   nothing to segregate, a second copy would only drift. Recorded rather than silently skipped.
+
+## NOTE 2026-08-25-1310 — workflow-ship claimed (self-grant)
+
+Self-granted the workflow lease to run the DoD gate: holder `workflow-ship`, token
+`wsh-2026-08-25-1310-pfc-dod`, `version_at_grant: 12`; re-read after the grant confirmed
+holder, token and version. Gate result written, lease **cleared** in the same run.
+Item version **12 -> 13 -> 14**. No other role held or was waiting on this item.
+
+## HANDOFF 2026-08-25-1310 — workflow-ship -> @operator
+
+- did:       **Six-dimension DoD gate in PREPARE mode. Verdict: `RELEASE-READY` — all six
+             dimensions Clear, none Waived.** State **`in-review` -> `release-ready`**
+             (`resume_state` stays `null`), `next_role: workflow-ship -> "@operator"`, lease
+             self-granted and cleared, version **12 -> 14**. **Ship record written.** Nothing
+             was merged, tagged, released or published, and **kai will not do any of those** —
+             the deploy steps below are yours to run.
+
+             **Security predicted this gate would bounce, and that prediction is now superseded
+             by evidence rather than waved away.** At 2026-08-25-1257 nothing was committed and
+             the branch sat at `9d16e075…`, so the one unticked acceptance criterion —
+             "`validate` green on the pushed PR" — could not be satisfied. It now is, on the
+             platform every future PR uses:
+
+             GitHub Actions run **32893764931**, workflow `validate`, event `pull_request`,
+             `head_sha d4145eed69681e20d2443a4242e687a9036bf557`, base `main` `9d16e075…`,
+             `run_attempt: 1`, `status: completed`, **`conclusion: success`**; job **`contract`**
+             (`97951496629`) on `ubuntu-latest` / Node 20, `2026-08-25T20:10:09Z -> 20:10:23Z`
+             (**14s**), **all 11 substantive steps `success`** — including step 4
+             `Validate plugin contract` (the new byte-pin), steps 8–9 the pack-generator
+             self-test and committed-tree check, and step 11 the `pull_request`-only **real**
+             `Release-guard --base --head` gate. Read from `api.github.com` by this run,
+             read-only — **not accepted on report.**
+             <https://github.com/RubenSaucedo/kai/actions/runs/32893764931/job/97951496629>
+
+             | # | Dimension | Status | Evidence |
+             |---|-----------|--------|----------|
+             | 1 | scope-true | **Clear** | Diff = `touches` + release metadata + coordination records, inside `scope.current: [dependency-guarantees]`. `non_negotiable` re-read, not asserted: `COMMITTED_PACKS = []`, **no `packs/` tree**, marketplace **N=1** (`kai` at `source: "."`, version-only patch), root stays source of truth, `0.x`. `.github/workflows/validate.yml` untouched by design. **P2-S1 parked as a backlog PROPOSAL**; nothing dropped. |
+             | 2 | verified | **Clear** *(was the only open criterion)* | The run above, 11/11 green. Local `npm test` exit 0 + `--self-test` (44), the three `--all` arms, `--check`, `validate-plugin` 56/51, `docs:check`, `host-contract`, `release-guard`, syntax — operator-attested. **Design/QA-UI sub-gates not triggered** (developer-facing packaging, no user-facing surface); no waiver invented. |
+             | 3 | reviewed | **Clear** | Architecture **ratified** + security **clear**, both bound to `change_ref 3383d7f2…` = the item's `change_ref`. A1/A2/N1 closed and re-read on disk. N2 decided-accepted. Head-vs-ref byte-identity is operator-attested and re-checked at deploy step 1. |
+             | 4 | shippable-safely | **Clear (proportional)** | `review-rollout-operability` — **Holds**. No runtime service, data, migration, external state or publication change. The block ships only into **generated** trees, none committed, so the shipped 56 agents are byte-unaffected; consumers get one inert skill. Pre-merge reversibility total; post-merge one revert. Signals: `validate` on `main`, then the next PRs. Owner `principal-swe-infra`. |
+             | 5 | documented | **Clear** | `CHANGELOG [0.59.0]` + compare link (the `v0.58.0` tag exists, so it is not dangling), README `## Status` `v0.59.0` 56/51 agreeing with `:168`, catalog + inventory at 51, ship record written and indexed in `deliverables.md`, `log.md` release-ready entry. **Ship stamp withheld.** |
+             | 6 | coordination-closed | **Clear** | Item v14 truthful, criterion 6 ticked **with the run URL**; this HANDOFF is the deploy handoff; BOARD/ACTIVE refreshed; `depends_on` satisfied at generator-gates v17; `waiting_on_questions: []`. |
+
+- state:     release-ready
+- change_ref: `3383d7f2476f6ccdec5b4d3077783a13fe47eeb7` — **deliberately unchanged.** Both
+             reviews bind this object; per `kai-core-work-coordination`, `change_ref` moves when
+             the *implementation* changes, and the operator attests the implementation/release
+             files at PR head `d4145eed…` are byte-identical to it. Deploy step 1 re-checks that
+             mechanically and fails closed.
+- artifacts: `kai/initiatives/pack-split/artifacts/docs/pack-split-preflight-compat-ship-record.md`
+             — canonical home is
+             `kai/library/releases/2026-08-25/01-ship-pack-split-preflight-compat/ship-record.md`;
+             **promotion owed** (this run cannot create directories), filed as deploy step 6.
+- evidence:  Item `## Ship gate — DoD, 2026-08-25-1310`; the ship record above; run
+             32893764931 / job 97951496629; PR <https://github.com/RubenSaucedo/kai/pull/154>.
+             **Environment limits stated, not absorbed:** no shell; `api.github.com` began
+             returning 403 mid-run, so the PR file list and a `contents/packs?ref=…` 404 could
+             not be re-derived at the head — those are read from the checked-out tree at
+             `d4145eed…` and re-verified on `main` at production verification.
+- needs:     **Operator deployment, in this order** (full commands, abort criteria and rollback
+             in the ship record):
+             1. `git diff --exit-code 3383d7f2… origin/kai/feat/29-preflight-compat -- <the 15
+                implementation/release files>` — must exit 0. `kai/**` may differ; implementation
+                or release-file drift voids both review bindings and returns the item here.
+             2. Commit the readiness records, push, then `gh pr checks 154` — `contract` must be
+                green on the **final** head you merge. Run 32893764931 only proves `d4145eed…`.
+             3. **Squash and merge PR #154.**
+             4. Watch `validate` on `main` at the merge commit (push event, 10 steps).
+             5. `git tag v0.59.0 && git push origin v0.59.0`, then cut the GitHub release from
+                the `[0.59.0]` CHANGELOG section. **Release-note constraint (security P2-S2):**
+                do **not** claim pack agents *refuse* — the truthful claim is that they *carry a
+                byte-pinned fail-closed instruction*; and do not imply any pack is published.
+             6. `git mv` the ship record to its canonical library home.
+             7. Return deployment evidence to `workflow-ship`: **CONFIRM-START** — run URL/ID,
+                environment, version + SHA, start timestamp; **CONFIRM-COMPLETE** — merge SHA and
+                timestamp, the `main` run URL **with its `conclusion`**, tag + release URLs,
+                completion timestamp. Do not mark this item `shipped` by hand.
+- questions: none blocking.
+- next:      **@operator** — run the deploy steps, then hand back to `workflow-ship` for
+             CONFIRM-START / CONFIRM-COMPLETE.
+
+## NOTE 2026-08-25-1310 — workflow-ship: what RELEASE-READY does and does not mean
+
+- **Not `shipped`, and not deployed.** `release-ready` means the gate passed and the release is
+  recorded with its rollout, rollback and verification plans. Production verification is a
+  separate, evidenced state and only the operator can produce the evidence that starts it.
+- **Nothing downstream moved.** `pack-split-degraded-refusal` and `pack-split-ci-partition-checks`
+  require this item at **`shipped`** and stay non-dispatchable; `pack-split-crosspack-validator`
+  still overlaps it on `scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs`, so the
+  touch-conflict check at dispatch still applies. Milestone `dependency-guarantees` remains
+  **1 of 5 required items `shipped`**.
+- **P2-S1 was not left to memory.** It is parked as a PROPOSAL in
+  `kai/initiatives/pack-split/backlog.md` with owner `principal-swe-infra` and natural home
+  `pack-split-ci-partition-checks`. **This gate created no item** — filing stays the steward's
+  call, exactly as security intended.
+- **No residual risk was accepted here.** R1 (authenticity, operator's call *at publication* —
+  not this release), R2 (instruction-level, evidence owed by `pack-split-host-gates`) and R3
+  (semantic integrity rests on review re-binding) travel unchanged. Nothing was waived.
+- **Activity log not appended:** `kai-core-work-activity` writes via `scripts/activity.mjs` and
+  this run had no shell. Per that skill a failed append is reported and dropped — never retried,
+  never allowed to gate the work. `kai/initiatives/pack-split/log.md` was updated by hand.
+- **`.kai/runs/` not used.** The gate produced one durable record and no evidence requiring
+  segregation — public repo, no secrets, no PII, no customer data. A run-lane copy would only
+  drift. Recorded rather than silently skipped.
+## NOTE 2026-08-25-1314 — operator: ship-record promotion completed
+
+- Moved the release-ready record to its canonical library home:
+  `kai/library/releases/2026-08-25/01-ship-pack-split-preflight-compat/ship-record.md`.
+- Updated current coordination references. Historical handoffs retain the pre-promotion
+  path because the thread is append-only.
+- No implementation or release metadata changed; review bindings remain valid.

@@ -52,3 +52,50 @@ merged, tagged, released or published. Assessment:
 this file's stated "briefly, why" purpose, and the authoritative state is the item record either
 way. The row's own text still ends at the architecture ratification and is superseded by this
 note.)*
+
+**Latest — 2026-08-25-1310 (`workflow-ship`, PREPARE).** `pack-split-preflight-compat`:
+**DoD gate verdict RELEASE-READY — all six dimensions Clear, none waived.** State
+**`in-review` -> `release-ready`**, item **v12 -> v14** (v13 was the gate lease grant, token
+`wsh-2026-08-25-1310-pfc-dod`, cleared after the write), `next_role: workflow-ship -> "@operator"`,
+`resume_state` stays `null`. **This is a readiness stamp, NOT a ship stamp — the item is NOT
+`shipped`.** PR **#154** is **open and unmerged** at head `d4145eed69681e20d2443a4242e687a9036bf557`
+(base `main` `9d16e075…`; one implementation commit, reflog-verified); **no tag, no release,
+nothing published**, and kai merged, tagged, released and published **nothing**.
+
+**The bounce the 2026-08-25-1257 note predicted did not happen, because the evidence arrived —
+that prediction is superseded, not waved away.** The operator committed, pushed and opened PR #154,
+and the one unticked criterion ("`validate` green on the pushed PR") is now closed by GitHub Actions
+run **32893764931**: workflow `validate`, event `pull_request`, `head_sha d4145eed…`,
+`run_attempt: 1`, **`conclusion: success`**; job **`contract`** (`97951496629`) on `ubuntu-latest` /
+Node 20, `20:10:09Z -> 20:10:23Z` (**14s**), **all 11 substantive steps `success`** — including the
+new byte-pin (`Validate plugin contract`), the pack-generator self-test, the committed-tree check,
+and the `pull_request`-only **real** `release-guard --base/--head` gate. Read from `api.github.com`
+by the gate run, read-only — **not accepted on report**.
+
+**The review binding held through delivery.** Both required reviews bind `change_ref
+3383d7f2476f6ccdec5b4d3077783a13fe47eeb7`, and the operator attests the implementation/release files
+at the PR head are byte-identical to it, so `change_ref` deliberately **stays** at the reviewed
+object. That attestation is the one thing the gate could not re-derive (**no shell**), so it is
+re-checked mechanically as **deploy step 1**, which fails closed. `api.github.com` also began
+returning **403** mid-run, so the PR *file list* and a `contents/packs?ref=d4145eed…` 404 could not
+be re-derived at the head; those claims are read from the checked-out tree at that head and are
+re-verified on `main` at production verification. **Non-negotiables re-read, not asserted:**
+`COMMITTED_PACKS = []`, **no `packs/` tree**, marketplace still **N=1** (`kai` at `source: "."`,
+version-only `0.58.0 -> 0.59.0`), root still the single source of truth with the shipped monolith
+injecting no preflight, `0.x` held; consumers who update get one **inert** 51st skill.
+
+**Owed to the operator, in the ship record**
+(`kai/library/releases/2026-08-25/01-ship-pack-split-preflight-compat/ship-record.md`): verify the
+reviewed diff -> commit the readiness records and confirm `contract` green on the **final** head ->
+squash-merge #154 -> watch `validate` on `main` -> tag and release `v0.59.0` -> return deployment
+evidence for CONFIRM-START / CONFIRM-COMPLETE. The record promotion is complete. Rollback is clean
+and recorded: pre-merge don't merge; post-merge one revert;
+post-tag revert **plus** delete the tag and release. **Security P2-S2 binds the release notes:** no
+claim that pack agents *refuse* — only that they *carry a byte-pinned fail-closed instruction*.
+**P2-S1 is now a parked PROPOSAL** in `kai/initiatives/pack-split/backlog.md` (owner
+`principal-swe-infra`, natural home `pack-split-ci-partition-checks`); the gate created **no item**
+and accepted **no** residual risk. **Milestone `dependency-guarantees` is still OPEN — 1 of 5
+required items `shipped`**: `degraded-refusal` and `ci-partition-checks` still require this item at
+`shipped` and stay non-dispatchable, and `crosspack-validator` still overlaps it on
+`scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs`, so the touch-conflict check at
+dispatch still applies. **Next: `@operator`**, then back to `workflow-ship`.
