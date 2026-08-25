@@ -5,11 +5,11 @@ title: Cross-pack reference validator across all three firing paths + assets + h
 initiative: pack-split
 milestone: dependency-guarantees
 delivery_class: product-change
-state: in-review
+state: release-ready
 resume_state: null
 priority: 20
 owner: principal-swe-infra
-next_role: workflow-ship
+next_role: "@operator"
 target: pack-split cross-pack reference validation
 artifact_target: null
 context_artifacts:
@@ -52,9 +52,9 @@ completed_reviews:
     evidence: "## Review — independent architecture (ratification), 2026-08-25-1428"
     timestamp: 2026-08-25-1428
 change_ref: cb5fd0290f1a8b7478b54e98bf24f1968aa58f09
-version: 5
+version: 6
 lease: null
-updated: 2026-08-25-1428
+updated: 2026-08-25-1435
 ---
 
 ## Outcome
@@ -92,10 +92,18 @@ invocable form — `pack-preview.mjs` usage on `main` is `--all --out <dir>`.*
       — **DONE 2026-08-25-1420.** `pack-preview --self-test`: 70 checks; `validate-plugin`:
       56 agents / 51 skills; `--all --out <session temp>`: all five preview trees generated;
       `npm test`: exit 0. The temporary output was removed.
-- [ ] The new CI step runs **green on the pushed PR** (its own claim, its own evidence — a
+- [x] The new CI step runs **green on the pushed PR** (its own claim, its own evidence — a
       workflow run, not an assertion).
-      — **NOT DONE**, and no new step was added: the checks ride the `Validate plugin contract` and
-      `Pack generator self-test` steps CI already runs. Nothing is committed or pushed.
+      — **DONE 2026-08-25-1435**, and no new step was added: the checks ride the
+      `Validate plugin contract` and `Pack generator self-test` steps CI already runs.
+      **GitHub Actions run `32900688907`** — workflow `validate`, event `pull_request`,
+      `head_sha 0f3705e0b714f7d23a900296fb7c6f59d12148be`, base `630089bc…`, `run_attempt: 1`,
+      **`conclusion: success`**; job **`contract`** (`97973596644`), `ubuntu-latest` / Node 20,
+      21:22:54Z -> 21:23:10Z (**16s**), **all 11 substantive steps `success`**. Read from
+      `api.github.com` at the ship gate, not accepted on report:
+      <https://github.com/RubenSaucedo/kai/actions/runs/32900688907/job/97973596644>.
+      That the job ran the **same 11 steps** as the `0.59.0` release job independently
+      confirms the "no new CI step" claim.
 - [x] Version bumped on `0.x` with CHANGELOG + README stamp.
       — `0.59.0 -> 0.60.0` across all eight locations, verified **by reading each one**: `plugin.json`,
       `package.json`, `package-lock.json` (top-level and `packages[""]`), `.github/plugin/marketplace.json`
@@ -412,3 +420,72 @@ remains **2 of 5 required items `shipped`**.
   the single `independent-architecture` review requirement, the open orchestrated-firing-path
   question (it routes to that review, it does not block start), and the `0.x` versioning rule.
   No architecture decision was made or re-opened by this promotion.
+
+## Ship gate — PREPARE, 2026-08-25-1435 (`workflow-ship`)
+
+**Verdict: RELEASE-READY.** All six DoD dimensions **Clear**; none waived. Item **v5 -> v6,
+`in-review -> release-ready`**, lease `null`, `resume_state: null`,
+`next_role: workflow-ship -> "@operator"`. **NOT shipped:** `workflow-ship` merged nothing,
+tagged nothing, released nothing and published nothing, and it will not — the deploy steps are
+the operator's to run. *(Stamped `1435` to preserve append-only ordering behind the architect's
+`1428`; this session's clock read 14:23.)*
+
+**Ship record:** `kai/library/releases/2026-08-25/02-ship-pack-split-crosspack-validator/ship-record.md`
+— written in the library zone; its final move into
+`…/02-ship-pack-split-crosspack-validator/ship-record.md` is **deploy step 2**, because this run
+had no shell and the file tool cannot create a directory. Doing it there keeps the move inside the
+same records commit, so no post-ship reconciliation is owed.
+
+**Release under gate:** PR **#156** *feat: validate cross-pack references* — open, draft false,
+**`mergeable: true`, `mergeable_state: clean`**, **1 commit**, **+1314 / −55 across 15 files**.
+Head **`0f3705e0b714f7d23a900296fb7c6f59d12148be`** (short `0f3705e` resolved from
+`.git/refs/heads/kai/feat/29-crosspack-validator` and confirmed by the GitHub API); base `main`
+**`630089bc3609e4b5793f3e755fadc7bb51d43bf4`**, which is byte-identical to local `main` **and**
+`FETCH_HEAD`, so the branch is exactly one commit ahead with no divergence. Version
+`0.59.0 -> 0.60.0`.
+
+**The one criterion that was open is closed with real evidence.** Criterion 5 is now ticked on
+run `32900688907` / job `97973596644` (`conclusion: success`, 11/11 steps, 16s, `ubuntu-latest`),
+read directly from `api.github.com` by this gate. The architecture review explicitly declined to
+tick or waive it; only CI could supply it, and CI has.
+
+**Dimension notes, so a Clear is not over-read.**
+
+- **1 scope-true.** Non-negotiables re-read **at the PR head**, not asserted: `COMMITTED_PACKS = []`
+  and `HOOKS_OWNER = 'core'` in `scripts/lib/pack-plan.mjs` at `0f3705e…`; all eight version
+  locations coherent at `0.60.0` (four read at the head commit via `raw.githubusercontent.com`,
+  four from the PR patches); marketplace still **N=1** at `source: "."`; **no `packs/` tree**;
+  root `agents/` and `skills/` untouched — **no shipped body was edited to fit the parser**.
+  `.github/workflows/validate.yml` is header-comment-only (+9/−7 inside the `#` block), and the
+  job's 11-step list matches the `0.59.0` run, so "no new CI step" is verified twice.
+- **2 verified.** CI as above; the local suite (70-check self-test, 56 agents / 51 skills,
+  five-pack `--all --out`, `npm test` exit 0) is **operator-attested**, not re-derived here.
+  Design sub-gate **not triggered** — build/CI tooling, no user-facing surface; no waiver invented.
+- **3 reviewed.** The sole `review_requirements` entry is satisfied at this item's own
+  `change_ref cb5fd029…`, zero blocking findings. Head-vs-ref byte-identity is an operator
+  attestation this run could not re-derive (no shell) and is re-checked mechanically as deploy
+  step 1, which fails closed. No security review was required and none was invented.
+- **4 shippable-safely.** `review-rollout-operability` applied and right-sized — **Holds**. No
+  runtime, data, migration or publication change; all 56 agent and 51 skill bodies byte-unchanged.
+  Real blast radius named: this repo's CI now gates every future PR on the new rules, and the next
+  contributor to move a reference will meet them. Canary/flag/runbook **not applicable** and
+  deliberately not invented; reversibility is total (revert; plus tag+release deletion after
+  tagging).
+- **5 documented.** CHANGELOG `[0.60.0]` + a compare link whose `v0.59.0` tag exists; README
+  `## Status`; the workflow header now describes what it enforces; deliverables indexed; the
+  initiative log carries the release-ready entry. The **ship** stamp is withheld.
+- **6 coordination-closed.** Thread deploy HANDOFF appended; `BOARD.md` and `ACTIVE.md` refreshed;
+  the architect's escalation parked as a **PROPOSAL** in `kai/initiatives/pack-split/backlog.md`
+  rather than left inside a review section; `depends_on` verified satisfied;
+  `waiting_on_questions: []`.
+
+**Environment limits, recorded not papered over.** No shell. `api.github.com` returned **403**
+partway through paging the PR file list, so 6 of 15 changed filenames were re-derived directly and
+**9 rest on the declared `touches` plus count agreement** (10 implementation/release + 5
+coordination = 15). Deploy step 1 turns that inference into a mechanical `git diff --name-only`
+check that fails closed on any extra path.
+
+**Nothing downstream moved.** `pack-split-ci-partition-checks` requires this item at **`shipped`**
+and stays non-dispatchable; `pack-split-degraded-refusal` still overlaps
+`scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs` as **live surface movement**.
+Milestone `dependency-guarantees` remains **2 of 5 required items `shipped`**.

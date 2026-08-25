@@ -1290,3 +1290,78 @@ release, no publication.
 **Activity log not appended** — `kai-core-work-activity` writes via `scripts/activity.mjs` and this
 run had no shell; per that skill a failed append is reported and dropped, never retried and never
 allowed to gate the work, so this entry was written by hand as prior runs on this initiative did.
+
+## 2026-08-25 — DoD gate: crosspack-validator RELEASE-READY (PR #156 open, awaiting the human merge and `v0.60.0`)
+
+`workflow-ship` ran **PREPARE** and the verdict is **RELEASE-READY** — all six dimensions **Clear**,
+none waived. Item **v5 -> v6, `in-review -> release-ready`**, lease `null`, `resume_state: null`,
+`next_role: workflow-ship -> "@operator"`. **It is NOT shipped.** kai merged nothing, tagged
+nothing, released nothing and published nothing; the deploy steps belong to the operator. *(Stamped
+`1435` to preserve append-only ordering behind the `1428` ratification; the session clock read
+14:23.)*
+
+**The one criterion only CI could close is closed, on evidence read here rather than reported.**
+Acceptance criterion 5 — "the new CI step runs green on the pushed PR" — is now ticked on **run
+`32900688907`**: workflow `validate`, event `pull_request`, `run_attempt: 1`,
+`head_sha 0f3705e0b714f7d23a900296fb7c6f59d12148be`, base `630089bc…`, **`conclusion: success`**;
+job **`contract`** (`97973596644`) on `ubuntu-latest` / Node 20, **11 of 11 substantive steps
+`success`**, 21:22:54Z -> 21:23:10Z (**16s**). The architecture review had explicitly declined to
+tick *or* waive it. A detail worth keeping: the job ran the **same 11 steps** as the `0.59.0`
+release job, which independently confirms the item's "no new CI step" claim — the new checks ride
+`Validate plugin contract` and `Pack generator self-test`.
+
+**The release under gate.** PR **#156** *feat: validate cross-pack references* — open, draft false,
+**`mergeable: true` / `mergeable_state: clean`**, **1 commit**, **+1314 / −55 across 15 files**.
+Branch `kai/feat/29-crosspack-validator` at `0f3705e…` (the short SHA resolved from local refs and
+confirmed by the API); base `main` `630089bc…`, byte-identical to local `main` **and** `FETCH_HEAD`,
+so the branch is exactly one commit ahead with no divergence — an `ff`/squash merge is clean and no
+rebase is needed (a rebase would void both the review binding and the CI evidence). Version
+`0.59.0 -> 0.60.0`.
+
+**Non-negotiables were re-read at the head commit, not asserted.** `COMMITTED_PACKS = []` and
+`HOOKS_OWNER = 'core'` in `scripts/lib/pack-plan.mjs` at `0f3705e…`; all **eight** version locations
+coherent at `0.60.0` (four read at the head via `raw.githubusercontent.com`, four from the PR
+patches), with the `v0.59.0` tag present so the CHANGELOG compare link is not dangling; marketplace
+still **N=1**, `kai` at `source: "."`; **no `packs/` tree**; and root `agents/` + `skills/`
+**untouched** — the validator landed without editing a single shipped body, which was the live risk
+in the orchestrated-syntax call.
+
+**Dimension 4 was right-sized rather than ritualised.** No runtime service, no data, no migration,
+no publication change, and all 56 agent and 51 skill bodies byte-unchanged, so a consumer running
+`/plugin update kai` gets metadata and docs only. A canary, a flag, a ring and a runbook are **not
+applicable** to a build-time gate and were deliberately not invented. The real blast radius is named
+instead: this repo's CI now gates every future PR on cross-pack reference resolution, asset
+ownership and hooks-exactly-once, and the next contributor to move a reference will meet those rules
+by name. Reversibility is total — revert before tagging, or revert plus delete the tag and release
+after.
+
+**Nothing from the review was dropped.** The architect's escalation — **cross-department agent-
+referral degradation is unspecified** — is now a **parked PROPOSAL** in
+`kai/initiatives/pack-split/backlog.md`, owned by `principal-product-manager` for triage, with the
+trigger to promote written down; it is not a dependency, an item, or an acceptance criterion. N1/N2
+ride with **A5** into `pack-split-ci-partition-checks`; N3/N4 and the three binding constraints
+(consume `planAssets` / `HOOKS_OWNER`, route hook scripts by declaration, emit `hooks.json` into
+core only) ride into `pack-split-generated-pack-trees`; **P2-S1** stays parked and was not widened.
+Also carried forward so a green check is not over-read: two of `assetOwnershipErrors`' four arms are
+**structurally unreachable today** and become load-bearing only when WS#7 supplies an independent
+owner source.
+
+**Limits, stated rather than papered over.** This run had **no shell**, so byte-identity between
+`cb5fd029…` and the PR head, and the local suite (70-check self-test, 56/51, five-pack preview,
+`npm test` exit 0), remain **operator-attested** — both are re-checked mechanically at deploy steps
+1 and 3, which fail closed. `api.github.com` returned **403** partway through paging the PR file
+list, so 6 of the 15 changed filenames were re-derived directly and 9 rest on the item's declared
+`touches` plus count agreement; deploy step 1 turns that inference into a
+`git diff --name-only` check that fails on any extra path. The ship record was written at
+`kai/library/releases/2026-08-25/02-ship-pack-split-crosspack-validator.md` — in the library zone,
+with the final directory move to `…/02-ship-pack-split-crosspack-validator/ship-record.md` as
+**deploy step 2**, because the file tool cannot create a directory without a shell; putting it there
+keeps the move inside the same records commit, so unlike the `0.58.0` record no post-ship
+reconciliation is owed.
+
+**Nothing downstream moved.** `pack-split-ci-partition-checks` requires this item at **`shipped`**
+and stays non-dispatchable; `pack-split-degraded-refusal` still overlaps
+`scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs` as **live surface movement**, so that
+diff must be read rather than assumed. **Milestone `dependency-guarantees` is unchanged at 2 of 5
+required items `shipped`** — `release-ready` is not `shipped`, and CONFIRM-START / CONFIRM-COMPLETE
+still need operator deployment evidence plus production verification before it becomes 3 of 5.

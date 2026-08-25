@@ -270,3 +270,75 @@ picking up `degraded-refusal` now should read this item's diff first: it moves s
              `shipped`), and `pack-split-degraded-refusal` still overlaps this item on
              `scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs` — now **live surface
              movement**, so that overlap must be read, not assumed.
+
+## HANDOFF 2026-08-25-1435 — workflow-ship -> @operator
+
+- did:       **DoD gate: RELEASE-READY.** All six dimensions **Clear**, none waived. Item **v5 -> v6,
+             `in-review -> release-ready`**, lease `null`, `resume_state: null`,
+             `next_role -> "@operator"`. Acceptance criterion 5 (CI green on the pushed PR) ticked
+             **with the run URL**, closing the last open criterion. Wrote the ship record, indexed
+             it in `deliverables.md`, stamped `log.md` with the release-ready entry, refreshed
+             `BOARD.md` + `ACTIVE.md`, and **parked the architect's escalation as a PROPOSAL** in
+             `kai/initiatives/pack-split/backlog.md` so a finding that ships is a finding that is
+             owned. **kai merged nothing, tagged nothing, released nothing, published nothing** —
+             and will not. *(Stamped `1435` to keep append-only ordering behind the `1428`
+             ratification; session clock read 14:23.)*
+- state:     release-ready — **NOT shipped.** Production deployment and verification are separate,
+             evidenced states, and both need the operator first.
+- change_ref: `cb5fd0290f1a8b7478b54e98bf24f1968aa58f09` (unchanged — no implementation moved)
+- needs:     **The operator to run the deploy steps in the ship record**, in order: (1) re-check
+             implementation/release byte-identity against `cb5fd029…` **and** that
+             `git diff --name-only 630089bc… origin/kai/feat/29-crosspack-validator` lists exactly
+             the 15 expected paths with nothing under `agents/`, `skills/`, `packs/`, `docs/` or
+             `test/`; (2) `mkdir` + `git mv` this record into
+             `kai/library/releases/2026-08-25/02-ship-pack-split-crosspack-validator/ship-record.md`
+             (owed only because this run had no shell and the file tool cannot create a directory —
+             doing it here keeps it in the same records commit, so no post-ship reconciliation);
+             (3) commit + push the records and confirm `contract` green on the **final** head;
+             (4) **Squash and merge PR #156**; (5) watch `validate` on `main`; (6) tag `v0.60.0`
+             and cut the release from the `[0.60.0]` CHANGELOG section, claiming **CI validation
+             only** — no pack is generated, committed or published; (7) return the deployment
+             evidence for CONFIRM-START / CONFIRM-COMPLETE. Abort criteria and the rollback path
+             are in the record; **do not** hand-edit around a red gate and **do not** loosen a new
+             check to get a merge through.
+- artifacts: kai/library/releases/2026-08-25/02-ship-pack-split-crosspack-validator.md (the ship
+             record — DoD table, rollout, rollback, deploy handoff, production-verification plan);
+             kai/coordination/items/pack-split-crosspack-validator.md (v6);
+             kai/initiatives/pack-split/backlog.md (PROPOSAL parked);
+             kai/initiatives/pack-split/deliverables.md; kai/initiatives/pack-split/log.md
+- evidence:  **Verified read-only by this gate, not accepted on report:** PR **#156** — open,
+             draft false, **`mergeable: true` / `mergeable_state: clean`**, **1 commit**,
+             **+1314 / −55 across 15 files**, head **`0f3705e0b714f7d23a900296fb7c6f59d12148be`**,
+             base **`630089bc3609e4b5793f3e755fadc7bb51d43bf4`** (identical to local `main` and
+             `FETCH_HEAD`, so one commit ahead, no divergence — reflog-confirmed). Workflow
+             `validate` run **`32900688907`**, event `pull_request`, `run_attempt: 1`,
+             **`conclusion: success`** at that exact head; job **`contract`** `97973596644`,
+             `ubuntu-latest` / Node 20, **11/11 substantive steps `success`**, 21:22:54Z ->
+             21:23:10Z (**16s**) — the **same 11 steps** as the `0.59.0` run, which independently
+             confirms "no new CI step". Release coherence at the **head commit**: `plugin.json`,
+             `package.json`, `package-lock.json` ×2 read via `raw.githubusercontent.com` at
+             `0f3705e…`; `marketplace.json` (both fields), `CHANGELOG.md` `[0.60.0]` + compare
+             link, and `README.md` `## Status` read from the PR patches — eight of eight at
+             `0.60.0`, and the `v0.59.0` tag exists so the compare link is not dangling.
+             Non-negotiables at the head: `COMMITTED_PACKS = []`, `HOOKS_OWNER = 'core'`,
+             marketplace **N=1** at `source: "."`, **no `packs/` tree**, root `agents/` and
+             `skills/` untouched. **Operator-attested, not re-derived (no shell here):** byte
+             identity between `cb5fd029…` and the PR head, and the local suite (70-check self-test,
+             56/51, five-pack preview, `npm test` exit 0) — both re-checked at deploy steps 1 and 3,
+             which fail closed. **`api.github.com` returned 403 partway through paging the PR file
+             list**, so 6 of 15 filenames were re-derived directly and 9 rest on the declared
+             `touches` plus count agreement; deploy step 1 converts that into a mechanical check.
+- questions: None blocking. Routed rather than dropped: the cross-department **agent-referral
+             degradation** escalation is now a parked **PROPOSAL** for `principal-product-manager`
+             (not a dependency, not an item, not an acceptance criterion); **N1/N2** ride with
+             **A5** into `pack-split-ci-partition-checks`; **N3/N4** and the three binding
+             constraints (consume `planAssets` / `HOOKS_OWNER`, route hook scripts by declaration,
+             emit `hooks.json` into core only) ride into `pack-split-generated-pack-trees`;
+             **P2-S1** stays parked and was not widened. Also recorded so today's green is not
+             over-read: two of `assetOwnershipErrors`' four arms are **structurally unreachable
+             today** and become load-bearing only when WS#7 supplies an independent owner source.
+- next:      **@operator** — run the deploy steps and return the evidence. Then `workflow-ship`
+             CONFIRM-START (`release-ready -> deploying`) and CONFIRM-COMPLETE (`-> production-
+             verification -> shipped`). **Nothing downstream is cleared yet:**
+             `pack-split-ci-partition-checks` needs this item at `shipped`; milestone
+             `dependency-guarantees` stays at **2 of 5**.

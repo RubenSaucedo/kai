@@ -266,3 +266,57 @@ non-dispatchable, and `pack-split-degraded-refusal` still overlaps it on `script
 and `scripts/validate-plugin.mjs`, now as **live surface movement**, so that diff must be read rather
 than assumed. Nothing was committed, pushed, merged, tagged, released or published, and this review
 edited **no implementation or release file**. **Next: `workflow-ship`** — the DoD gate.
+
+**DoD gate RELEASE-READY — 2026-08-25-1435 (`workflow-ship`, PREPARE).**
+`pack-split-crosspack-validator` is **v5 -> v6, `in-review -> release-ready`**, lease `null`,
+`resume_state: null`, `next_role: workflow-ship -> "@operator"`. **All six DoD dimensions Clear,
+none waived** — and **it is NOT shipped**: kai merged nothing, tagged nothing, released nothing and
+published nothing, and will not; the deploy steps are the operator's. *(Stamped `1435` to preserve
+append-only ordering behind the `1428` ratification; session clock read 14:23.)* **The one open
+criterion is closed on evidence read here, not reported:** acceptance criterion 5 is ticked on
+**run `32900688907`** — workflow `validate`, event `pull_request`, `run_attempt: 1`,
+`head_sha 0f3705e0b714f7d23a900296fb7c6f59d12148be`, base `630089bc…`, **`conclusion: success`**;
+job **`contract`** (`97973596644`), `ubuntu-latest` / Node 20, **11/11 substantive steps `success`**,
+21:22:54Z -> 21:23:10Z (**16s**) — the **same 11 steps** as the `0.59.0` run, which independently
+confirms the "no new CI step" claim (the checks ride `Validate plugin contract` and `Pack generator
+self-test`). **PR #156** *feat: validate cross-pack references* is **open, draft false,
+`mergeable: true` / `mergeable_state: clean`, 1 commit, +1314 / −55 across 15 files**; head
+`0f3705e…` (short SHA resolved from local refs, confirmed by the API), base `main` `630089bc…` which
+is byte-identical to local `main` **and** `FETCH_HEAD`, so the branch is exactly **one commit ahead
+with no divergence** — a squash merge is clean and **no rebase is needed** (a rebase would void both
+the review binding and the CI evidence). **Non-negotiables re-read at the head commit:**
+`COMMITTED_PACKS = []` and `HOOKS_OWNER = 'core'`; **eight of eight** version locations coherent at
+`0.60.0` (four via `raw.githubusercontent.com` at `0f3705e…`, four from the PR patches) with the
+`v0.59.0` tag present so the compare link is not dangling; marketplace still **N=1** at
+`source: "."`; **no `packs/` tree**; root `agents/` and `skills/` **untouched** — the validator
+landed without editing a single shipped body. **Dimension 4 was right-sized, not ritualised:** no
+runtime, data, migration or publication change and all 56 agent / 51 skill bodies byte-unchanged, so
+canary/flag/ring/runbook are **not applicable** and were deliberately not invented; the real blast
+radius is this repo's CI, which now gates every future PR on cross-pack reference resolution, asset
+ownership and hooks-exactly-once, with total reversibility (revert before tagging, or revert plus
+tag/release deletion after). **Nothing from the review was dropped:** the architect's escalation —
+**cross-department agent-referral degradation is unspecified** — is now a **parked PROPOSAL** in
+`kai/initiatives/pack-split/backlog.md` for `principal-product-manager` triage, with its promote
+trigger written down and deliberately **no** item, dependency or acceptance criterion created;
+N1/N2 ride with **A5** into `ci-partition-checks`; N3/N4 plus the three binding constraints (consume
+`planAssets` / `HOOKS_OWNER`, route hook scripts **by declaration**, emit `hooks.json` into **core
+only**) ride into `generated-pack-trees`; **P2-S1** stays parked and was not widened; and the caveat
+that **two of `assetOwnershipErrors`' four arms are structurally unreachable today** is carried
+forward so nobody reads today's green as a guarantee it does not yet make. **Limits stated, not
+papered over:** this run had **no shell**, so byte-identity between `cb5fd029…` and the PR head and
+the local suite (70-check self-test, 56/51, five-pack preview, `npm test` exit 0) remain
+**operator-attested** — both re-checked mechanically at deploy steps 1 and 3, which fail closed; and
+`api.github.com` returned **403** partway through paging the PR file list, so 6 of 15 filenames were
+re-derived directly and 9 rest on the declared `touches` plus count agreement, which deploy step 1
+converts into a `git diff --name-only` check that fails on any extra path. **Ship record:**
+`kai/library/releases/2026-08-25/02-ship-pack-split-crosspack-validator/ship-record.md` — at its canonical library path,
+with the final move into `…/02-ship-pack-split-crosspack-validator/ship-record.md` as **deploy
+step 2** (the file tool cannot create a directory without a shell), which keeps it inside the same
+records commit so **no post-ship reconciliation is owed**, unlike the `0.58.0` record. **Milestone
+`dependency-guarantees` is unchanged at 2 of 5 required items `shipped`** — `release-ready` is not
+`shipped`: `pack-split-ci-partition-checks` still requires this item at `shipped` and stays
+non-dispatchable, and `pack-split-degraded-refusal` still overlaps it on `scripts/lib/pack-plan.mjs`
+and `scripts/validate-plugin.mjs` as **live surface movement**. **Next: `@operator`** — run the
+recorded deploy steps (verify identity + file set, move the record, commit/push and re-check green,
+squash-merge #156, watch `main`, tag and release `v0.60.0` claiming **CI validation only**), then
+return the deployment evidence so `workflow-ship` can run CONFIRM-START and CONFIRM-COMPLETE.
