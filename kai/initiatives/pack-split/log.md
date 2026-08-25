@@ -336,3 +336,66 @@ items are all typed `shipped` and none has reached it. Downstream items
 only coordination records, threads, the backlog, `ACTIVE.md`, `BOARD.md`, and this
 log. Two read-only spot-checks were made to avoid ticking criteria on assertion
 alone (`scripts/release-guard.mjs:20`, `.github/workflows/validate.yml:41-44`).
+
+## 2026-08-24 — DoD gate re-run: generator-gates RELEASE-READY (PR #152 open, awaiting the human merge)
+
+`workflow-ship` re-ran the six-dimension DoD gate on `pack-split-generator-gates`
+after the 2026-08-24-2244 BOUNCE. **Verdict: RELEASE-READY — all six dimensions
+Clear.** Item version 11 -> 12 -> 13 (lease self-granted at 11, token
+`wsh-2026-08-24-2252-gg-dod2`, cleared after the write); state
+**`in-progress` -> `release-ready`**, `next_role: @operator`.
+
+**This is a readiness stamp, not a ship stamp.** PR #152 is open and unmerged.
+Nothing was committed, pushed, merged, tagged, released, or published, and kai did
+not merge — it never will. The ship entry for this item will be written only when
+production verification passes and the item reaches `shipped`.
+
+**The one Gap closed on real evidence, on the platform the risk lived on.**
+Acceptance criterion 5 ("the new CI steps run green on the pushed PR") is now
+backed by GitHub Actions run **32814515790**, job **`contract`** (`97700043167`),
+`ubuntu-latest` / Node 20, `conclusion: success`, 13s, at PR head
+`4ed8f88562909ac292d856902b401a724f796f02`. **All 11 steps green.** Each bounce
+reason is retired by name: (1) every prior green run was Windows — this one is
+`ubuntu-latest`, exactly where an LF/path/OS-artifact defect in a byte-stable
+generator would surface; (2) step 11, the `pull_request`-only
+`release-guard --base/--head` **real** gate that had never executed in any form,
+ran against this diff and passed — `scripts/` is a `BEHAVIOR_PREFIX`, so it
+classified the change behavior-sensitive and found the `0.58.0` bump, CHANGELOG
+and README it demands; (3) the two steps that become mandatory on *every* future
+PR in this repository are green on the runner every future PR will use.
+
+**Delivery held the binding.** PR #152 committed the ratified tree unchanged — the
+operator confirmed an empty diff between `change_ref
+457254b973fb58b129332ffaa609fb5febfdd412` and the PR head across all
+implementation and release files, and PR #152's body records it publicly.
+Because the implementation did not change, `change_ref` deliberately **stays** at
+the ratified object, so the `independent-architecture` verdict still binds by
+exact match. Differences at the PR head beyond the binding are coordination-only
+records.
+
+**Verified, not accepted on report.** `workflow-ship` re-read the job conclusion
+and every step conclusion, PR #152's open/unmerged state, and the head-tree facts
+directly from the GitHub REST API (read-only): `GET /contents/packs?ref=4ed8f88…`
+-> **404**, so no pack tree is committed; the `marketplace.json` patch is
+version-only, so the index still lists exactly one plugin (`kai`, `source: "."`)
+and the monolith remains authoritative. The non-negotiables held.
+
+**Ship record written** at
+`kai/initiatives/pack-split/artifacts/docs/pack-split-generator-gates-ship-record.md`
+— its canonical library destination is
+`kai/library/releases/2026-08-24/01-ship-pack-split-generator-gates/ship-record.md`,
+promotion pending, because this environment has no shell and could not create the
+directory. It carries the six-dimension table, the rollout plan, the rollback plan
+(revert one squash-merge commit; **nothing survives it** — no data migration, no
+external state), the operator's exact merge/tag steps and abort criteria, and the
+four production-verification checks.
+
+**Milestone status unchanged.** `dependency-guarantees` remains **open**: its five
+required items are typed `shipped` and none has reached it. `release-ready` is not
+`shipped`, so `crosspack-validator`, `preflight-compat`, `migration-doctor`, and
+`generated-pack-trees` all stay non-executable until the human merges and
+production verification passes.
+
+**Boundary respected.** No implementation, release, or marketplace file was
+touched — only coordination records, the thread, `ACTIVE.md`, `BOARD.md`,
+`deliverables.md`, this log, and the new ship record.

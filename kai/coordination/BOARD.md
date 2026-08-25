@@ -9,7 +9,7 @@ hand as if it were the source of truth.
 |----|-------|------------|-----------|----------|-------|-------|------|------------|------------|---------|
 | pack-split-partition-lock | Lock the five-pack partition (authoritative docs) | pack-split | partition-lock | 10 | completed | — | — | — | — | 2026-08-24-1959 |
 | pack-split-engineering-decomposition | Decompose the build & ship milestones into sequenced items | pack-split | dependency-guarantees | 10 | completed | — | director-chief-of-staff | partition-lock (completed) | — | 2026-08-24-2013 |
-| pack-split-generator-gates | Harden generator + multi-manifest gates (foundation) | pack-split | dependency-guarantees | 10 | in-progress | principal-swe-infra | principal-swe-infra | partition-lock (completed) | — | 2026-08-24-2244 |
+| pack-split-generator-gates | Harden generator + multi-manifest gates (foundation) | pack-split | dependency-guarantees | 10 | release-ready | principal-swe-infra | @operator | partition-lock (completed) | — | 2026-08-24-2252 |
 | pack-split-host-semantics-spike | Spike — macOS/cloud host semantics before extraction | pack-split | first-pack-extracted | 20 | proposed | — | principal-product-manager | partition-lock (completed) | — | 2026-08-24-2011 |
 | pack-split-crosspack-validator | Cross-pack reference validator (3 firing paths + assets + hooks-once) | pack-split | dependency-guarantees | 20 | proposed | — | principal-product-manager | generator-gates (shipped) | — | 2026-08-24-2011 |
 | pack-split-preflight-compat | Combined preflight + version-compat, CI byte-pinned | pack-split | dependency-guarantees | 20 | proposed | — | principal-product-manager | generator-gates (shipped) | — | 2026-08-24-2011 |

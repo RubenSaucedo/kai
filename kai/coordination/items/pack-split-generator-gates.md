@@ -5,11 +5,11 @@ title: Harden the pack generator and make validate/release gates multi-manifest 
 initiative: pack-split
 milestone: dependency-guarantees
 delivery_class: product-change
-state: in-progress
+state: release-ready
 resume_state: null
 priority: 10
 owner: principal-swe-infra
-next_role: principal-swe-infra
+next_role: "@operator"
 target: pack-split build tooling — generator + multi-manifest gates (foundation)
 artifact_target: null
 context_artifacts:
@@ -40,9 +40,9 @@ completed_reviews:
     verdict: ratified
     timestamp: 2026-08-24-2231
 change_ref: 457254b973fb58b129332ffaa609fb5febfdd412
-version: 11
+version: 13
 lease: null
-updated: 2026-08-24-2244
+updated: 2026-08-24-2252
 ---
 
 ## Outcome
@@ -69,9 +69,11 @@ guarantee it does not provide.
 *Reconciled by the steward at acceptance 2026-08-24-2240 against the ratified review at
 `change_ref 457254b973fb58b129332ffaa609fb5febfdd412` and the operator's verification run.
 Criterion 4 as originally written bundled four local commands with "new CI steps green";
-those are two different claims with two different evidence sources, so it is **split** —
-the local half is met, the remote half cannot be true before the branch is pushed. The bar
-is not lowered: nothing is ticked that is not evidenced, and the CI half stays open.*
+those are two different claims with two different evidence sources, so it was **split** —
+the local half was met, the remote half could not be true before the branch was pushed.
+**All six are now met** (`workflow-ship` gate re-run 2026-08-24-2252): the CI half closed on
+workflow run 32814515790, not by assertion. The bar was never lowered — nothing was ticked
+ahead of its evidence.*
 
 - [x] The generator materializes core + a department tree deterministically from root,
       with a per-pack `plugin.json`; re-running is byte-stable.
@@ -94,11 +96,16 @@ is not lowered: nothing is ticked that is not evidenced, and the CI half stays o
 - [x] `node scripts/pack-preview.mjs --self-test`, `node scripts/validate-plugin.mjs`,
       `node scripts/release-guard.mjs --self-test`, and `npm test` all pass **locally**
       (operator-executed 2026-08-24, pre-binding; all exit 0).
-- [ ] **The new CI steps run green on the pushed PR.** The steps exist in
-      `.github/workflows/validate.yml` (`Pack generator self-test` → `pack-preview --self-test`;
-      `Committed pack trees match the generator` → `pack-preview --check`), but remote CI has
-      **never executed** — the change is uncommitted, unpushed, and has no PR. **Open by
-      construction**; it closes at PR delivery on real workflow-run evidence, not by assertion.
+- [x] **The new CI steps run green on the pushed PR.** *(The one criterion the
+      2026-08-24-2244 DoD gate held open; closed 2026-08-24-2252 on real evidence.)*
+      GitHub Actions run **32814515790**, job **`contract`** (`97700043167`),
+      `ubuntu-latest` / Node 20, `conclusion: success`, 13s —
+      <https://github.com/RubenSaucedo/kai/actions/runs/32814515790/job/97700043167>
+      at PR head `4ed8f88562909ac292d856902b401a724f796f02` (PR #152). **All 11 steps green**,
+      including `Pack generator self-test` (step 8), `Committed pack trees match the generator`
+      (step 9), and the `pull_request`-only `Release-guard --base/--head` real gate (step 11)
+      that had never executed in any form. Closed on a workflow run, not on assertion, and
+      verified by `workflow-ship` directly against the GitHub API.
 - [x] Version bumped on `0.x` with CHANGELOG + README stamp (release-guard).
       — `0.57.0 -> 0.58.0` coherent across `plugin.json`, `package.json`, `package-lock.json`
       (both fields), `marketplace.json` (both fields), CHANGELOG dated section + compare link,
@@ -106,8 +113,36 @@ is not lowered: nothing is ticked that is not evidenced, and the CI half stays o
 
 ## Evidence
 
-**Implemented on branch `kai/feat/29-pack-generator-gates` (working tree; uncommitted).**
-`principal-swe-infra`, with operator verification and review fixes, 2026-08-24.
+**Implemented on branch `kai/feat/29-pack-generator-gates`.** `principal-swe-infra`, with
+operator verification and review fixes, 2026-08-24. **Delivered as PR #152 by the operator
+2026-08-24-2251** — <https://github.com/RubenSaucedo/kai/pull/152>, head
+`4ed8f88562909ac292d856902b401a724f796f02`, base `main`, open and unmerged.
+
+**PR-head equivalence to the ratified binding (dim-3 anchor).** The operator confirmed an
+**empty diff** between `change_ref 457254b973fb58b129332ffaa609fb5febfdd412` and PR head
+`4ed8f88…` across every implementation and release file; PR #152's body records the same
+claim publicly. Differences at the PR head beyond the binding are **coordination-only**
+acceptance/readiness records under `kai/`. The implementation therefore did not change, so
+per `kai-core-work-coordination` the item's `change_ref` **deliberately stays** at the
+ratified object and `completed_reviews.change_ref == change_ref` still matches exactly.
+The durable, pushed equivalent of that (dangling, GC-able) stash object is PR head
+`4ed8f88562909ac292d856902b401a724f796f02`.
+
+**Remote CI — the evidence that closed the DoD gap.** GitHub Actions run **32814515790**,
+job **`contract`** (`97700043167`), `ubuntu-latest` / Node 20, `status: completed`,
+**`conclusion: success`**, 13s (`2026-08-25T05:51:47Z -> 05:52:00Z` = 22:51:47–22:52:00
+local): <https://github.com/RubenSaucedo/kai/actions/runs/32814515790/job/97700043167>.
+All 11 steps `success`, including the three previously unevidenced ones — `Pack generator
+self-test`, `Committed pack trees match the generator`, and the `pull_request`-only
+`Release-guard --base <base.sha> --head <head.sha>` **real** gate (not `--self-test`),
+which classified this diff behavior-sensitive via the `scripts/` prefix and found the
+`0.58.0` bump + CHANGELOG + README it demands.
+
+**Independently re-verified at the PR head by `workflow-ship` (read-only, GitHub REST API),
+not accepted on report:** job conclusion and per-step conclusions as above; PR #152 open at
+that head; `GET /contents/packs?ref=4ed8f88…` -> **404** (no committed pack tree); the
+`marketplace.json` patch is version-only, so the index still lists exactly one plugin
+(`name: kai`, `source: "."`).
 
 Increment 1 — generator engine:
 - `scripts/lib/pack-plan.mjs` (new): the single machine-readable partition/manifest source —
@@ -171,7 +206,48 @@ until the core-plus-personal extraction item selects that slice.
 
 ## Notes
 
+- **DoD gate RE-RUN 2026-08-24-2252 (`workflow-ship` PREPARE) — verdict `RELEASE-READY`,
+  all six dimensions Clear.** Self-granted the lease at version 11 (token
+  `wsh-2026-08-24-2252-gg-dod2`, `version_at_grant: 11`, re-read confirmed
+  holder/token/version), wrote the gate result, cleared the lease; version 11 -> 12 -> 13.
+  State **`in-progress` -> `release-ready`**. `next_role: @operator` — the human merge.
+  **Ship record written:** `kai/initiatives/pack-split/artifacts/docs/pack-split-generator-gates-ship-record.md`.
+  Nothing was committed, pushed, merged, tagged, released, or published; no implementation,
+  release-metadata, or downstream-scope file was touched. This environment has no shell
+  (read/search/edit tools only) — nothing was executed locally, and all remote evidence was
+  read via the GitHub REST API, read-only.
+
+  | # | Dimension | Status | Evidence |
+  |---|-----------|--------|----------|
+  | 1 | scope-true | **Clear** | PR file set = this item's `touches` + release metadata + coordination records; nothing smuggled. `non_negotiable` verified at the PR head, not asserted: `GET /contents/packs?ref=4ed8f88…` -> **404** (no committed tree), `marketplace.json` patch is version-only so the index still lists exactly one plugin (`kai`, `source: "."`), groundwork on `0.x`, no sixth pack. Inside `scope.current: [dependency-guarantees]`. A1–A6 routed/parked in the owning records. |
+  | 2 | verified | **Clear** *(the Gap that bounced this item, now closed)* | Run 32814515790 / job `contract` `97700043167`, `ubuntu-latest`, `conclusion: success`, 11/11 steps green — including `Pack generator self-test`, `Committed pack trees match the generator`, and the PR-only `Release-guard --base/--head` real gate. Local suite green (operator-executed, all exit 0). Design sub-gate **not triggered** — developer-facing build tooling, no user-facing surface; no waiver invented. |
+  | 3 | reviewed | **Clear** | Sole `review_requirements` entry ratified at `change_ref 457254b97…`; implementation unchanged through PR delivery (operator-confirmed empty diff to PR head, restated in PR #152's body), so `change_ref` stays put and the verdict binds by exact match. Architect's snapshot-equivalence caveat discharged at 2026-08-24-2244; not reopened. |
+  | 4 | shippable-safely | **Clear (proportional)** | `review-rollout-operability` verdict **Holds**. No runtime service, data, migration, external state, user surface, or publication change. Rollback = revert one squash-merge commit; nothing survives it. **The residual risk named at the bounce is retired** — the two steps that become mandatory on every future PR, plus the real release-guard gate, are now green on `ubuntu-latest`, the exact platform the hazard lived on. Signals: `validate` on `main` and the next PRs. Owner `principal-swe-infra`. |
+  | 5 | documented | **Clear** | CHANGELOG `[0.58.0]` + compare link; README `## Status`; AGENTS.md release path (+`packs/`); `packs/` root decision in Evidence and `log.md`; ship record written and indexed in `deliverables.md`. Initiative `log.md` carries the **release-ready** entry — the **ship** stamp is withheld until CONFIRM-COMPLETE, because it has not shipped. |
+  | 6 | coordination-closed | **Clear** | Item v13 current and truthful; deploy HANDOFF on the thread; BOARD/ACTIVE refreshed; dependency `partition-lock` `completed`; `waiting_on_questions: []`; A6 parked in the committed backlog. Recorded openly: PR delivery was operator-executed rather than routed through a `principal-swe-infra` HANDOFF, so the thread had no delivery entry — the gate's HANDOFF supplies it, and every delivery claim was re-verified against GitHub rather than taken on report. |
+
+  **`release-ready` is not `shipped`.** PR #152 is open and unmerged. The four dependents
+  (`crosspack-validator`, `preflight-compat`, `migration-doctor`, `generated-pack-trees`)
+  require this item at `shipped` and stay non-executable until the human merges and
+  production verification passes.
+
+  **Non-blocking deviations from the bounce's suggested PR shape, reviewed and accepted as
+  correct:** the title is `feat(pack-split): add generator and manifest gates` (49 chars,
+  imperative, correct type, no trailing `(#N)` — conforms to `kai-core-pr-delivery` §3);
+  and the body says `Part of #29`, not `Closes #29`, which is **more** accurate — #29 is the
+  umbrella "Align Kai positioning and evaluate optional plugin packs", and closing it here
+  would have falsely retired the whole initiative.
+
+  **Coordination-record lag the operator must handle.** PR #152's head contains this item at
+  version 11 / `in-progress`; the `release-ready` records written by this gate are
+  working-tree-only. Merge #152 at head `4ed8f88…` **unchanged** — pushing the records onto
+  the branch first would change the head SHA and detach the verified CI evidence — then
+  commit the coordination records separately (`kai/` is not a `BEHAVIOR_PREFIX`, so
+  release-guard will not demand a second bump).
+
 - **DoD gate run 2026-08-24-2244 (`workflow-ship` PREPARE) — verdict `BOUNCE`, one Gap.**
+  *(Historical; the Gap below is closed. Retained because the bounce is the reason the CI
+  evidence exists.)*
   Five of six dimensions Clear at `change_ref 457254b973fb58b129332ffaa609fb5febfdd412`;
   **dim-2 (verified) is a Gap** — the item's own open acceptance criterion ("the new CI
   steps run green on the pushed PR") has **no evidence and cannot acquire any** until the
@@ -199,7 +275,11 @@ until the core-plus-personal extraction item selects that slice.
   bounced item), nothing was committed, pushed, PR'd, merged, tagged, released, or
   published, and no implementation, release-metadata, or downstream-scope file was touched.
 
-- **The ratified diff must not be edited (binding constraint on PR delivery).** The
+- **The ratified diff must not be edited (binding constraint on PR delivery) — HONORED,
+  2026-08-24-2251.** PR #152 committed the reviewed tree unchanged; the operator confirmed an
+  empty diff between `457254b97…` and PR head `4ed8f88…` for all implementation and release
+  files, and the PR body records it. `change_ref` therefore stays at the ratified object.
+  The original constraint, retained for the record: the
   `independent-architecture` verdict binds to `change_ref
   457254b973fb58b129332ffaa609fb5febfdd412`, and the operator has confirmed byte-identity
   between that object and the current implementation/release files via

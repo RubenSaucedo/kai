@@ -452,3 +452,141 @@ Append-only communication log mirroring
              item moves `in-review -> release-ready` with the deploy handoff; the four downstream
              `dependency-guarantees`/`first-pack-extracted` items require this item at `shipped`, so
              they stay non-executable until the human completes delivery and deployment.
+
+## HANDOFF 2026-08-24-2252 — workflow-ship -> @operator
+
+- did:       **Six-dimension DoD gate RE-RUN in PREPARE mode after the 2026-08-24-2244 BOUNCE.
+             Verdict: `RELEASE-READY` — all six dimensions Clear.** Self-granted the lease at
+             version 11 (token `wsh-2026-08-24-2252-gg-dod2`, `version_at_grant: 11`, re-read
+             confirmed holder/token/version), wrote the gate result, cleared the lease;
+             version 11 -> 12 -> 13. State **`in-progress` -> `release-ready`**
+             (`resume_state` stays `null`). **Ship record written.** Nothing was committed,
+             pushed, merged, tagged, released, or published; no implementation, release-metadata,
+             or downstream-scope file was touched. **kai did not merge and will not.**
+
+             This environment has no shell (read/search/edit tools only), so nothing was
+             executed locally. Remote evidence was read directly from the GitHub REST API
+             (read-only) rather than taken on report — the delivery claims below are verified,
+             not asserted.
+
+             **The one Gap that bounced this item is closed, on the platform the risk lived on.**
+             Acceptance criterion 5 ("the new CI steps run green on the pushed PR") now has real
+             evidence: GitHub Actions run **32814515790**, job **`contract`** (`97700043167`),
+             `ubuntu-latest` / Node 20, `status: completed`, **`conclusion: success`**, 13s
+             (`2026-08-25T05:51:47Z -> 05:52:00Z`) at PR head
+             `4ed8f88562909ac292d856902b401a724f796f02` —
+             https://github.com/RubenSaucedo/kai/actions/runs/32814515790/job/97700043167
+             **All 11 steps green.** Each of the three bounce reasons is retired by name:
+             1. **Platform.** Every prior green run was Windows; this one is `ubuntu-latest`.
+                The byte-stable, LF-normalised, forward-slash-keyed generation claim — the exact
+                class that passes on one OS and fails on the other, and the hazard A2/A3 name —
+                passed there.
+             2. **The step that had never executed in any form.** Step 11,
+                `Release-guard --base <base.sha> --head <head.sha>` (the `pull_request`-only
+                **real** gate, not `--self-test`), ran against this diff and passed: `scripts/`
+                is a `BEHAVIOR_PREFIX`, so it classified the change behavior-sensitive and found
+                the `0.58.0` bump + CHANGELOG + README it demands.
+             3. **Repo-wide blast radius.** The two steps that become mandatory on *every* future
+                PR (`Pack generator self-test`, `Committed pack trees match the generator`) are
+                green on the runner every future PR will use.
+
+             | # | Dimension | Status | Evidence |
+             |---|-----------|--------|----------|
+             | 1 | scope-true | **Clear** | PR #152's file set = this item's `touches` + release metadata + coordination records; nothing smuggled. `non_negotiable` verified **at the PR head**, not asserted: `GET /contents/packs?ref=4ed8f88…` -> **404** (no committed pack tree); the `marketplace.json` patch is version-only (`0.57.0 -> 0.58.0`, both fields) so the index still lists exactly one plugin, `name: kai`, `source: "."`; groundwork on `0.x`; no sixth pack. Inside `northstar.scope.current: [dependency-guarantees]`. A1–A3 -> `generated-pack-trees`, A4 -> `release-12b`, A5 -> `ci-partition-checks`, A6 -> backlog PROPOSAL — all still present in the owning records. |
+             | 2 | verified | **Clear** *(was the Gap)* | The run above: 11/11 steps `success` on `ubuntu-latest`, including the two new steps and the PR-only real release-guard gate. Local suite (35-check `--self-test`, `--check`, `validate-plugin`, `release-guard --self-test`, `check-syntax`, `npm test`) operator-executed, all exit 0. Design sub-gate **not triggered** — developer-facing build tooling, no user-facing surface; no waiver needed and none invented. |
+             | 3 | reviewed | **Clear** | Sole `review_requirements` entry (`principal-swe-architect` / `independent-architecture`) `ratified` at `change_ref 457254b973fb58b129332ffaa609fb5febfdd412`. The implementation **did not change** through PR delivery — operator-confirmed empty diff to PR head `4ed8f88…` across all implementation and release files, restated publicly in PR #152's body. Per `kai-core-work-coordination` (`change_ref` updates *when implementation changes*), the item's `change_ref` **deliberately stays** at the ratified object, so `completed_reviews.change_ref == change_ref` still matches exactly. The architect's snapshot-equivalence caveat was discharged at 2026-08-24-2244 and is not reopened. |
+             | 4 | shippable-safely | **Clear (proportional)** | `review-rollout-operability` applied, verdict **Holds**. No runtime service, no data, no migration, no external state, no user-facing surface, no publication change. Fail-closed by construction (`COMMITTED_PACKS` empty; `writeCommitted` throws before any `rmSync`; `discoverManifests` leaves N=1 byte-for-byte unchanged). Pre-merge reversibility total; post-merge = revert one squash-merge commit, and **nothing survives that revert** — no data migration to un-do. **The residual risk I named at the bounce is retired** by the green Ubuntu run. Signals: `validate` on `main`, then the next PRs. Owner `principal-swe-infra`. |
+             | 5 | documented | **Clear** | `CHANGELOG.md` `[0.58.0] - 2026-08-24` + compare link; `README.md` `## Status` `v0.58.0` (honestly framed — "no packs are published yet"); `AGENTS.md` release path (+ committed `packs/` tree); the `packs/` root decision in the item Evidence and `log.md`. Ship record written and indexed in `deliverables.md`; `log.md` carries the **release-ready** entry. The **ship** stamp is deliberately withheld — it has not shipped. |
+             | 6 | coordination-closed | **Clear** | Item v13 current and truthful (criterion 5 ticked **with the run URL**); this HANDOFF is the deploy handoff; BOARD/ACTIVE refreshed; dependency `partition-lock` `completed`; `waiting_on_questions: []`; the three initiative questions are non-blocking; A6 parked in the committed backlog. **Recorded, not hidden:** PR delivery was executed by the operator directly rather than routed back through a `principal-swe-infra` HANDOFF, so the thread had no delivery entry — this entry supplies it, and every delivery claim was re-verified against GitHub. |
+
+             **Two non-blocking deviations from the shape I prescribed at the bounce, reviewed and
+             accepted as CORRECT — no gap:** (a) the PR title is
+             `feat(pack-split): add generator and manifest gates` (49 chars, imperative, correct
+             `<type>`, no trailing `(#N)`) — conforms to `kai-core-pr-delivery` §3; (b) the body says
+             `Part of #29`, not `Closes #29`, which is **more** accurate than my instruction —
+             issue #29 is the umbrella "Align Kai positioning and evaluate optional plugin packs",
+             not this item, and `Closes` would have falsely retired the whole initiative on merge.
+- state:     release-ready
+- needs:     **@operator merges PR #152. kai does not merge, tag, release, or publish.**
+             1. **Confirm the verified head is still the head:** `git fetch origin && git rev-parse
+                origin/kai/feat/29-pack-generator-gates` must print
+                `4ed8f88562909ac292d856902b401a724f796f02`. **If it differs, STOP** — the CI
+                evidence is bound to that SHA and the gate must re-run.
+             2. **Squash and merge PR #152** into `main` (repo convention; GitHub auto-appends
+                `(#152)`). **Do not push more commits to the branch first** — that changes the head
+                SHA and detaches the verified CI evidence.
+             3. **Watch `validate` on `main`** (push event, 10 steps; the PR-only release-guard step
+                is correctly skipped on push). All green.
+             4. **Commit the readiness records separately, after the merge.** PR #152's head still
+                contains this item at v11/`in-progress`; the `release-ready` records are
+                working-tree-only. `kai/` is not a `BEHAVIOR_PREFIX`, so release-guard will not
+                demand a second bump. Promote the ship record on the way:
+                `mkdir -p kai/library/releases/2026-08-24/01-ship-pack-split-generator-gates` then
+                `git mv kai/initiatives/pack-split/artifacts/docs/pack-split-generator-gates-ship-record.md
+                kai/library/releases/2026-08-24/01-ship-pack-split-generator-gates/ship-record.md`
+                (I could not create the directory — this environment has no shell).
+             5. **Per `AGENTS.md`, once `main` is green:** `git tag v0.58.0 && git push origin
+                v0.58.0`, then cut the GitHub release from the `[0.58.0]` CHANGELOG entry.
+             **Abort criteria:** head SHA mismatch at step 1; a merge conflict on `main` (a rebase
+             changes the tree, so both the ratified binding and the CI evidence stop applying —
+             return to the gate); `validate` red on `main` after merge -> **revert first**
+             (`git revert <merge-sha>`, or GitHub Revert on #152), then treat it as a real defect,
+             not flake, and route to `principal-swe-infra`. Never hand-edit around a failing
+             release-guard step. If a rollback happens, only `workflow-ship` returns this item to
+             `release-ready`, on rollback evidence.
+             **Production verification to run after merge:** (1) `validate` green on `main` at the
+             merge commit; (2) `0.58.0` coherent on `main` across `plugin.json`, `package.json`,
+             `package-lock.json`, `marketplace.json`, README `## Status`, CHANGELOG section +
+             compare link; (3) `marketplace.json` still exactly one entry, `name: kai`,
+             `source: "."`; (4) `GET /contents/packs?ref=main` -> **404**, no `packs/` tree
+             published.
+- artifacts: kai/initiatives/pack-split/artifacts/docs/pack-split-generator-gates-ship-record.md
+             (**ship record**; canonical destination
+             `kai/library/releases/2026-08-24/01-ship-pack-split-generator-gates/ship-record.md`,
+             promotion pending the operator `mkdir`);
+             kai/coordination/items/pack-split-generator-gates.md (v13, `release-ready`, lease
+             cleared, `next_role: @operator`, criterion 5 ticked with the run URL, gate result in
+             Notes); kai/coordination/threads/pack-split-generator-gates.md (this entry);
+             kai/coordination/BOARD.md (row refreshed); kai/coordination/ACTIVE.md (focus pointer);
+             kai/initiatives/pack-split/log.md (release-ready entry, **not** a ship stamp);
+             kai/initiatives/pack-split/deliverables.md (release-record row, promotion pending)
+- evidence:  Verified read-only by `workflow-ship` against the GitHub REST API, 2026-08-24-2252:
+             job `97700043167` (`contract`, run 32814515790, `ubuntu-latest`, `head_sha
+             4ed8f88562909ac292d856902b401a724f796f02`, `conclusion: success`, 11/11 steps
+             `success`); PR #152 `state: open`, `merged_at: null`, head `4ed8f88…`, base `main`,
+             branch `kai/feat/29-pack-generator-gates`; `GET /contents/packs?ref=4ed8f88…` -> 404;
+             `marketplace.json` patch version-only, one `kai` entry. Read locally from C:\src\kai
+             (nothing executed): `.github/workflows/validate.yml` (job `contract`, 8 authored steps,
+             the two new ones, the `pull_request`-gated release-guard); `package.json:3` and
+             `plugin.json:4` (`0.58.0`); `.github/plugin/marketplace.json` (one plugin, `kai`);
+             `kai/initiatives/pack-split/northstar.md` (`scope.current`, `non_negotiable`,
+             `dependency-guarantees.required_items` requires this item at `shipped`); the four
+             routed records and the backlog. Operator-reported (not re-executed here): the local
+             suite green, and the empty `git diff 457254b97… 4ed8f88…` over implementation and
+             release files — the latter also stated publicly in PR #152's body.
+- questions: none blocking. One **action for @operator** (not a blocker on any kai role): press
+             merge on PR #152 per the steps above, then return the merge commit SHA, the merge
+             timestamp, the `main` workflow-run URL **and its conclusion**, and the `v0.58.0`
+             tag/release URL if cut.
+- next:      **@operator** — merge PR #152, then hand the deployment evidence back to
+             `workflow-ship` for CONFIRM-START (`release-ready -> deploying`) and CONFIRM-COMPLETE
+             (`deploying -> production-verification -> shipped`). A run URL without a success
+             conclusion is not completion. `release-ready` is **not** `shipped`: the four
+             dependents (`crosspack-validator`, `preflight-compat`, `migration-doctor`,
+             `generated-pack-trees`) declare `depends_on: generator-gates (shipped)` and stay
+             non-executable until production verification passes.
+
+## NOTE 2026-08-24-2300 — readiness records included in PR #152
+
+- The release-ready coordination records and pre-promotion ship record are being
+  committed to PR #152 rather than carried as an uncommitted post-merge change.
+  This supersedes the prior HANDOFF instruction to require the branch head to
+  equal `4ed8f88562909ac292d856902b401a724f796f02` and to commit the records after
+  merge.
+- `4ed8f88562909ac292d856902b401a724f796f02` remains the reviewed implementation
+  commit. Any later PR commit must be coordination-only: that commit must remain
+  an ancestor of the current head, the implementation/release-file diff from it
+  must stay empty, and the required `contract` check must pass on the final head.
+- The ship record remains at its pre-promotion initiative path until
+  CONFIRM-COMPLETE moves it to the canonical library location. Nothing is merged,
+  tagged, released, published, or marked `shipped`.
