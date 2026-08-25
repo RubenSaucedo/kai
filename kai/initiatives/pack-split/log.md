@@ -258,3 +258,81 @@ questions (review-lens binding, committed-tree location `packs/`, first-departme
 `shipped` semantics, director-availability completeness) are carried on the
 decomposition record for the architect/steward as the chain is groomed. Handoff to
 `director-chief-of-staff` to dispatch the first item.
+
+## 2026-08-24 — steward acceptance: generator-gates ACCEPTED (in-review, routed to ship gate); `packs/` root confirmed
+
+`principal-product-manager` (steward) performed product acceptance of
+`pack-split-generator-gates` at the exact ratified
+`change_ref 457254b973fb58b129332ffaa609fb5febfdd412` (item version 7 -> 8 -> 9;
+lease self-granted at 7 and cleared). **Verdict: ACCEPTED.** Nothing was built,
+committed, pushed, PR'd, merged, tagged, released, or published, and the item is
+**not** `shipped`.
+
+**Acceptance reconciled honestly — 4 of 5 criteria met, 1 split and left open.**
+The generator's determinism + per-pack `plugin.json`, the N-manifest validator
+with N=1 unchanged, `packs/` classified behavior-sensitive in `release-guard`,
+and the `0.57.0 -> 0.58.0` bump + CHANGELOG + README stamp are all evidenced by
+the operator's verification run and the architect's line-by-line review. The
+fourth criterion **bundled two different claims** — four local commands *and*
+"new CI steps green" — so it was **split**: the local half is met (all exit 0),
+and the remote half is **open by construction**. Both CI steps exist in
+`.github/workflows/validate.yml`, but remote CI has never executed because the
+change is uncommitted, unpushed, and has no PR. The criterion was reworded to be
+truthful, not weaker; it closes on a real workflow run at PR delivery.
+
+**Outcome prose corrected.** The item claimed "asset/hooks-ownership routing
+hooks", crediting the foundation with a downstream guarantee. It delivers
+partition/generator/multi-manifest **plumbing only**; asset ownership and
+hooks-exactly-once remain with `pack-split-crosspack-validator` (validation) and
+`pack-split-generated-pack-trees` (materialization).
+
+**Open Question 2 CLOSED — committed-tree root is `packs/`.** Existing evidence
+was sufficient (the accepted decomposition's WS#1/#7, `generated-pack-trees`'
+declared `touches`, and the ratified implementation encoding it in exactly two
+places: `PACKS_DIR` in `scripts/lib/pack-plan.mjs`, `BEHAVIOR_PREFIXES` in
+`scripts/release-guard.mjs`). `dist/` rejected — it conventionally signals
+uncommitted build output, the opposite of the committed-unpublished contract.
+This is now the initiative's convention; downstream items inherit it. **Three of
+the four decomposition open questions remain** (review-lens binding,
+first-department `shipped` semantics, director-availability completeness).
+
+**Lifecycle decision: stays `in-review`, `next_role: workflow-ship`.** All
+`review_requirements` are satisfied for this `product-change`, so review routing
+sends it to `workflow-ship`, which alone owns the six-dimension DoD gate and the
+`in-review -> release-ready` transition; `shipped` additionally requires evidenced
+production deployment plus verification. Product acceptance is the steward's call
+and is granted; the readiness gate is not the steward's to run, pre-empt, or
+relabel. A human must commit, push, and open the PR to produce the CI evidence.
+
+**Architect carry-forward findings routed into owning records, not left as prose:**
+A1 (`checkCommitted` ENOENT before the `--write` hint), A2 (OS artifacts under
+`packs/` causing local-vs-CI split-brain), A3 (`.gitattributes` `packs/** text
+eol=lf`) → `pack-split-generated-pack-trees` acceptance (+`.gitattributes` in its
+`touches`); A4 (marketplace publication outside release enforcement; entry `name`
+not asserted against its `source` manifest) → `pack-split-release-12b` acceptance
+(+`release-guard.mjs`, `validate-plugin.mjs` in its `touches`), cross-referenced
+from `generated-pack-trees` because committing the first tree is what makes the
+flip a pure `marketplace.json` edit; A5 (`PACK_AGENTS` duplicate legacy roster
+truth; four self-tests on the legacy path) → `pack-split-ci-partition-checks`
+acceptance, where the self-test becomes a hard CI gate; A6 (zero-skill pack
+manifest/`skills/` mismatch) → **parked as a PROPOSAL** in the initiative backlog
+with a promotion trigger, unreachable while all five locked departments own ≥1
+skill and the northstar forbids a sixth pack. **The ratified PR was not expanded**
+for A5/A6 — re-opening a bound `change_ref` for a non-defect would invalidate the
+binding review for no gain.
+
+**Binding caveat carried to the ship gate.** The architect had no shell and bound
+its verdict to the operator's stated equivalence between the `git stash create`
+snapshot and the reviewed worktree. If the operator cannot confirm they are
+identical, that ratification **does not bind** and the review must be re-run —
+flagged for `workflow-ship`'s dim-3, not resolved by the steward.
+
+**Milestone status.** `dependency-guarantees` remains **open**: its five required
+items are all typed `shipped` and none has reached it. Downstream items
+(`crosspack-validator`, `preflight-compat`) depend on `generator-gates` at
+`shipped`, so they stay non-executable until a human completes delivery.
+
+**Boundary respected.** No implementation, release, or marketplace file touched —
+only coordination records, threads, the backlog, `ACTIVE.md`, `BOARD.md`, and this
+log. Two read-only spot-checks were made to avoid ticking criteria on assertion
+alone (`scripts/release-guard.mjs:20`, `.github/workflows/validate.yml:41-44`).
