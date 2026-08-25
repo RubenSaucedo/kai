@@ -1189,3 +1189,104 @@ the director's call, not this gate's.
 and there was no shell; per that skill a failed append is reported and dropped, never
 retried and never allowed to gate the work, so this entry was written by hand as prior runs
 on this item did.
+
+## 2026-08-25 — crosspack-validator: independent architecture review RATIFIED at `cb5fd029…` (sole required review; ship gate is next)
+
+`principal-swe-architect` reviewed `change_ref cb5fd0290f1a8b7478b54e98bf24f1968aa58f09` and
+**RATIFIED**. Item v4 -> v5, **still `in-review`**, lease cleared,
+`next_role: principal-swe-architect -> workflow-ship`, and `completed_reviews` now carries
+`principal-swe-architect` / `independent-architecture` / `ratified` at this exact ref — good **for
+this ref only**; if the ref moves, the entry stops counting. This is the item's **sole** review
+requirement, so it is now satisfied. The bound snapshot was read through the worktree on the
+operator's attested empty diff for all implementation and release files; this run had **no shell**
+and re-executed nothing, so the 70-check self-test, `validate-plugin` at 56 agents / 51 skills, the
+five-pack preview and `npm test` exit 0 were treated as **input, not verdict**. No implementation or
+release file was edited; no commit, push, PR, merge, tag, release or publication.
+
+**The seam was endorsed on its strongest choice.** References resolve against
+`packProviders(materializePacks(...))` — *what a user installs* — rather than against `planPacks()`.
+A plan that adds up on paper and a tree that omits a provider are different failures and only the
+second reaches a user, so "the generator would not copy this" is now a CI failure today instead of a
+post-split support ticket. Everything else in the change is scaffolding around that decision.
+
+**All four contested calls were ruled on re-derived evidence, not on the build handoff's word.**
+*Orchestrated syntax:* `DISPATCH_ENTRY` is the exact shape `validate-plugin`'s pre-existing
+firing-path check already treated as dispatch — a parser was added for a convention that existed, not
+a convention invented to fit a parser — and "any backticked mention" was correctly rejected because
+~20 editorial cross-links would become dependencies they are not. *Agents-only collection:* verified
+by enumerating **every** dispatch-shaped list head in all 51 skills — 59 matches across 13 skills,
+**zero** naming a skill (record-field schemas, lifecycle states, error strings, path templates,
+family globs, and four *agent* ids in `kai-core-design-grounding`), so collecting skills would add
+~55 false tokens for zero coverage. *Agent/skill asymmetry:* checked against the locked artifact
+rather than accepted — **partition-lock §7.2 is stated in terms of *inherit***, so it binds
+**providers, not referrals**; the offered `if (ref.kind === 'agent') continue;` must **not** be made,
+as it would fail 12+ live referrals and demand a re-routing plan this item does not own. The force is
+real: a skill is *loaded* and a missing one breaks the body that named it; an agent id is a *routing
+target* and a missing one degrades to "that pack is not installed". *Hooks:* `HOOKS_OWNER = core`
+unioned with generated emitters was traced through **all four** future states — core-only emission,
+dual emission, department-only emission with the constant moved, and today's no-emission — and every
+one fails closed.
+
+**The fail-open scan found no blocking gap.** The live anti-fail-open arms assert **thresholds**
+(>100 inherited, >5 orchestrated-agent, >5 user-invoked, >=1 asset) plus four *named* carries, so a
+collector that silently found nothing cannot pass. `declaredInherits`' single-line read is safe
+because `validate-plugin.mjs:276–303` independently enforces exactly one first-line `**Inherits:**`
+line across all 56 agents. Unplaced skills fail closed through `fromPack: null`, with the plan side
+caught by `orphans === overrides` and `unplaced === 0`. `packProviders`' `kai-` strip is the **exact
+inverse** of `packPluginName` for every possible pack key — no provider-identity bug and **no new
+future-pack-name assumption**; the known `/^kai-[a-z]+\/agents\//` one is pre-existing and already
+parked as P2-S1, and sharing `generatedPacks` did not widen it. Scope was verified independently:
+**no new CI step** (the workflow already runs `validate-plugin`, `--self-test` and `--check`; the
+workflow diff is header prose), `COMMITTED_PACKS` still `[]`, **no `packs/` tree**, marketplace still
+**N=1** at `source: "."` and `0.60.0`.
+
+**Recorded so a green check is not over-read.** Given `planAssets` output, two of
+`assetOwnershipErrors`' four arms are **structurally unreachable today** — the plan *defines*
+ownership from the consumer set, so it cannot disagree with itself. Acceptance criterion 2 is
+satisfied by the **assignment**, pinned on live subjects (`generate-audio.ps1 -> core`,
+`demo-zoom.mjs -> personal`); those arms become load-bearing only when **WS#7 supplies an independent
+owner source**. Likewise, `scripts/observe-subagent.mjs` is owned by core today only because a core
+skill's prose invokes it — fail-closed, but fragile as a *routing* input.
+
+**Three constraints now bind WS#7 `pack-split-generated-pack-trees`:** consume `planAssets` /
+`HOOKS_OWNER` instead of re-deriving ownership (a second truth is the A5 defect class and would be
+invisible because the validator would keep agreeing with itself); route hook scripts **by
+declaration**, since `${PLUGIN_ROOT}` never crosses a plugin boundary; emit `hooks.json` into **core
+only** — the union check will fail a second emitter by name, and that alarm is the point.
+
+**Five non-blocking observations, routed rather than absorbed, none fixed here.** **N1** — a dispatch
+entry naming a *deleted skill* is silently dropped, because skill tokens classify by resolution while
+agent tokens classify by shape; this is **not** a cross-pack defect, exists identically in the
+monolith, and cannot be fixed by shape since skills have no family prefix — the cheap mitigation is
+widening the live lens arm from one lens to all nine `workflow-doc-review` lenses, routed to
+`pack-split-ci-partition-checks`. **N2** — two "agent-shaped" definitions now exist (`AGENT_REF`
+omits `creative`; the new `AGENT_SHAPED` is the complete one), routed with **A5** to the same item
+because consolidating changes a docs-scanning check's behaviour. **N3** —
+`endsWith('/hooks.json')` counts any depth where `^[^/]+/hooks\.json$` is the intent; unreachable
+today and fail-closed, so it is for WS#7 when that path goes live. **N4** — hook-asset key-spaces
+differ and only the first `${PLUGIN_ROOT}` path per command is read; fail-closed, one line, whenever
+hooks change. **N5** — no separate design artifact was opened: the item's `## Review` section is this
+initiative's convention for an architecture review (only *security* reviews carry an artifact file),
+which answers infra's standing question about where such a rationale belongs.
+
+**One escalation, deliberately undecided here.** Cross-department **agent referral degradation is
+unspecified**: ratifying the asymmetry lets 12+ live referrals survive the split with no defined
+behaviour when the sibling pack is absent, and WS#5 `degraded-refusal` covers a missing **core**, not
+a missing **department**. Whether a referral should degrade silently, name the missing pack, or
+suggest installing it is a **product** call that would add a surface no committed item owns — routed
+to `principal-product-manager` as a **PROPOSAL for triage**, not as a dependency, an item, or an
+acceptance criterion.
+
+**Ratification is not completion.** The item is **not** `complete`, **not** `release-ready` and
+**not** `shipped`; the CI-green-on-the-pushed-PR criterion stays **unticked** and only CI can supply
+it. **Milestone `dependency-guarantees` is unchanged at 2 of 5 required items `shipped`** — a
+ratified review moves nothing downstream: `pack-split-ci-partition-checks` still requires this item
+at `shipped` and stays non-dispatchable, and `pack-split-degraded-refusal` still overlaps it on
+`scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs` — now **live surface movement**, so
+that diff must be read rather than assumed. **Boundaries held:** no pack trees, no marketplace pack
+entries, no generated assets, no hooks emission, no collision gates, no migration logic, no tag, no
+release, no publication.
+
+**Activity log not appended** — `kai-core-work-activity` writes via `scripts/activity.mjs` and this
+run had no shell; per that skill a failed append is reported and dropped, never retried and never
+allowed to gate the work, so this entry was written by hand as prior runs on this initiative did.

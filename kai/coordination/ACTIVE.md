@@ -143,3 +143,126 @@ on `crosspack-validator` (still `ready`), one of two dependencies met.
 this release is not), R2 (owed by `pack-split-host-gates`) and R3 travel unchanged; **P2-S1 remains
 a parked backlog PROPOSAL** and this run created **no item**. **Next: the director** — dispatch is
 its call, not this gate's.
+
+**Latest — 2026-08-25-1410 (`principal-swe-infra`, BUILD).** `pack-split-crosspack-validator` is
+**`ready -> in-review`** (v2 -> v3, `owner: principal-swe-infra`, `next_role:
+principal-swe-architect`, lease `null`, `change_ref` still `null`). Cross-pack reference validation
+now exists in the working tree: one collector and one resolver in `scripts/lib/pack-plan.mjs`
+(`declaredInherits`, `dispatchedRefs`, `assetRefs`, `collectReferences`, `referenceErrors`,
+`planAssets`, `assetOwnershipErrors`, `hooksAssignmentErrors`, `packProviders`), resolving every
+inherited, user-invoked and orchestrated reference — plus every invoked `scripts/*` asset — against
+**what `materializePacks` actually emits**, not against a plan. `scripts/validate-plugin.mjs`
+consumes them and its old inline firing-path regexes are **deleted**, so generator, preview and
+validator cannot disagree about what a reference is. Assets are planned to a pack (sole invoker
+keeps it, two or more promote to `kai-core`); `hooks.json` is assigned to exactly one pack
+(`HOOKS_OWNER = 'core'`, WS#7's disposition) with zero/duplicate/foreign-script assignment failing
+by name, and the declared owner unioned with any generated emitter so the duplicate arm fires the
+day `generated-pack-trees` routes assets rather than silently doubling the observer per subagent.
+`pack-preview --self-test` gained ~25 arms — pure mutation arms for each failure **plus live
+anti-fail-open arms** asserting the real corpus populates all three firing paths, so a collector
+that found nothing could not pass. **No new CI step:** the workflow already runs `validate-plugin`
+and the pack self-test; only its header comment changed. Release bumped `0.59.0 -> 0.60.0` across
+all eight locations with the dated CHANGELOG section, compare link and README stamp; inventory
+untouched at **56 agents / 51 skills**, so no catalog or fixture regeneration — nothing about the
+roster moved. **Architecture ambiguity resolved without inventing syntax:** the orchestrated path is
+the bolded-backticked list-entry shape the roster (and the existing firing-path check) already uses;
+"any backticked mention" was **rejected** because ~20 live editorial cross-links would become
+dependencies they are not; dispatch entries are read from **agents only** (skills use that shape for
+field definitions); and cross-department **agent** referrals are **deliberately permitted** while
+cross-department **skill** references fail — a referral degrades to "that pack is not installed",
+a missing skill breaks the body that named it. All four calls are routed to the required review, not
+asserted as settled. **It is NOT complete, NOT release-ready and NOT shipped, for one stated
+reason: this run had no shell and therefore ran nothing.** `npm test`,
+`node scripts/validate-plugin.mjs`, `node scripts/pack-preview.mjs --self-test`, `--check` and
+`--all --out <dir>` are **all owed**; every "resolves clean today" statement in the record comes
+from **reading** the corpus with grep. No branch was created (`kai/feat/29-crosspack-validator`
+does not exist), nothing is committed, pushed, opened as a PR, merged, tagged, released or
+published — so `change_ref` is `null` and the required `independent-architecture` review **cannot
+bind yet**. Acceptance criteria 1–3 are annotated **implemented-but-unrun** and stay unticked;
+only the version-bump criterion is ticked, on evidence re-derivable by reading. `touches` was
+extended (declared, not silent) with `scripts/pack-preview.mjs` and the six release files.
+**Milestone `dependency-guarantees` is unchanged at 2 of 5 required items `shipped`** — moving to
+`in-review` clears nothing: `pack-split-ci-partition-checks` still requires this item at `shipped`
+and stays non-dispatchable, and `pack-split-degraded-refusal` (dispatchable since 2026-08-25-1328)
+still overlaps it on `scripts/lib/pack-plan.mjs` and `scripts/validate-plugin.mjs` — that overlap is
+now **live surface movement**, so whoever picks up `degraded-refusal` must read this diff first.
+
+**Continuation — 2026-08-25-1420 (`@operator`).** Created branch
+`kai/feat/29-crosspack-validator`; the item remains **in-review** and is now bound at
+`cb5fd0290f1a8b7478b54e98bf24f1968aa58f09` (v4, architecture lease active). The previously owed
+checks are complete: `pack-preview --self-test` **70/70**, `validate-plugin` **56 agents / 51
+skills**, `pack-preview --all --out <session temp>` generated all five previews, and full
+`npm test` exited 0; the temporary output was removed. Acceptance 1–4 and the version bump are
+now satisfied. The pushed-PR CI criterion remains open. No implementation or release file changed
+after the review binding.
+`COMMITTED_PACKS` is still `[]`, there is no `packs/` tree, and the marketplace is still N=1.
+**Next: `@operator`** for the branch/run/ref, then `principal-swe-architect`.
+
+**Architecture review RATIFIED — 2026-08-25-1428 (`principal-swe-architect`) at `change_ref
+cb5fd0290f1a8b7478b54e98bf24f1968aa58f09`.** `pack-split-crosspack-validator` is **v4 -> v5, still
+`in-review`**, lease cleared, `next_role: principal-swe-architect -> workflow-ship`, and
+`completed_reviews` now carries `principal-swe-architect` / `independent-architecture` / `ratified`
+at this exact ref — good **for this ref only**, so if the ref moves the entry stops counting. It is
+the item's **sole** required review, so the requirement is now satisfied and the ship gate is the
+next stop. Read through the worktree on the operator's attested empty diff for all implementation
+and release files; this run had **no shell** and re-executed nothing, so the 70-check self-test,
+`validate-plugin` at 56/51, the five-pack preview and `npm test` exit 0 were treated as **input, not
+verdict**. **All six contested design calls were endorsed — each on evidence re-derived in the
+review rather than inherited from the build handoff.** The load-bearing one is call 6: references
+resolve against `packProviders(materializePacks(...))` — **what a user installs** — not against a
+plan, so a provider the generator would not copy is a CI failure today instead of a post-split
+support ticket. Call 2 (dispatch read from **agents only**) was tested by enumerating **every**
+dispatch-shaped list head in all 51 skills: 59 matches across 13 skills, **zero** naming a skill —
+they are record-field schemas, lifecycle states, error strings, path templates, family globs, and
+four *agent* ids in `kai-core-design-grounding` — so collecting skills would add ~55 false tokens for
+zero coverage. Call 3 (cross-department **agent** referrals permitted, **skill** references fail) was
+checked against the locked artifact rather than accepted: **partition-lock §7.2 is stated in terms of
+*inherit***, so it binds **providers, not referrals**, and the offered one-line change to fail agent
+refs must **not** be made — it would break 12+ live referrals and demand a re-routing plan this item
+does not own. Calls 1, 4 and 5 hold: `DISPATCH_ENTRY` is the shape the pre-existing firing-path check
+already used (no syntax invented, ~20 editorial cross-links correctly excluded); asset **planning
+now / emission at WS#7** matches the decomposition, which names this validator as WS#7's containment;
+and `HOOKS_OWNER = core` unioned with generated emitters fails closed in **all four** future states
+that were traced. **Fail-open scan found no blocking gap:** the live anti-fail-open arms assert
+**thresholds** (>100 inherited, >5 orchestrated-agent, >5 user-invoked, >=1 asset) plus four named
+carries, so a collector that found nothing cannot pass; `declaredInherits`' single-line read is safe
+because `validate-plugin.mjs:276–303` independently enforces exactly one first-line `**Inherits:**`
+across all 56 agents; unplaced skills fail closed via `fromPack: null`; `packProviders`' `kai-` strip
+is the **exact inverse** of `packPluginName`, so there is no provider-identity bug and **no new
+future-pack-name assumption** (the known `/^kai-[a-z]+\/agents\//` one is pre-existing and already
+parked as P2-S1 — sharing `generatedPacks` did not widen it). Scope verified independently: **no new
+CI step** (the workflow already runs `validate-plugin`, `--self-test` and `--check`; the workflow
+diff is header prose), `COMMITTED_PACKS` still `[]`, **no `packs/` tree**, marketplace still **N=1**
+at `source: "."` and `0.60.0`. **Stated so a green check is not over-read:** given `planAssets`
+output, two of `assetOwnershipErrors`' four arms are **structurally unreachable today** (the plan
+defines ownership from the consumer set, so it cannot disagree with itself) — acceptance criterion 2
+is satisfied by the **assignment**, pinned live at `generate-audio.ps1 -> core` /
+`demo-zoom.mjs -> personal`, and those arms become load-bearing only when **WS#7 supplies an
+independent owner source**. **Three constraints now bind `pack-split-generated-pack-trees`:** consume
+`planAssets` / `HOOKS_OWNER` instead of re-deriving ownership (a second truth is the A5 defect class
+and would be invisible), route hook scripts **by declaration** rather than by prose mention (today
+`observe-subagent.mjs` is owned by core only because a core skill's prose invokes it — fail-closed,
+but fragile as routing), and emit `hooks.json` into **core only**. **Four non-blocking observations
+routed, none fixed here:** **N1** a dispatch entry naming a *deleted skill* is silently dropped
+(skills classify by resolution, agents by shape) — not a cross-pack defect, identical in the monolith,
+and unfixable by shape since skills have no family prefix; the cheap mitigation is widening the live
+lens arm to all nine `workflow-doc-review` lenses -> `ci-partition-checks`. **N2** two "agent-shaped"
+definitions now exist (`AGENT_REF` omits `creative`, `AGENT_SHAPED` is complete) -> with **A5** in
+`ci-partition-checks`. **N3** `endsWith('/hooks.json')` counts any depth where `^[^/]+/hooks\.json$`
+is the intent — unreachable today, fail-closed -> WS#7. **N4** hook-asset key-spaces differ and only
+the first `${PLUGIN_ROOT}` path per command is read — fail-closed, one line. **N5** no separate
+design artifact was opened: the item's `## Review` section is the initiative's convention for an
+architecture review (only *security* reviews get an artifact file), which answers infra's standing
+question. **One escalation, decided by nobody here:** cross-department **agent referral degradation
+is unspecified** — 12+ referrals will survive the split with no defined behaviour when the sibling
+pack is absent (WS#5 covers a missing **core**, not a missing **department**). Silent / named /
+install-suggesting is a **product** call that would add a surface no committed item owns, so it is
+routed to `principal-product-manager` as a **PROPOSAL for triage** — not a dependency, not an item,
+not an acceptance criterion. **Ratification is not completion:** the item is **not** `complete`,
+**not** `release-ready`, **not** `shipped`, and the **pushed-PR CI criterion stays unticked** — only
+CI can supply it. **Milestone `dependency-guarantees` is unchanged at 2 of 5 required items
+`shipped`** — `pack-split-ci-partition-checks` still needs this item at `shipped` and stays
+non-dispatchable, and `pack-split-degraded-refusal` still overlaps it on `scripts/lib/pack-plan.mjs`
+and `scripts/validate-plugin.mjs`, now as **live surface movement**, so that diff must be read rather
+than assumed. Nothing was committed, pushed, merged, tagged, released or published, and this review
+edited **no implementation or release file**. **Next: `workflow-ship`** — the DoD gate.
