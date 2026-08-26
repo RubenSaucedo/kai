@@ -353,3 +353,92 @@ the **director's** call, not the ship gate's — this is reconciliation, not a d
              cannot run against an item with no commit and no valid `change_ref`. Milestone
              `dependency-guarantees` stays at **4 of 5** required items `shipped`;
              `pack-split-generated-pack-trees` is not cleared.
+## HANDOFF 2026-08-25-1740 — principal-swe-infra/@operator -> principal-swe-architect
+
+- did:       Corrected the review findings without changing the gate architecture. Host behavior
+             wording is now neutral across documented and observed host variants; provider
+             uniqueness is justified as removing ambiguity, not install-order control. Unknown
+             generated pack keys now fail guarantee validation instead of skipping it, with a named
+             mutation arm. All targeted gates and full `npm test` pass (134 self-test checks).
+             Committed the implementation to real commit
+             `aca16e56d3d70cf6bac5181a41c3d4a87055dccc`.
+- state:     in-review
+- change_ref: `aca16e56d3d70cf6bac5181a41c3d4a87055dccc`
+- needs:     Scoped architecture re-review of A1/A2/A3 closure. CI-on-pushed-PR remains open.
+- next:      principal-swe-architect
+
+## REVIEW 2026-08-25-1745 — principal-swe-architect -> workflow-ship
+
+- did:       **`independent-architecture` re-review at `change_ref
+             aca16e56d3d70cf6bac5181a41c3d4a87055dccc`: RATIFIED.** Item **v7 -> v8**, state stays
+             `in-review`, lease `psa-2026-08-25-1740-pcg` cleared, `next_role:
+             principal-swe-architect -> workflow-ship`, and `completed_reviews` now carries
+             `principal-swe-architect` / `independent-architecture` / `ratified` at this exact ref —
+             the item's **single** review requirement is satisfied **for this ref only**; if the ref
+             moves the entry stops counting. **No design change was requested in any round.**
+             **A1 CLOSED — the ref is a real commit and is the branch tip.** The branch reflog holds
+             `16493a303c… -> aca16e56d3… commit: feat: enforce pack partition gates`; `HEAD` points
+             at that branch, `main` is the commit's parent, and `COMMIT_EDITMSG` now carries this
+             item's message. The 1725 blob `de4fc3ad…` appears nowhere in the reflog.
+             **A2 CLOSED — the shipped prose now matches this initiative's own `[observed]`
+             truth.** No "first copy / install order / drops the rest" host claim survives anywhere
+             in `scripts/`, `README.md`, `CHANGELOG.md` or `docs/`. All eleven code sites plus
+             `README.md:44-47` and `CHANGELOG.md:21-24` now state duplicate-provider behaviour as
+             **not a stable contract across host and namespace surfaces**, and justify uniqueness as
+             **partition-defined ownership** rather than order control. The rename rationale is
+             **stronger**, not weaker: the legacy-`kai` bare-name collision is the documented case
+             from `pack-architecture.md` §"Legacy collision" and partition-lock §6. **No gate logic,
+             mutation arm, message-name assertion or part of the rename changed.**
+             **A3 CLOSED, harder than asked** — the return only required correcting the record;
+             instead `guaranteeBlockErrors` (`pack-plan.mjs:1069-1074`) now **errors by name** on any
+             key outside the declared pack list ("belongs to no declared pack — generated files must
+             not escape guarantee validation"), before the non-agent skip, with a named mutation arm
+             at `pack-preview.mjs:833-835`. Unreachable on the authoritative path today
+             (`materializePacks` derives keys from the same list), so it is a fail-closed guard that
+             cannot false-positive. 133 -> 134 checks matches exactly one added arm.
+             **Everything endorsed at 1725 re-read and unchanged:** six pure gates / three callers,
+             A5 still closed by deletion (`PACK_AGENTS`, `planSkills` absent from `scripts/`), four
+             named CI steps, P2-S1 + N2 closures, contract-skill/version coupling, availability by
+             membership, rename complete at 56/51, `0.62.0` coherent across all eight locations,
+             `COMMITTED_PACKS = []`, no `packs/` tree, marketplace N=1. **No new file, CI step,
+             capability or acceptance criterion.**
+- state:     in-review
+- change_ref: `aca16e56d3d70cf6bac5181a41c3d4a87055dccc`
+- needs:     **Criterion 6 is UNMET and is the ship path's first job.**
+             `refs/remotes/origin/` (and `packed-refs`) carry **no** entry for
+             `kai/feat/29-ci-partition-checks` — the commit is **local only**, nothing is pushed and
+             no PR exists, so "the new CI gates run green on the pushed PR" cannot be claimed yet.
+             Criterion 5 is operator-attested, not machine-verified here. **No acceptance box was
+             ticked by this review.**
+- artifacts: kai/coordination/items/pack-split-ci-partition-checks.md (v8, `## Independent
+             architecture re-review — 2026-08-25-1745 (ratification)`)
+- evidence:  `.git/HEAD`; `.git/refs/heads/kai/feat/29-ci-partition-checks` (`aca16e56d3…`);
+             `.git/logs/refs/heads/kai/feat/29-ci-partition-checks` (the `commit:` entry);
+             `.git/logs/HEAD`; `.git/refs/heads/main` (`16493a303c…`, the parent);
+             `.git/COMMIT_EDITMSG`; `.git/refs/remotes/origin/*` + `.git/packed-refs` (no remote
+             branch). Code: `scripts/lib/pack-plan.mjs:27-29, 598-616, 632, 904, 952-974,
+             1063-1125`; `scripts/pack-preview.mjs:12, 740, 780, 764, 790-835, 890-1000`;
+             `scripts/validate-plugin.mjs:388-395, 428-430, 478-512`;
+             `.github/workflows/validate.yml:44-58`; `package.json` (`test` runs `--self-test`,
+             `--gate all`, `--check`); `README.md:33-47`; `CHANGELOG.md:7-70, 2768`;
+             `plugin.json`, `package.json`, `package-lock.json`, `.github/plugin/marketplace.json`
+             (all `0.62.0`); `skills/kai-core-fleet-observation/SKILL.md` present and
+             `skills/fleet-observation/` absent; 56 agent files / 51 SKILL.md files.
+             All read 2026-08-25 from C:\src\kai. **Nothing was executed — this session had no
+             shell**, so worktree/commit byte-identity and the reported run (134 checks, four gates
+             clean, `validate-plugin` 56/51, full `npm test` pass) are **operator-attested input,
+             not verdict**.
+- questions: None. `Q-…-01` is now **fully closed** — the outstanding commit clause landed at 1740.
+- next:      **workflow-ship** — run the definition-of-done gate. Expect it to hold on criterion 6
+             until the branch is pushed, a PR is opened and `validate` is green on it; the four new
+             gate steps are what must be seen green. Non-blocking for the ship gate, to fix in
+             passing rather than in a round trip: **N4** — `pack-plan.mjs:27` says "Hosts have
+             exposed duplicate plugin names differently" where the measured corpus is one host plus
+             the open question at `pack-architecture.md:278`; the honest form is that duplicate
+             exposure is not a guaranteed contract and has been measured on one host only. **N5** —
+             `packProviders` and the hooks-claimant filters still skip an unresolvable generated
+             key while `guaranteeBlockErrors` now errors on it; masked today because the partial-
+             install gate fails loudly in the same run, so it is a named trigger, not a fix. **N6** —
+             the item's Evidence table lists the pre-fix CI step names; `validate.yml:47-55` now
+             reads differently (same four gates). Milestone `dependency-guarantees` stays at **4 of
+             5** required items `shipped`; `pack-split-generated-pack-trees` is **not** cleared.
