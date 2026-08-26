@@ -5,11 +5,11 @@ title: Real CI partition/collision/skew gates + kai-core-* namespace enforcement
 initiative: pack-split
 milestone: dependency-guarantees
 delivery_class: product-change
-state: in-review
+state: release-ready
 resume_state: null
 priority: 50
 owner: principal-swe-infra
-next_role: workflow-ship
+next_role: "@operator"
 target: pack-split CI partition enforcement + namespace
 artifact_target: null
 context_artifacts:
@@ -57,9 +57,9 @@ completed_reviews:
     evidence: "## Independent architecture re-review — 2026-08-25-1745 (ratification)"
     timestamp: 2026-08-25-1745
 change_ref: aca16e56d3d70cf6bac5181a41c3d4a87055dccc
-version: 8
+version: 9
 lease: null
-updated: 2026-08-25-1745
+updated: 2026-08-25-1750
 ---
 
 ## Outcome
@@ -86,23 +86,33 @@ below are unchanged from v2.*
 - [x] `validate-plugin.mjs` fails if any core-provided skill lacks the `kai-core-*` prefix.
       *(`namespaceErrors` in `scripts/lib/pack-plan.mjs`, enforced in both directions; a department
       claiming a `kai-core-*` name fails too. Not executed.)*
-- [ ] `fleet-observation` renamed to `kai-core-fleet-observation` — skill dir + the **canonical
+- [x] `fleet-observation` renamed to `kai-core-fleet-observation` — skill dir + the **canonical
       partition source** (`scripts/lib/pack-plan.mjs`, which maps `'fleet-observation': 'core'`
       today) + `generate-catalog.mjs` CATEGORIES + `test/fixtures/inventory.json` + doc mentions;
-      catalog check green. *(Every **reference** is renamed, including the SKILL.md frontmatter
-      `name:` — but **the directory itself is NOT renamed** and the catalog check has **not** been
-      run, so this criterion is **unticked**. The file tool cannot move or delete a path and this
-      run had no shell. `git mv skills/fleet-observation skills/kai-core-fleet-observation` is owed
-      by `@operator` (Q-…-01); until it runs, `host-contract`, `docs:check` and `validate` are RED
-      by construction.)*
+      catalog check green. *(**Ticked at the 2026-08-25-1750 DoD gate.** The `git mv` landed at
+      1720: `skills/kai-core-fleet-observation/SKILL.md` exists and `skills/fleet-observation/` is
+      gone. Catalog check green rests on the operator-attested `npm test` — CI does **not** run
+      `generate-catalog --check` — corroborated by reading its two artefacts,
+      `docs/reference/agents-and-skills.md:199` and `test/fixtures/inventory.json:81,143`.)*
 - [x] Director availability is asserted by roster **membership**, not a model-computed count (per proposal).
       *(Decomposition Open Question 4 answered: the work was already complete —
       `agents/director-chief-of-staff.agent.md` §2b carries all three rules. It is now pinned by
       `availabilityErrors` over `DISPATCHING_ROLES`, so it cannot fall off in an unrelated edit.)*
-- [ ] `node scripts/pack-preview.mjs --self-test`, `node scripts/validate-plugin.mjs`, and
-      `npm test` pass **locally**. *(NOT RUN — no shell in this session. Nothing was executed.)*
-- [ ] The new CI gates run **green on the pushed PR** (their own claim, their own evidence — a
-      workflow run, not an assertion). *(Nothing branched, committed or pushed.)*
+- [x] `node scripts/pack-preview.mjs --self-test`, `node scripts/validate-plugin.mjs`, and
+      `npm test` pass **locally**. *(**Ticked at the 2026-08-25-1750 DoD gate on operator
+      attestation, labelled as such:** 134 self-test checks, `--gate all` four gates clean,
+      `validate-plugin` 56 agents / 51 skills, `host-contract` self-test, full `npm test` pass.
+      The ship gate had no shell and executed nothing.)*
+- [x] The new CI gates run **green on the pushed PR** (their own claim, their own evidence — a
+      workflow run, not an assertion). *(**Ticked at the 2026-08-25-1750 DoD gate, machine-read
+      from `api.github.com`, not accepted on report.** PR [#160](https://github.com/RubenSaucedo/kai/pull/160),
+      head `63f6da167f1ead58bc63dd5ef8e9c5f52ad1869b`; check run `contract` `98018029769`
+      (run `32915426171`), `conclusion: success`, 18s, `check-runs total_count: 1`. The four gates
+      are **individually green as named steps** — 9 `Partition gate (one pack per agent, one
+      provider per skill, kai-core-* namespace)`, 10 `Collision gate (no id emitted by two packs)`,
+      11 `Partial-install gate (a department installed with kai-core alone)`, 12 `Version-skew gate
+      (contract pins agree; absent or skewed core fails closed)` — matching `validate.yml:47-55`
+      byte-for-byte, so the pushed workflow is the reviewed workflow.)*
 - [x] Version bumped on `0.x` with CHANGELOG + README stamp. *(`0.61.0 -> 0.62.0` across
       `plugin.json`, `package.json`, `package-lock.json` ×2, `.github/plugin/marketplace.json` ×2,
       the dated `## [0.62.0] - 2026-08-25` CHANGELOG section and its compare link, and the README
@@ -623,3 +633,93 @@ pushed and no PR exists**. Ticking belongs to the owner and to the ship gate, on
 **Milestone `dependency-guarantees` stays at 4 of 5 required items `shipped`.** A ratified review is
 not a shipped item, so `pack-split-generated-pack-trees` is **not** cleared. Nothing was committed,
 pushed, merged, tagged, released or published here.
+
+## DoD gate — 2026-08-25-1750 (`workflow-ship`, PREPARE): **RELEASE-READY**
+
+**Verdict: RELEASE-READY — all six dimensions Clear, none Gap.** Item **v8 -> v9**,
+`in-review -> release-ready`, `lease: null`, `resume_state: null`, `next_role: workflow-ship ->
+"@operator"`, `change_ref` **unchanged** at `aca16e56d3d70cf6bac5181a41c3d4a87055dccc`. Acceptance
+criteria **3, 5 and 6 ticked here**, which is exactly where the 1745 re-review left them. Ship
+record: `kai/library/releases/2026-08-25/04-ship-pack-split-ci-partition-checks/ship-record.md`
+(promoted to its canonical path before merge). **Timestamp note:** wall clock at this run is 2026-08-25 17:31 local
+(2026-08-26T00:31Z); the label is `1750` so the append-only record stays ordered behind the `1745`
+ratification, whose labels had already drifted ahead of the clock.
+
+**It is NOT shipped.** kai pushed nothing, merged nothing, tagged nothing, released nothing,
+published nothing and deployed nothing. Every deploy step belongs to the operator.
+
+**The one criterion only CI could close is closed — and it was read, not accepted on report.** The
+1745 review predicted a hold on criterion 6 because nothing was pushed. Since then the operator
+pushed `kai/feat/29-ci-partition-checks` and opened **PR #160** (`state: open`, head
+`63f6da167f1ead58bc63dd5ef8e9c5f52ad1869b`, exactly two commits). Check run `contract`
+**`98018029769`** (run **`32915426171`**, `workflow_name: validate`, `run_attempt: 1`) is
+`status: completed`, **`conclusion: success`**, 00:31:27Z -> 00:31:45Z (**18s**) at that exact head,
+with `check-runs total_count: 1` so nothing red hides behind it. **The four gates were verified as
+individual steps, not inferred from a green tick:** step 9 `Partition gate (one pack per agent, one
+provider per skill, kai-core-* namespace)`, step 10 `Collision gate (no id emitted by two packs)`,
+step 11 `Partial-install gate (a department installed with kai-core alone)`, step 12 `Version-skew
+gate (contract pins agree; absent or skewed core fails closed)` — each `success`, and each name
+matching `.github/workflows/validate.yml:47-55` byte-for-byte, which is direct proof that **the
+pushed workflow is the reviewed workflow**. Also green on the same run: `Validate plugin contract`,
+`Pack generator self-test`, `Committed pack trees match the generator`, `Check helper script syntax`
+and the `pull_request`-only `Release-guard (--base --head)` — twelve substantive steps, all
+`success`. **N6 is corrected by this entry:** the Evidence table above still lists the pre-fix step
+names; the four names in this paragraph are the live ones.
+
+**The review still binds although the head moved, and that was checked rather than assumed.**
+`change_ref` is `aca16e56…`; the PR head is one commit past it. That commit (`63f6da16…`,
+`docs: record partition gate review`) has `aca16e56…` as its **parent**, and its **complete** diff —
+read from GitHub — is three files, **all under `kai/coordination/`**: `ACTIVE.md` (+64),
+`BOARD.md`, and this item (+182/-9). The diff *begins* at `kai/coordination/ACTIVE.md`, so nothing
+under `.github/`, `CHANGELOG.md`, `README.md` or `docs/` precedes it, and *terminates* inside this
+item file, so nothing under `package*.json`, `plugin.json`, `scripts/`, `skills/` or `test/` follows
+it. **Every implementation and release file at the PR head is therefore byte-identical to the
+ratified object.** `change_ref` stays where it is: it moves only when the implementation moves.
+
+**Scope was derived from git objects, not asserted.** Comparing the *complete* root trees
+(`truncated: false` on both) of base `16493a303c…` and head `63f6da16…`, the moved top-level
+entries are exactly `.github`, `CHANGELOG.md`, `README.md`, `docs`, `kai`, `package-lock.json`,
+`package.json`, `plugin.json`, `scripts`, `skills`, `test` — every one declared in `touches` or a
+`kai/` coordination record. **`agents` is byte-identical on both sides
+(`c0284f31c7cd221cc2f31712f98148482c5ac49a`)**, which proves in one reading that no agent body
+changed, **no new tool grant** was added and no `**Inherits:**` line moved; so are `examples`,
+`hooks.json`, `.kai`, `AGENTS.md`, `LICENSE` and the dotfiles. **`packs` is absent from both root
+trees** — proven positively from the listings (it would sort between `package.json` and
+`plugin.json`), not from a local glob. `COMMITTED_PACKS = []` at `pack-plan.mjs:122`, marketplace
+still **exactly one** entry at `source: "."`, `0.62.0` coherent across all eight release locations,
+groundwork still on `0.x`.
+
+**Two sub-gates waived, with reasons, not skipped.** `principal-qa-ui` did not run and no UX walk
+was performed, and the **product-design step is not implicated** — both on the northstar's own
+recorded line that this is "a developer-facing packaging change with no user-facing interaction
+surface". The rename *is* user-visible and is handled as blast radius, not as a design surface.
+
+**The one user-visible consequence, named rather than waved past.**
+`kai-core-fleet-observation` is `user-invocable: true`, updates reach users through
+`/plugin update kai` or a new session, and **no alias ships for the old name** — anyone invoking
+`fleet-observation` gets nothing after updating. Not treated as a Gap: the prefix is an initiative
+non-negotiable, 22 core skills were already renamed the same way, this is the single remaining
+violation the new check finds, and the break is recorded in the `0.62.0` CHANGELOG and the README
+`## Status`. It is converted into a **release-note constraint** (deploy step 6 must state the
+breaking rename) and parked as **PROPOSAL S1** for the steward to set policy for the remaining
+renames.
+
+**Rollout and rollback, right-sized.** Big-bang is justified — a build-time CI gate has no runtime
+path, no cohort and no data — so a flag, canary, ring and runbook were **not invented**. The stated
+risk is that these gates fail the build for the *whole repository*, so a false positive blocks every
+PR; what makes that acceptable is one implementation shared by three callers, 134 mutation arms
+asserting on specific message text, and a green run against the live tree before merge. Rollback is
+`git revert -m 1 <merge-sha>` plus a `0.63.0` bump, and — if the tag is already cut — an **explicit**
+deletion or supersession of `v0.62.0`, which is the one artefact a revert does not clean up.
+
+**Nothing routed was dropped.** **N4** (a source comment claiming a wider host corpus than the one
+measured) and **N5** (the fail-closed property inconsistent across `parseGeneratedKey`'s consumers,
+with the reviewer's reopen trigger) are parked as PROPOSALs in
+`kai/initiatives/pack-split/backlog.md` rather than fixed — fixing either means a new commit, a new
+ref and re-binding the one review, which this gate will not spend a round trip on for a comment
+adjective. **N6** is corrected in this entry.
+
+**Milestone `dependency-guarantees` stays at 4 of 5 required items `shipped`** — `release-ready` is
+not `shipped`. `pack-split-generated-pack-trees` is **not** cleared and stays `proposed` at 4 of 6
+met, outside `scope.current`. Declaring the milestone met when this ships is the **steward's** call,
+as is closing decomposition **Open Question 4**, which criterion 4 now answers.

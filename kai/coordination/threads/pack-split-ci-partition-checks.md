@@ -442,3 +442,92 @@ the **director's** call, not the ship gate's — this is reconciliation, not a d
              the item's Evidence table lists the pre-fix CI step names; `validate.yml:47-55` now
              reads differently (same four gates). Milestone `dependency-guarantees` stays at **4 of
              5** required items `shipped`; `pack-split-generated-pack-trees` is **not** cleared.
+
+## HANDOFF 2026-08-25-1750 — workflow-ship -> @operator
+
+- did:       **Ran the definition-of-done gate (PREPARE). Verdict: RELEASE-READY — all six
+             dimensions Clear, none Gap.** Item **v8 -> v9**, `in-review -> release-ready`,
+             `lease: null`, `resume_state: null`, `next_role: workflow-ship -> "@operator"`,
+             `change_ref` **unchanged** at `aca16e56d3d70cf6bac5181a41c3d4a87055dccc`. Acceptance
+             criteria **3, 5 and 6 ticked here** — exactly where the 1745 review left them.
+             **The criterion only CI could close is closed, and it was read from `api.github.com`
+             rather than accepted on report:** PR **#160** is open at head
+             `63f6da167f1ead58bc63dd5ef8e9c5f52ad1869b`, and check run `contract` **`98018029769`**
+             (run **`32915426171`**, `workflow_name: validate`, `run_attempt: 1`) is
+             **`conclusion: success`** in **18s** at that exact head, `check-runs total_count: 1`.
+             **The four gates are individually green as named steps** — 9 `Partition gate (one pack
+             per agent, one provider per skill, kai-core-* namespace)`, 10 `Collision gate (no id
+             emitted by two packs)`, 11 `Partial-install gate (a department installed with kai-core
+             alone)`, 12 `Version-skew gate (contract pins agree; absent or skewed core fails
+             closed)` — each name matching `validate.yml:47-55` byte-for-byte, which is direct proof
+             that the **pushed** workflow is the **reviewed** workflow. Twelve substantive steps, all
+             `success`, including the `pull_request`-only release-guard.
+             **The review still binds although the head moved, and that was checked:** the one
+             commit past `aca16e56…` is `63f6da16…`, whose parent is exactly that ref and whose
+             **complete** diff is three files, **all under `kai/coordination/`** — so every
+             implementation and release file at the PR head is **byte-identical to the ratified
+             object**. `change_ref` moves only when the implementation moves.
+             **Scope derived from git objects:** complete root-tree comparison base -> head shows
+             only declared paths moved; **`agents` is byte-identical
+             (`c0284f31c7cd221cc2f31712f98148482c5ac49a`)**, so no agent body changed and no new
+             tool grant landed; **`packs` is absent from both trees**, proven positively from the
+             listings. `COMMITTED_PACKS = []`, marketplace N=1 at `source: "."`, `0.62.0` coherent
+             across all eight release locations.
+             **Two sub-gates waived with reasons:** `principal-qa-ui` / UX walk and the
+             product-design step, both on the northstar's recorded line that this is a
+             developer-facing packaging change with no user-facing interaction surface.
+             **N6 corrected in the record**; **N4** and **N5** parked as PROPOSALs in the backlog
+             rather than fixed — either fix means a new commit, a new ref and re-binding the one
+             review.
+- state:     release-ready
+- change_ref: `aca16e56d3d70cf6bac5181a41c3d4a87055dccc`
+- needs:     **The deploy steps are yours; kai pushed, merged, tagged, released and published
+             nothing and will not.** In order: **(1)** `git diff --exit-code aca16e56…
+             origin/kai/feat/29-ci-partition-checks --` over the implementation/release paths must
+             exit 0, and the base-to-head name list must contain nothing under `agents/`,
+             `examples/` or `packs/`, must not touch `hooks.json`, and must list **exactly two**
+             paths under `skills/` (the two halves of the rename); **(2)** `mkdir -p` +
+             `git mv` this record into
+             `kai/library/releases/2026-08-25/04-ship-pack-split-ci-partition-checks/ship-record.md`
+             and commit the coordination + library records together; **(3)** push and confirm
+             `contract` — **and the four gate steps** — green on the *final* head; **(4)** squash-
+             merge PR #160, **no rebase** (a rebase changes the tree and voids both the review
+             binding and the CI evidence); **(5)** watch `validate` on `main` at the merge commit —
+             eleven substantive steps, the `pull_request`-only release-guard correctly skipped;
+             **(6)** `git tag v0.62.0 && git push origin v0.62.0`, then cut the release from the
+             `[0.62.0]` CHANGELOG section. **The release note must state the breaking rename of a
+             user-invocable skill with no alias**, and must **not** claim any pack is generated,
+             committed, published or installable, that the split is done, that partial-install or
+             version-skew is measured on a real host, or re-introduce the host-resolution claim A2
+             removed ("first-found-wins", "install order decides"). **(7)** return the deployment
+             evidence here. **Do not mark this item `shipped` by hand.**
+             **Abort** — and return the item rather than pushing through — if step 1's diff is
+             non-empty, if the name list shows drift, if any of the four gate steps is red or
+             missing on the head you intend to merge, or if `main` is red at the merge commit
+             (revert before tagging).
+- artifacts: kai/library/releases/2026-08-25/04-ship-pack-split-ci-partition-checks.md (ship record;
+             canonical home is `…/04-ship-pack-split-ci-partition-checks/ship-record.md` after
+             deploy step 2) · kai/coordination/items/pack-split-ci-partition-checks.md (v9,
+             `## DoD gate — 2026-08-25-1750 (workflow-ship, PREPARE): RELEASE-READY`) ·
+             kai/initiatives/pack-split/{log.md,deliverables.md,backlog.md}
+- evidence:  `api.github.com` PR #160; job `98018029769` / run `32915426171` (`success`, 18s, four
+             named gate steps green); `commits/63f6da16…/check-runs` (`total_count: 1`);
+             `commit/63f6da16….diff` (three coordination files, parent `aca16e56…`);
+             `git/trees/95b0a523…` and `git/trees/16493a303c…` (complete root trees, `agents`
+             identical, no `packs` on either side); local reads of
+             `.github/workflows/validate.yml:44-58`, `scripts/lib/pack-plan.mjs:122`,
+             `plugin.json`, `package.json`, `package-lock.json`, `.github/plugin/marketplace.json`,
+             `CHANGELOG.md:6-70,2768`, `README.md:32-47`,
+             `skills/kai-core-fleet-observation/SKILL.md`, `test/fixtures/inventory.json:81,143`,
+             `docs/reference/{plugin-structure.md:96-97,agents-and-skills.md:199}`, and
+             `.git/logs/refs/heads/kai/feat/29-ci-partition-checks`. **This run had no shell and
+             executed nothing** — the local suite (134 checks, four gates clean, 56/51,
+             `host-contract`, full `npm test`) and worktree/commit byte-identity remain
+             **operator-attested input**, converted into fail-closed deploy step 1.
+- questions: None. `Q-…-01` stays closed and `waiting_on_questions` is `[]`.
+- next:      **@operator** — run the deploy steps, then return the evidence to **workflow-ship** for
+             CONFIRM-START and CONFIRM-COMPLETE (9 production checks, threshold 9 of 9). Milestone
+             `dependency-guarantees` stays at **4 of 5** required items `shipped` until then;
+             `pack-split-generated-pack-trees` is **not** cleared. After `shipped`, two items belong
+             to **principal-product-manager**: closing decomposition **Open Question 4** (criterion 4
+             now answers it) and deciding whether the fifth required item closes the milestone.

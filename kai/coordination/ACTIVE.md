@@ -866,3 +866,67 @@ committed, pushed, merged, tagged, released or published, and this review edited
 implementation or release file. **Next: `workflow-ship`** — run the definition-of-done gate; expect
 it to hold on criterion 6 until the branch is pushed, a PR is opened and `validate` is green with
 the four new gate steps visible.
+
+**Latest — 2026-08-25-1750 (`workflow-ship`, PREPARE).** `pack-split-ci-partition-checks`: **DoD
+gate verdict RELEASE-READY — all six dimensions Clear, none Gap.** Item **v8 -> v9,
+`in-review -> release-ready`**, `lease: null`, `resume_state: null`, `next_role: workflow-ship ->
+"@operator"`, `change_ref` **unchanged** at `aca16e56d3d70cf6bac5181a41c3d4a87055dccc`, acceptance
+criteria **1–8 all ticked** (3, 5 and 6 ticked at this gate, exactly where the ratification left
+them). **It is NOT shipped** — kai pushed, merged, tagged, released, published and deployed
+**nothing**; every deploy step belongs to the operator. Ship record written at
+`kai/library/releases/2026-08-25/04-ship-pack-split-ci-partition-checks/ship-record.md`, canonical home
+`…/04-ship-pack-split-ci-partition-checks/ship-record.md` after the operator's `git mv` in deploy
+step 2 (this environment cannot create directories). **The criterion only CI could close is closed,
+and it was read from `api.github.com` rather than accepted on report:** PR **#160** is open at head
+`63f6da167f1ead58bc63dd5ef8e9c5f52ad1869b` with exactly two commits, and check run `contract`
+**`98018029769`** (run **`32915426171`**, `workflow_name: validate`, `run_attempt: 1`) is
+**`conclusion: success`** in **18s** at that exact head with `check-runs total_count: 1`, so nothing
+red hides behind it. **The four gates were verified as individual steps, not inferred from a green
+tick** — step 9 `Partition gate (one pack per agent, one provider per skill, kai-core-* namespace)`,
+step 10 `Collision gate (no id emitted by two packs)`, step 11 `Partial-install gate (a department
+installed with kai-core alone)`, step 12 `Version-skew gate (contract pins agree; absent or skewed
+core fails closed)`, each `success` and each name matching `validate.yml:47-55` byte-for-byte, which
+is direct proof that **the pushed workflow is the reviewed workflow**; twelve substantive steps all
+green, including the `pull_request`-only release-guard, which independently confirms the `0.62.0`
+bump. **The review still binds although the head moved, and that was checked rather than assumed:**
+the one commit past the ratified ref (`63f6da16…`) has `aca16e56…` as its **parent** and its
+**complete** diff is three files, **all under `kai/coordination/`** (`ACTIVE.md`, `BOARD.md`, the
+item) — the diff *begins* at `kai/coordination/ACTIVE.md` and *terminates* inside the item file — so
+**every implementation and release file at the PR head is byte-identical to the ratified object**.
+This is the first item in this initiative where that binding was **machine-derived** instead of
+converted wholly into an operator attestation. **Scope was derived from git objects too:** complete
+root trees (`truncated: false`) at base `16493a303c…` and head show only `.github`, `CHANGELOG.md`,
+`README.md`, `docs`, `kai`, `package-lock.json`, `package.json`, `plugin.json`, `scripts`, `skills`,
+`test` moved — all declared — while **`agents` is byte-identical on both sides
+(`c0284f31c7cd221cc2f31712f98148482c5ac49a`)**, proving no agent body changed, **no new tool grant**
+and no `**Inherits:**` line moved, and **`packs` is absent from both trees**, proven positively from
+the listings rather than a local glob. `COMMITTED_PACKS = []`, marketplace still **exactly one**
+entry at `source: "."`, `0.62.0` coherent across all eight release locations, groundwork still on
+`0.x`. **Two sub-gates waived with reasons, not skipped:** `principal-qa-ui`/UX walk and the
+product-design step, both on the northstar's recorded line that this is "a developer-facing
+packaging change with no user-facing interaction surface"; and the one acceptance-relevant check CI
+does **not** run — `generate-catalog --check` — rests on the operator-attested `npm test`,
+corroborated by reading the two artefacts it compares. **The one user-visible consequence is named,
+not waved past:** `kai-core-fleet-observation` is `user-invocable: true` and **no alias ships**, so
+anyone invoking `fleet-observation` gets nothing after `/plugin update kai` — not a Gap (the prefix
+is an initiative non-negotiable, 22 core skills were already renamed this way, and the break is in
+the `0.62.0` CHANGELOG and README `## Status`), but converted into a **release-note constraint** and
+parked as **PROPOSAL S1** for steward policy on the remaining renames. **Rollout/rollback
+right-sized:** big-bang justified (a build-time gate has no runtime path, cohort or data), so flag,
+canary, ring and runbook were **not invented**; the stated risk is that these gates fail the build
+for the *whole repository*, held acceptable by one implementation across three callers, 134 mutation
+arms asserting on specific message text, and a green run against the live tree; rollback is
+`git revert -m 1 <merge-sha>` plus a `0.63.0` bump and, if already cut, an **explicit** deletion or
+supersession of `v0.62.0` — the one artefact a revert does not clean up. **Production verification
+is 9 checks, threshold 9 of 9**, including that the four gate steps are green in the **`main`** run
+and that the merge diff under `skills/` is exactly the two rename paths. **Nothing routed was
+dropped:** **N4** and **N5** are parked as PROPOSALs in `backlog.md` rather than fixed — either fix
+mints a new ref and un-binds the one required review — and **N6** is corrected in the item record.
+**Milestone `dependency-guarantees` stays at 4 of 5 required items `shipped`** — `release-ready` is
+not `shipped`, `pack-split-generated-pack-trees` is **not** cleared (still `proposed`, 4 of 6 met,
+outside `scope.current`), and declaring the milestone met when this ships is the **steward's** call,
+as is closing decomposition **Open Question 4**, which criterion 4 now answers. **Next:
+`@operator`** — run the deploy steps (confirm the reviewed diff is unmoved, promote the record,
+push, squash-merge PR #160 **without rebasing**, watch `main`, tag and release `v0.62.0` under the
+recorded language constraints), then return the deployment evidence to `workflow-ship` for
+CONFIRM-START and CONFIRM-COMPLETE.
