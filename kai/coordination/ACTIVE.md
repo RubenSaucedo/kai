@@ -1263,3 +1263,35 @@ release remains `v0.64.0`. Kai performed no deployment, rollback, tag, release,
 version, marketplace, or publication action. `pack-split-host-gates` is now
 dependency-satisfied but remains `proposed`; milestone closure/promotion stays
 with the steward.
+
+**Steward pass 2026-08-26-1558 (`principal-product-manager`).**
+`first-pack-extracted` is **OPEN at 3 of 4** typed requirements. Generated pack
+trees, migration doctor, and first department are `shipped`;
+`pack-split-host-gates` is promoted `proposed -> ready` at priority 10 with
+`principal-swe-infra` next and no lease. It still owes a `completed` reliability
+record, so neither the milestone nor initiative is closed.
+
+The next-milestone critical path is accepted but remains behind the one-way
+scope valve: `host-gates (completed) -> pack-dependency-manifests (shipped) ->
+onboarding-installer (shipped) -> release-12a (shipped) -> release-12b
+(shipped) -> release-12c (shipped)`. Dependency manifests are now an explicit
+typed requirement of `five-pack-split-shipped`; the proposed downstream items
+were not promoted while `scope.current` remains `first-pack-extracted`.
+Repository refs verify the current branch
+`docs/29-first-department-shipped` at `30b432bb…`, based on `main`
+`9a800e4e…`. The repository files do not independently evidence PR #172's
+required-check state, so this pass makes no claim that the check emitted.
+Generated packs remain committed and unpublished, marketplace topology remains
+N=1 at source `.`, `v0.64.0` remains current, and no fleet-observer redesign was
+adopted.
+
+**Director dispatch 2026-08-26-1607 (`principal-swe-infra`).**
+`pack-split-host-gates` is now `blocked` at v4 with
+`resume_state: in-progress`, lease clear, and two operator action questions.
+Infra prepared
+`kai/initiatives/pack-split/artifacts/reliability/pack-split-host-gates.md`
+with pinned-source macOS and genuine managed-cloud evidence packets, transcript
+identity requirements, credential scanning, and abort criteria. This Windows
+run claims no macOS/cloud result. Release 12b remains **NO-GO**; downstream
+items remain proposed and no marketplace, version, publication, or
+fleet-observer change occurred.
