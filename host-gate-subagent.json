@@ -1,0 +1,7 @@
+{
+  "event": "subagentStart",
+  "sessionId": "test-session",
+  "timestamp": "2026-08-27T00:30:00.000Z",
+  "agentName": "kai-personal:persona-self",
+  "agentDisplayName": "Persona Self"
+}
