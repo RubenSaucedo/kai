@@ -1295,3 +1295,14 @@ identity requirements, credential scanning, and abort criteria. This Windows
 run claims no macOS/cloud result. Release 12b remains **NO-GO**; downstream
 items remain proposed and no marketplace, version, publication, or
 fleet-observer change occurred.
+
+**Superseding host-gate evidence 2026-08-26-1702.**
+The bounded macOS arm passed on genuine GitHub-hosted Apple Silicon run
+`33024791572`. The branch-scoped cloud task
+`7160810a-a4e1-43eb-bc97-d6f8e2f53aad` / run `33024086802` emitted no plugin
+or provider events and is **indeterminate**, not a pass. The item remains
+`blocked` at v11 with `resume_state: in-progress`, lease clear, and only
+`Q-pack-split-host-gates-04` open for operator authorization of one disposable
+default-branch consumer fixture with a positive control. `change_ref` remains
+`null`; release 12b remains **NO-GO**; all downstream items remain proposed and
+no pack was published.

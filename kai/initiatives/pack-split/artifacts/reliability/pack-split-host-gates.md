@@ -1,33 +1,37 @@
 # Pack split host gates
 
-**Status:** BLOCKED — operator macOS and cloud-host execution not yet run  
-**Prepared:** 2026-08-26  
-**Source pin:** `main` tip recorded at each run start  
+**Status:** BLOCKED — macOS PASS; cloud branch spike INDETERMINATE; consumer-repository authorization pending
+**Prepared:** 2026-08-26
+**macOS source pin:** `9a800e4e76cd6c15b9dfab01a7b1ed99c4285080`
 **Release 12b verdict:** **NO-GO**
 
 ## Decision
 
-Release 12b must not start. The host evidence and independent reliability review
-are incomplete. The packs remain committed and unpublished.
+Release 12b must not start. The macOS host arm passed, but the cloud branch
+spike did not provision any plugin and is indeterminate. A discriminating cloud
+experiment and the independent reliability review remain incomplete. The packs
+remain committed and unpublished.
 
 The evidence path uses the lowest persistent-install rung that exercises each
 required provenance. It does not require either pack to appear in the public
 marketplace:
 
 ```text
-  RubenSaucedo/kai main                 throwaway cloud branch
-  tip recorded at run start            settings.json only
-       |                                      |
-       | direct OWNER/REPO:PATH               | enabledPlugins
-       v                                      v
-  isolated macOS homes                 Copilot coding agent
-       |                                      |
-       +-- direct installs, both orders       +-- host task/run identity
-       +-- local directory marketplace        +-- plugin/skill provider events
-       +-- provenance collision
+  RubenSaucedo/kai main
        |
-       v
-  installed plugin.json SHA-256 == source at recorded main tip
+       +-- authenticated macOS arm -------------------------- PASS
+       |     direct both orders + directory marketplace
+       |     provider events + checksums + refusal probes
+       |
+       +-- branch-scoped cloud fixture
+             settings present; host made two bash calls
+             zero plugin/provider/dispatch events ----------- INDETERMINATE
+                                                              |
+                                                              v
+  disposable consumer repository, DEFAULT branch
+       +-- direct kai-core + kai-personal specs
+       +-- default-marketplace positive control
+       +-- one read-only cloud task ------------------------- NEXT
 ```
 
 This packet implements the architecture decision at
@@ -45,18 +49,115 @@ the required `principal-sre` independent reliability review.
 
 | Gate | macOS | cloud host | Status |
 | --- | --- | --- | --- |
-| Host identity and run-start `main` tip | not run | not run | BLOCKED |
-| Persistent core-first and personal-first install | not run | branch task pending | BLOCKED |
-| Fresh-session activation | not run | not run | BLOCKED |
-| Cross-plugin core contract resolution | not run | not run | BLOCKED |
-| Marketplace and direct binding | not run | direct declarative specs pending | BLOCKED |
-| Direct/marketplace collision refusal | not run | not required separately | BLOCKED |
-| Per-pack npm / `node_modules` behavior | not run | not run | BLOCKED |
-| Exact no-core refusal | not run | not required separately | BLOCKED |
-| Exact `--contract 2` refusal | not run | not required separately | BLOCKED |
+| Host identity and run-start `main` tip | PASS | identity PASS; provisioning indeterminate | BLOCKED |
+| Persistent core-first and personal-first install | PASS | not observed | BLOCKED |
+| Fresh-session activation | PASS | not observed | BLOCKED |
+| Cross-plugin core contract resolution | PASS | zero provider events | BLOCKED |
+| Marketplace and direct binding | PASS | direct declarative specs not exercised | BLOCKED |
+| Direct/marketplace collision refusal | PASS | not required separately | PASS |
+| Per-pack npm / `node_modules` behavior | PASS — inventories empty | not observed | PASS |
+| Exact no-core refusal | PASS | not required separately | PASS |
+| Exact `--contract 2` refusal | PASS | not required separately | PASS |
 
-No row is inferred from Windows evidence, a generic subagent, an Actions runner,
-or final model text.
+No row is inferred from Windows evidence, a generic subagent, or final model
+text. A generic Actions CLI runner still cannot substitute for the Copilot cloud
+host. The accepted macOS arm is different: it is a first-party authenticated
+Copilot CLI run on a genuine GitHub-hosted Apple Silicon macOS runner and
+preserves installed-plugin and provider evidence.
+
+## Observed macOS result — PASS
+
+- GitHub Actions run
+  [`33024791572`](https://github.com/RubenSaucedo/kai/actions/runs/33024791572),
+  job `98363497414`, succeeded on 2026-08-26 at source
+  `9a800e4e76cd6c15b9dfab01a7b1ed99c4285080`.
+- Host: macOS `26.5.2` build `25F84`, Darwin `25.5.0` arm64
+  `VMAPPLE`; Node `v24.18.0`; npm `11.16.0`; Copilot CLI `1.0.80`.
+- Result file is `PASS`; process exit status is `0`.
+- Direct core-first and personal-first installs both list `kai-core` and
+  `kai-personal` at `0.64.0`. The run-local directory marketplace lists
+  `kai-core@pack-split-host-gate` and
+  `kai-personal@pack-split-host-gate`, also at `0.64.0`.
+- Host `skill.invoked` events bind selected
+  `kai-personal:persona-self` to `kai-core-contract-v1` from source plugin
+  `kai-core` `0.64.0`. Direct providers resolve under
+  `_direct/RubenSaucedo--kai--packs-kai-core/...`; marketplace providers
+  resolve under `pack-split-host-gate/kai-core/...`.
+- Installed and source `plugin.json` SHA-256 values match:
+  `kai-core` `ea392ecc72c5c5404180fc7291a33d0ae816292fbf231a4372e183c27262f80b`;
+  `kai-personal`
+  `cfbb11184f5d326a3e95b2e3e3ed79524f081580f572e0665a0c3eb5928dd59b`.
+- Direct and marketplace per-pack inventories contain no `package.json`,
+  `package-lock.json`, `npm-shrinkwrap.json`, or `node_modules`.
+- The migration doctor refused the two-provenance install with
+  `provenance-collision`. Its additional `workspace-provenance-stale` code is
+  expected because the producer workspace still records legacy `kai`; it is
+  not a host-gate failure.
+- No-core and contract-2 sessions each returned exactly
+  `KAI-CORE-MISSING`. The skew provider event identifies
+  `kai-core-preview`, contract `2`.
+
+Sanitized evidence is under
+`.kai/runs/eng/2026-08-26/02-infra-pack-split-host-gates/macos/`.
+No raw Copilot home, session database, or configuration was copied.
+
+## Observed cloud branch result — INDETERMINATE
+
+- Task
+  [`7160810a-a4e1-43eb-bc97-d6f8e2f53aad`](https://github.com/RubenSaucedo/kai/tasks/7160810a-a4e1-43eb-bc97-d6f8e2f53aad)
+  completed. Host run
+  [`33024086802`](https://github.com/RubenSaucedo/kai/actions/runs/33024086802),
+  event `dynamic`, job `98361210602`, succeeded; task session
+  `43a930a4-59d5-4577-9345-6da7aa86c2d5`; created
+  `2026-08-26T23:38:25Z`, completed `2026-08-26T23:39:25Z`.
+- Selected base `kai/chore/pack-split-host-gates-cloud-spike` and generated
+  head `copilot/readonly-host-gate-spike` both resolved to
+  `fb04975c2969e1aca463d148b6cb1784966e20b9`; no change was committed.
+- The host resolved the selected base and the task confirmed
+  `.github/copilot/settings.json` exists. It then made only two bash calls:
+  zero plugin discovery/install events, zero `skill.invoked` events, and zero
+  `persona-self` dispatches.
+- This is not a pass. It also does not prove default-branch-only semantics or
+  direct-spec rejection: there is no positive control and no host-side
+  plugin-root evidence.
+
+Only the sanitized identity/result summary was retained at
+`.kai/runs/eng/2026-08-26/02-infra-pack-split-host-gates/cloud/99-summary.json`.
+The raw host log remains temporary session material and was not copied.
+
+## Next discriminating cloud experiment
+
+Pending `Q-pack-split-host-gates-04`, create one disposable consumer repository
+outside `RubenSaucedo/kai`. Its **default branch** carries
+`.github/copilot/settings.json` with:
+
+```json
+{
+  "enabledPlugins": {
+    "RubenSaucedo/kai:packs/kai-core": true,
+    "RubenSaucedo/kai:packs/kai-personal": true,
+    "<verified-default-marketplace-positive-control>": true
+  }
+}
+```
+
+Select the positive control from the host's current default-registered
+marketplace inventory and record its exact identity before the task. Run one
+read-only genuine cloud task and require host-side installed-plugin inventory,
+plugin-root evidence, and provider events; final model text is insufficient.
+
+| Observed outcome | Disposition |
+| --- | --- |
+| All three plugins install | Cloud arm passes; route the evidence revision to `principal-sre`. |
+| Positive control installs; Kai direct specs do not | Direct subdirectory specs are unsupported in cloud settings; route to the steward/publication-dependent fallback. |
+| Nothing installs | Record an evidenced host provisioning/control-plane defect and route it accordingly. |
+
+Creating and deleting the external repository is an operator authorization
+boundary. Infra has not created it. Temporary settings on Kai `main` are
+rejected because they would auto-install core/personal beside legacy `kai`,
+activate duplicate hooks/coexistence, persist host state, and contradict the
+committed-unpublished boundary. A temporary Kai `main` marketplace is worse and
+circular. Deferral remains a fallback only after this experiment.
 
 ## Common evidence contract
 
@@ -419,12 +520,14 @@ node "$ROOT/scripts/pack-preview.mjs" --all --packs personal --contract 2 \
 Both refusal files pass only when their trimmed content is exactly
 `KAI-CORE-MISSING`.
 
-## Cloud throwaway-branch spike
+## Cloud throwaway-branch spike (executed; indeterminate)
 
 Official documentation says Copilot coding agent installs plugins declaratively
 from repository `.github/copilot/settings.json`. The bounded question is whether
 the cloud host reads this file from the assigned non-default branch and accepts
-direct plugin specs as `enabledPlugins` keys.
+direct plugin specs as `enabledPlugins` keys. The packet below is retained as
+execution history; its observed result is recorded above and must not be rerun
+as a substitute for the consumer-repository experiment.
 
 ### Branch payload
 
@@ -472,8 +575,8 @@ git -C "$SPIKE_CLONE" commit -m "chore: configure pack host-gate cloud spike"
 git -C "$SPIKE_CLONE" push --set-upstream origin "$BRANCH"
 ```
 
-The operator executes those commands. This preparation run does not commit or
-push them. Never merge this branch.
+The operator executed those commands for the historical spike. The cloud task
+committed no changes. Never merge this branch.
 
 ### One cloud task
 
@@ -553,23 +656,25 @@ Abort and preserve evidence if:
 - a provider cannot be tied to its installed root;
 - an unexpected package manifest, lockfile, or `node_modules` appears;
 - either refusal arm contains additional model text;
-- the cloud task ran against `main` or any branch other than the throwaway
-  branch;
+- the cloud task ran against a branch other than the explicitly selected
+  fixture branch (throwaway branch for the historical spike; default branch for
+  the consumer fixture);
 - the cloud run lacks host-issued task/run identity;
 - plugin or skill provider events cannot be preserved;
 - the cloud task edits, commits, pushes, installs, updates, publishes, or opens a
   pull request; or
 - credentials appear in transferred evidence.
 
-Do not substitute a generic subagent, GitHub Actions runner, local VM, or
-model-authored identity. Do not use `--plugin-dir` as persistent-install
-evidence. Do not modify the public marketplace, release metadata, plugin
-manifests, packs, or `main` cloud settings.
+Do not substitute a generic subagent, a generic Linux/Windows Actions CLI
+runner, a local VM, or model-authored identity for the cloud arm. Do not use
+`--plugin-dir` as persistent-install evidence. Do not modify the public
+marketplace, release metadata, plugin manifests, packs, or Kai `main` cloud
+settings.
 
 ## Completion rule
 
-After both host packets run, update this record with exact evidence paths,
-checksums, and results. Commit the documentation/coordination revision to obtain
-a `change_ref`, then route that exact revision to `principal-sre` for
+After the cloud arm produces a conclusive result, update this record with exact
+evidence paths and results. Commit the documentation/coordination revision to
+obtain a `change_ref`, then route that exact revision to `principal-sre` for
 `independent-reliability`. Until reviewed completion, the item stays incomplete
 and release 12b remains **NO-GO**.

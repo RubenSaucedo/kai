@@ -33,7 +33,7 @@ scope:
     - Cutting 1.0.0 before the phase-3 gates are met; the number is a stability promise, not a refactor marker.
     - Re-litigating department boundaries or adding packs beyond the agreed five once the partition is locked.
   deferred:
-    - Full macOS and cloud-host certification of collision and roster-enumeration behavior; all evidence to date is Windows CLI.
+    - Full fleet certification of collision and roster-enumeration behavior. The bounded macOS arm passed on genuine GitHub-hosted Apple Silicon run 33024791572; cloud-host certification remains open after branch task 7160810a-a4e1-43eb-bc97-d6f8e2f53aad provisioned no plugins and was classified indeterminate.
     - A dispatch-probe that fails observably, stronger than roster introspection; noted open in the proposal.
     - Per-pack independent semver decoupled from the core contract version; lockstep for now.
 principles:
@@ -244,3 +244,14 @@ added to `five-pack-split-shipped.required_items`; all downstream records
 remain `proposed` while the current milestone is open. Generated trees remain
 committed and unpublished, marketplace topology remains the single monolith
 source `.`, and no fleet-observer redesign enters this chain.
+
+**Superseding host-gate state (2026-08-26-1702).**
+`pack-split-host-gates` is `blocked` at v11 with
+`resume_state: in-progress`, lease clear, and `change_ref: null`. The bounded
+macOS arm passed on genuine GitHub-hosted Apple Silicon run `33024791572`.
+Cloud task `7160810a-a4e1-43eb-bc97-d6f8e2f53aad` provisioned no plugin and is
+indeterminate, not a pass. The sole blocking question is
+`Q-pack-split-host-gates-04`, operator authorization for one disposable
+default-branch consumer fixture with a positive control. The milestone remains
+open at 3 of 4, downstream items remain proposed, packs remain unpublished, and
+release 12b remains **NO-GO**.

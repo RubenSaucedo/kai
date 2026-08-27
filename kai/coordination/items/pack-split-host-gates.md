@@ -20,29 +20,37 @@ context_artifacts:
   - kai/initiatives/pack-split/artifacts/reliability/pack-split-first-department-install.md
   - kai/initiatives/pack-split/artifacts/reliability/pack-split-migration-doctor.md
 touches:
+  - .kai/runs/eng/2026-08-26/02-infra-pack-split-host-gates/**
+  - kai/coordination/ACTIVE.md
+  - kai/coordination/BOARD.md
+  - kai/coordination/items/pack-split-host-gates.md
+  - kai/coordination/threads/pack-split-host-gates.md
+  - kai/initiatives/pack-split/artifacts/decisions/pack-split-host-gates.md
   - kai/initiatives/pack-split/artifacts/reliability/pack-split-host-gates.md
+  - kai/initiatives/pack-split/deliverables.md
+  - kai/initiatives/pack-split/log.md
+  - kai/initiatives/pack-split/northstar.md
 depends_on:
   - item: pack-split-first-department
     requires: shipped
   - item: pack-split-migration-doctor
     requires: shipped
 waiting_on_questions:
-  - Q-pack-split-host-gates-01
-  - Q-pack-split-host-gates-03
+  - Q-pack-split-host-gates-04
 required_for_milestone: true
 review_requirements:
   - role: principal-sre
     kind: independent-reliability
 completed_reviews: []
 change_ref: null
-version: 10
+version: 11
 lease:
   holder: null
   token: null
   version_at_grant: null
   acquired: null
   expires: null
-updated: 2026-08-26-1650
+updated: 2026-08-26-1702
 ---
 
 ## Outcome
@@ -65,15 +73,26 @@ hard gate that must pass before the `1.0.0` flip. Closes `completed` (evidence r
 
 ## Evidence
 
-- Prepared canonical gate and execution packets:
-  `kai/initiatives/pack-split/artifacts/reliability/pack-split-host-gates.md`.
-- Corrected the packet from the architecture decision at
-  `kai/initiatives/pack-split/artifacts/decisions/pack-split-host-gates.md`:
-  persistent direct macOS installs in both orders, a run-local directory
-  marketplace, run-start `main` pin verification, and a throwaway-branch cloud
-  spike using repository `enabledPlugins`.
-- External macOS and genuine cloud-host transcripts are not yet available.
-  Release 12b is explicitly **NO-GO**.
+- Preparation commit `c617cb8` is open as PR #173. This evidence-binding update
+  is uncommitted, so `change_ref` remains `null`.
+- macOS **PASS**: genuine GitHub-hosted Apple Silicon Actions run
+  `33024791572`, job `98363497414`, at source
+  `9a800e4e76cd6c15b9dfab01a7b1ed99c4285080`. Sanitized evidence is under
+  `.kai/runs/eng/2026-08-26/02-infra-pack-split-host-gates/macos/`.
+- macOS direct installs in both orders and the run-local marketplace bind
+  `kai-personal:persona-self` to `kai-core-contract-v1` from `kai-core`
+  `0.64.0`; installed/source manifest SHA-256 values match; per-pack dependency
+  inventories are empty; collision refusal and both exact refusal arms pass.
+- Cloud branch spike **INDETERMINATE**: task
+  `7160810a-a4e1-43eb-bc97-d6f8e2f53aad`, run `33024086802`, job
+  `98361210602`, base/generated head
+  `fb04975c2969e1aca463d148b6cb1784966e20b9`. It made two bash calls and
+  emitted zero plugin discovery/install, `skill.invoked`, or `persona-self`
+  dispatch events. Sanitized summary:
+  `.kai/runs/eng/2026-08-26/02-infra-pack-split-host-gates/cloud/99-summary.json`.
+- The amended decision and next experiment are recorded at
+  `kai/initiatives/pack-split/artifacts/decisions/pack-split-host-gates.md`.
+  Release 12b remains explicitly **NO-GO**.
 
 ## Notes
 
@@ -92,3 +111,10 @@ hard gate that must pass before the `1.0.0` flip. Closes `completed` (evidence r
   `Q-pack-split-host-gates-03` requests the bounded cloud branch spike. A
   default-branch-only cloud result routes to steward escalation E1 without an
   infra decision.
+- **Evidence amendment 2026-08-26-1702:** `Q-pack-split-host-gates-01` is
+  answered by the macOS PASS. `Q-pack-split-host-gates-03` is answered
+  indeterminate, not as default-branch-only or direct-spec rejection. The
+  smallest discriminating next step is a disposable external consumer
+  repository whose default branch carries both direct Kai specs plus a
+  default-marketplace positive control. Creating/deleting that repository is an
+  operator boundary tracked only by `Q-pack-split-host-gates-04`.

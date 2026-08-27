@@ -412,3 +412,127 @@ becomes available the moment that guard lands, and stays hazardous until it does
 **Promotion.** Library promotion of this record to
 `kai/library/dev-designs/` is steward-approved per `kai/library/README.md`; it is
 not claimed here.
+
+---
+
+## Amendment — branch null is indeterminate; use a default-branch consumer fixture
+
+**Date:** 2026-08-26 17:02 local
+**Evidence:** macOS run `33024791572`; cloud task
+`7160810a-a4e1-43eb-bc97-d6f8e2f53aad`; cloud run `33024086802`
+**Consultation:** read-only `principal-swe-architect` (Opus 5)
+
+### TLDR
+
+The macOS arm passed. The branch-scoped cloud spike did not provision any
+plugin and is **indeterminate**, not a pass and not evidence of
+default-branch-only behavior or direct-spec rejection.
+
+Run one smaller, discriminating experiment: a disposable consumer repository
+outside `RubenSaucedo/kai`, with its **default branch** carrying both direct Kai
+pack specs plus one known-good plugin from a default-registered marketplace.
+Require host-side install and provider evidence. Do not change Kai `main`, add a
+temporary Kai marketplace, or defer the cloud arm before this experiment.
+
+### Before / after
+
+The branch fixture had no positive control; the consumer fixture separates host
+provisioning failure from Kai direct-spec support.
+
+```text
+BEFORE
+
+  Kai non-default branch
+    settings: core + personal
+              |
+              v
+       cloud task: 2 bash calls
+              |
+              +-- 0 installs / 0 provider events
+              |
+              v
+        INDETERMINATE
+
+AFTER
+
+  Kai main packs                 default marketplace
+    core + personal                  known-good control
+          |                                |
+          +-----------+--------------------+
+                      v
+       consumer repo DEFAULT branch settings
+                      |
+                      v
+              one read-only cloud task
+                      |
+       +--------------+--------------+
+       |              |              |
+    all 3          control only     nothing
+    PASS           direct specs     provisioning/
+                   unsupported      control defect
+```
+
+### Evidence that changed the decision
+
+- macOS run
+  [`33024791572`](https://github.com/RubenSaucedo/kai/actions/runs/33024791572),
+  job `98363497414`, passed on genuine GitHub-hosted Apple Silicon macOS.
+  Direct installs in both orders and the directory marketplace bound
+  `kai-personal:persona-self` to `kai-core-contract-v1` from `kai-core`
+  `0.64.0`; installed manifests match source; collision and refusal probes
+  passed.
+- Cloud task
+  [`7160810a-a4e1-43eb-bc97-d6f8e2f53aad`](https://github.com/RubenSaucedo/kai/tasks/7160810a-a4e1-43eb-bc97-d6f8e2f53aad)
+  selected base `kai/chore/pack-split-host-gates-cloud-spike`; its generated
+  head and base were both
+  `fb04975c2969e1aca463d148b6cb1784966e20b9`.
+- Host run
+  [`33024086802`](https://github.com/RubenSaucedo/kai/actions/runs/33024086802),
+  job `98361210602`, succeeded, but the task made only two bash calls. There
+  were zero plugin discovery/install events, zero `skill.invoked` events, and
+  zero `persona-self` dispatches.
+- The task saw `.github/copilot/settings.json`, but the null has no positive
+  control and no host-side plugin-root evidence. It cannot distinguish
+  branch-scope behavior, direct-spec rejection, or a provisioning/control-plane
+  defect.
+
+### Amended decision
+
+Pending operator authorization, create one disposable consumer repository
+outside `RubenSaucedo/kai`. On its default branch:
+
+1. add `.github/copilot/settings.json` with
+   `RubenSaucedo/kai:packs/kai-core`,
+   `RubenSaucedo/kai:packs/kai-personal`, and one verified plugin from a
+   default-registered marketplace;
+2. run one read-only genuine cloud task;
+3. require host-side installed-plugin inventory, plugin-root evidence, and
+   provider events for the control and Kai plugins; and
+4. preserve only sanitized identity/result evidence.
+
+Outcomes are binding:
+
+| Outcome | Decision |
+| --- | --- |
+| All three install | Cloud arm passes; route the evidence revision to `principal-sre`. |
+| Control installs; Kai specs do not | Direct subdirectory specs are unsupported in cloud settings; route to the steward/publication-dependent fallback. |
+| Nothing installs | Record a host provisioning/control-plane defect and route accordingly. |
+
+Creating and deleting the external repository is an operator authorization
+boundary, tracked as `Q-pack-split-host-gates-04`. No repository was created by
+this amendment.
+
+### Rejected alternatives
+
+- **Temporary `.github/copilot/settings.json` on Kai `main`: rejected.** It
+  auto-installs core/personal beside legacy `kai`, activates duplicate
+  hooks/coexistence, leaves persistent host state, and contradicts the
+  committed-unpublished boundary.
+- **Temporary marketplace index on Kai `main`: rejected.** It is a wider,
+  publication-adjacent change and circularly uses the surface this gate exists
+  to authorize.
+- **Immediate deferral: rejected.** Keep it only as fallback after the
+  consumer-repository experiment produces a discriminating result.
+
+Release 12b remains **NO-GO**. Acceptance and required milestone states are
+unchanged.

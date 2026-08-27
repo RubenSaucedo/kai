@@ -191,3 +191,100 @@ Append-only communication log mirroring
              command, commit, push, merge, publication, or release was executed.
 - questions: Q-pack-split-host-gates-01; Q-pack-split-host-gates-03
 - next:      @operator — external macOS and cloud-spike execution.
+
+## ANSWER Q-pack-split-host-gates-01 2026-08-26-1702 — @operator -> @principal-swe-infra
+
+- status: answered
+- answer: The corrected macOS arm passed on genuine GitHub-hosted Apple Silicon
+          macOS Actions run `33024791572`, job `98363497414`, at source
+          `9a800e4e76cd6c15b9dfab01a7b1ed99c4285080`. Result `PASS`, exit `0`.
+          Both direct install orders and the directory marketplace list
+          `kai-core` + `kai-personal` `0.64.0`; provider events bind
+          `kai-personal:persona-self` to `kai-core-contract-v1` from
+          `kai-core`; installed/source manifest checksums match; dependency
+          inventories are empty; collision and exact refusal probes pass.
+- lane: in-lane
+- provenance: operator — host run
+              https://github.com/RubenSaucedo/kai/actions/runs/33024791572
+
+## ANSWER Q-pack-split-host-gates-03 2026-08-26-1702 — @operator -> @principal-swe-infra
+
+- status: answered
+- answer: The branch-scoped cloud spike is INDETERMINATE, not a pass. Task
+          `7160810a-a4e1-43eb-bc97-d6f8e2f53aad` and run `33024086802` resolved
+          the selected base/head at
+          `fb04975c2969e1aca463d148b6cb1784966e20b9`, but the host made only two
+          bash calls and emitted zero plugin discovery/install events, zero
+          `skill.invoked` events, and zero `persona-self` dispatches. With no
+          positive control or host-side plugin-root evidence, this does not
+          prove default-branch-only semantics or direct-spec rejection.
+- lane: in-lane
+- provenance: operator — task
+              https://github.com/RubenSaucedo/kai/tasks/7160810a-a4e1-43eb-bc97-d6f8e2f53aad
+              and host run
+              https://github.com/RubenSaucedo/kai/actions/runs/33024086802
+
+## HANDOFF 2026-08-26-1702 — principal-swe-architect -> principal-swe-infra
+
+- did:       Read-only Opus 5 consultation classified the branch null as
+             indeterminate and selected one smaller discriminating experiment:
+             a disposable consumer repository whose default branch declares
+             the two direct Kai specs plus a default-marketplace positive
+             control. Rejected temporary Kai-main settings, a temporary
+             Kai-main marketplace, and premature deferral.
+- state:     blocked (unchanged; architecture did not self-clear reliability)
+- needs:     Bind the amendment, ask the operator once for the external
+             repository authorization boundary, and preserve release 12b
+             NO-GO.
+- artifacts: kai/initiatives/pack-split/artifacts/decisions/pack-split-host-gates.md;
+             kai/initiatives/pack-split/artifacts/reliability/pack-split-host-gates.md
+- evidence:  Cloud task/run identity and zero-event counts above; architecture
+             amendment captured 2026-08-26-1702 from C:\src\kai.
+- questions: Q-pack-split-host-gates-04
+- next:      principal-swe-infra — update the canonical evidence and
+             coordination records without changing acceptance.
+
+## QUESTION Q-pack-split-host-gates-04 2026-08-26-1702 — principal-swe-infra -> @operator
+
+- status: open
+- kind: decision
+- blocking: yes
+- context: The branch-scoped cloud run had no positive control and did not
+           provision any plugin. The smallest discriminating experiment needs
+           one disposable consumer repository outside `RubenSaucedo/kai`; its
+           default branch declares both direct Kai pack specs plus one verified
+           default-marketplace control. Creating and deleting that external
+           repository crosses an operator authorization boundary.
+- ask: Do you authorize a later operator-supervised run to create and, after
+       evidence capture, delete exactly one disposable consumer repository for
+       this read-only cloud experiment, with no change to Kai `main`, no pack
+       publication, and host-side install/provider evidence required?
+- answer_by: next-dispatch
+
+## HANDOFF 2026-08-26-1702 — principal-swe-infra -> @operator
+
+- did:       Bound the macOS PASS and cloud INDETERMINATE evidence, copied the
+             sanitized macOS artifact and a cloud identity/result summary into
+             the ignored canonical run root, amended the architecture and
+             reliability records, answered Q-01/Q-03, and opened only Q-04.
+- state:     blocked (resume_state `in-progress`); lease clear at item v11;
+             `change_ref: null`
+- needs:     Answer Q-pack-split-host-gates-04. If authorized, execute the
+             default-branch consumer fixture and return host-side installed
+             plugin/root/provider evidence. Infra then binds the result and
+             routes a committed evidence revision to `principal-sre`.
+- artifacts: workspace root C:\src\kai;
+             kai/initiatives/pack-split/northstar.md;
+             kai/initiatives/pack-split/deliverables.md;
+             kai/initiatives/pack-split/artifacts/reliability/pack-split-host-gates.md;
+             kai/initiatives/pack-split/artifacts/decisions/pack-split-host-gates.md;
+             kai/coordination/items/pack-split-host-gates.md;
+             kai/coordination/threads/pack-split-host-gates.md
+- evidence:  .kai/runs/eng/2026-08-26/02-infra-pack-split-host-gates/macos/
+             from Actions run 33024791572; sanitized
+             .kai/runs/eng/2026-08-26/02-infra-pack-split-host-gates/cloud/99-summary.json
+             from task 7160810a-a4e1-43eb-bc97-d6f8e2f53aad / run 33024086802;
+             captured 2026-08-26-1702
+- questions: Q-pack-split-host-gates-04
+- next:      @operator — only the operator can authorize the external
+             create/delete boundary. Release 12b remains NO-GO.
