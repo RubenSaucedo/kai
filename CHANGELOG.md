@@ -10,8 +10,8 @@ minor bumps (`0.x`) carry features and patch bumps carry fixes.
 
 - **Agent and skill tool declarations use portable primary aliases.** Shell,
   file, search, delegation, and combined web families now declare `execute`,
-  `read`, `edit`, `search`, `agent`, and `web`. Specialized Kai tools remain
-  explicit, including `web_search` where search-only authority is intentional.
+  `read`, `edit`, `search`, `agent`, and `web`. Fine-grained host tools remain
+  explicit where required, including `web_search` for three search-only roles.
   Live CLI 1.0.79 and 1.0.81 probes exercised the replacement capabilities in
   both direct and delegated launches (see the area-plugin host-tool
   conformance decision, section 12.2). Interactive warning silence remains

@@ -33,6 +33,8 @@ touches:
   - scripts/host-contract.mjs
   - test/fixtures/host-loader/
   - docs/host-capabilities.md
+  - docs/workspaces.md
+  - kai/initiatives/area-plugins/artifacts/decisions/area-plugins-host-tool-conformance.md
   - README.md
   - CHANGELOG.md
   - plugin.json
@@ -55,15 +57,23 @@ completed_reviews:
     timestamp: 2026-08-28-0112
     satisfies_requirement: false
     recorded_by: principal-product-manager (steward) 2026-08-28-0125 — the reviewer held no lease and did not edit this record; P0-1..P0-3 are adjudicated in the STEWARD RULING 2026-08-28-0125, P1-2/P1-3 and the four P2s remain open
-change_ref: f093c5a2678ee1ecf9c25a88015110a1fbd057cd
-version: 5
+  - role: principal-swe-architect
+    kind: independent-architecture
+    phase: implementation
+    change_ref: 4db3c907142ea510b4d5ec7f02668029d616d1c2
+    verdict: approved
+    evidence: kai/coordination/threads/area-plugins-tool-allowlist-fix.md (REVIEW 2026-08-28-0207)
+    timestamp: 2026-08-28-0207
+    satisfies_requirement: true
+change_ref: 4db3c907142ea510b4d5ec7f02668029d616d1c2
+version: 6
 lease:
   holder: null
   token: null
   version_at_grant: null
   acquired: null
   expires: null
-updated: 2026-08-28-0125
+updated: 2026-08-28-0215
 ---
 
 ## Outcome

@@ -1486,6 +1486,35 @@ documentation plus an upstream report — not to another declaration change.
 
 ---
 
+## RECORD CLOSURE 2026-08-28-0215 — director-chief-of-staff / steward
+
+- Recorded the final independent-architecture approval against
+  `4db3c907142ea510b4d5ec7f02668029d616d1c2`.
+- Corrected the superseded 0140 disclosure for the final tree: the three
+  search-only roles retain `web_search`; their final delta is **no token change**
+  and no authority widening. The 16 `edit` declarations were also unchanged in
+  token and never widened. Residual declared-authority widening is zero.
+- Ratified `docs/workspaces.md` and the conformance decision §12.4 in this
+  item's `touches`; both are directly coupled live documentation corrections.
+- Reconciled `BOARD.md`. The `v1.0.5` probe item is `shipped`; this item is
+  `in-review` and routes to `workflow-pull-request`.
+- Final PR disclosure must be generated from the final tree, not copied from
+  the superseded 0140 table's three `web_search->web` rows.
+
+## HANDOFF 2026-08-28-0215 — director-chief-of-staff -> workflow-pull-request
+
+- did: Final implementation and exact-ref architecture/security reviews are
+  complete. P0/P1 implementation findings are closed. Full local validation
+  passed. Release metadata is `1.0.6`.
+- state: `in-review`
+- needs: Open the PR with the A11 carve-out clauses, final capability mapping,
+  exact validation evidence, and the honest interactive-warning caveat.
+- change_ref: `4db3c907142ea510b4d5ec7f02668029d616d1c2`
+- next: PR checks, merge, exact-main checks, tag/release `v1.0.6`, then operator
+  interactive warning observation before marking this item `shipped`.
+
+---
+
 ## REVIEW 2026-08-28-0157 — principal-security · independent-security (exact ref, bounded to P2-1)
 
 - **verdict:** **APPROVED** — **CONDITIONAL** in security terms — P0 **0** / P1 **0** / P2 **3**
@@ -1788,3 +1817,372 @@ steward, not something I add or require.**
 - evidence:  `observed` — file reads at `C:\src\kai` at HEAD `9b98143…` (the 19 declarations, `workflow-issue-analysis`, `SUPPORTED_TOOLS` and `loaderErrors()`, the assessor roster pin, and the `web`/`agent`/`todo`/`execute`/`search` counts), plus the published GitHub custom-agents tool-alias table fetched this pass. `reported` — the 0140 disclosure table, the §12.2/§12.1 probe records, and the operator's warning text. `inferred` — that retained `execute` already subsumes file creation and outbound egress for the widened agents (medium-high; basis: probe §4.2 and available environment tooling). **Not run:** every gate, `git`, `node`, `npm`; the commit diff was not read.
 - questions: none blocking. One decision is owed and it is not mine: whether the three-agent web-fetch widening is accepted.
 - next:      Steward records the corrected three-declaration acceptance, then the existing `workflow-pull-request` / `workflow-ship` path. **This review does not clear `shipped`** — the interactive startup-warning observation remains the operator's alone, and the milestone-2 PR-3 ordering constraint is untouched by this pass.
+
+---
+
+## REVIEW 2026-08-28-0207 — principal-swe-architect · independent-architecture (exact ref, final)
+
+- **verdict:** **APPROVED** — P0 **0** / P1 **2** / P2 **3**
+- **change_ref reviewed:** `4db3c907142ea510b4d5ec7f02668029d616d1c2`
+  (`.git/HEAD` → `refs/heads/fix/area-plugin-tool-aliases`; that ref file reads
+  `4db3c907…`). `.git/logs/HEAD:535-538` records the branch from `main` at
+  `71ee251`, then `f093c5a` *fix(host): use portable tool aliases*, `9b98143`
+  *docs(review): resolve alias migration findings*, `4db3c90` *fix(host):
+  preserve search-only web access*. Three commits on the branch.
+- **satisfies_requirement:** `true` — **bound to `4db3c90`.** One bounded
+  carry-forward is stated below so a records-only fix does not force a fourth
+  exact-ref pass; anything outside that bound voids this approval.
+- **Disposition: Endorse.** Zero implementation changes requested. `4db3c90`
+  resolves the only real finding either prior review left open, and it resolves
+  it by *not changing three declarations* rather than by seeking a human
+  acceptance for changing them. That is the smaller structural move and it is
+  the right one.
+
+### 1. The headline answer to the dispatch
+
+**Residual declared-authority widening at this ref is zero.** Not "acceptable" —
+**zero**. There is no acceptance for the steward to record and no residual risk
+for anyone to hold, because the widening was removed rather than accepted.
+
+`principal-security`'s SEC-1 correction is **accepted in full, and it corrects my
+own prior finding.** My `REVIEW 2026-08-28-0141` P2-1 was **half wrong**: the
+16 file-family declarations never widened, because their `edit` token was
+byte-unchanged across the migration — I derived a delta from a frequency table
+rather than from the declarations, and 49 *siblings* dropping `create` is not
+16 declarations gaining anything. The web-family half was right, and it is the
+half `4db3c90` closes. The corrected count was 3; the count at this ref is 0.
+
+### 2. What changed since `9b98143`, and why the shape is right
+
+| force | option at `9b98143` | option at `4db3c90` |
+|---|---|---|
+| 3 `kai-personal` agents declared search-only web | migrate to `web` → declares fetch+search | **retain `web_search`** → declares search only |
+| Who accepts the broadening? | nobody — `principal-security` explicitly declined (SEC-2) and the steward had not ruled | **no acceptance needed** |
+| Capability delta vs `main` | search→search+fetch (declared) | **zero, in both directions** |
+| Cost | a residual-risk record that must be re-audited later | one legacy name stays in the vocabulary |
+| Reversible? | yes | yes — 6 declaration lines + 2 contract copies |
+
+The cheapest resolution of a risk nobody would accept is to stop creating it.
+Preserving three lines is a smaller structural change than migrating them and
+then carrying a permanent acceptance record against them, so this is the shape
+I endorse.
+
+**The cost is real and I am not hiding it:** kai's vocabulary now has a third
+tier. That tier is *smaller* than the alternative, and it is better evidenced
+than the vocabulary at `9b98143` was — see §4.6.
+
+### 3. The seam, at this ref
+
+```text
+            KAI DECLARATION VOCABULARY — SUPPORTED_TOOLS, 14 names, 2 copies
+            scripts/lib/loader-contract.mjs:15-24  ==  packs/kai-core/…:15-24
+            ┌────────────────────────────────────────────────────────────┐
+            │ tier 1  documented primary aliases                         │
+            │         execute read edit search agent web todo            │
+            │         status: measured (R2-primary, 1.0.79 + 1.0.81,     │
+            │                 direct + delegated)                        │
+            ├────────────────────────────────────────────────────────────┤
+            │ tier 2  specialized names, absent from the published       │
+            │         alias table, retained because they are real        │
+            │         ask_user  skill  read_agent  write_agent           │
+            │         session_store_sql  playwright                      │
+            ├────────────────────────────────────────────────────────────┤
+            │ tier 3  retained legacy NARROW name    ◄── new at 4db3c90  │
+            │         web_search        (web_fetch stays REJECTED)       │
+            │         status: launch-safe in R8; grant not-testable      │
+            └────────────────────────────────────────────────────────────┘
+                    ‖  set-equal to REPO_TOOLS in scripts/lib/tool-conformance.mjs
+                    ‖  = the R8-repo-current probe row, valid on both CLI builds
+                    ▼
+        loaderErrors()  REJECTS  bash shell view create grep glob task web_fetch
+                        ACCEPTS  the 14 above — no wildcard, no omission, no empty
+```
+
+```text
+  WEB FAMILY — the whole of the change at this ref
+
+  pre-change (main @ 71ee251)                    at 4db3c907
+  ─────────────────────────────────              ────────────────────────────────
+  agents: 28 declare web_search
+      ├── 25 also declare web_fetch  ──────────►  25 declare  web    (fetch+search)
+      └──  3 declare search only     ──────────►   3 declare  web_search  UNCHANGED
+      (0 declare web_fetch alone → rejecting web_fetch strands nothing)
+  skills: 13 declare both           ──────────►  13 declare  web
+  mirrors: 25 + 3 agents, 13 skills ──────────►  identical to their roots
+                                                ────────────────────────────────
+                                                declared-authority delta: ZERO
+```
+
+### 4. What I verified first-hand (`observed` — file reads at `C:\src\kai`, HEAD `4db3c907`)
+
+1. **Ref binding.** `.git/refs/heads/fix/area-plugin-tool-aliases` =
+   `4db3c907142ea510b4d5ec7f02668029d616d1c2`; `.git/HEAD` points at it;
+   reflog shows the three-commit branch above.
+2. **The three preserved declarations, line 4 of each root and each mirror,
+   byte-equal pairs:**
+   `agents/instructor-path-mentor.agent.md` and
+   `agents/principal-engineer-career-mentor.agent.md` =
+   `["read", "edit", "search", "ask_user", "execute", "web_search", "skill"]`;
+   `agents/instructor-tutor.agent.md` =
+   `["execute", "read", "edit", "search", "ask_user", "web_search", "skill"]`.
+   Each is the exact order-preserving, de-duplicated image of its `main`
+   predecessor (thread §2a lines 231/233/245) under
+   `view→read`, `create→edit`, `grep|glob→search`, `bash|shell→execute`,
+   **`web_search→web_search`**. Zero drops, zero additions, zero re-ordering.
+3. **The web family partitions exactly, and I checked the partition by name, not
+   by count.** The 25 root agents declaring `web` at this ref are *precisely* the
+   25 that declared `web_fetch` on `main` (thread §2a plus the `web_fetch | 25`
+   frequency row at line 317). The 3 declaring `web_search` are precisely the 3
+   that had `web_search` without `web_fetch`. 25 + 3 = 28 = the pre-change
+   `web_search` count. **No agent held `web_fetch` without `web_search`**, so
+   rejecting `web_fetch` from the vocabulary strands no declaration and no
+   fetch-only agent silently gained search.
+4. **Skills are untouched by this commit and correct.** 13 root skills declare
+   `web` — exactly the 13 whose disclosure rows carry both `web_search` and
+   `web_fetch`. **Zero skills retain `web_search`**, which is right: none was
+   search-only. 13 skill mirrors match (2 `kai-core`, 10 `kai-engineering`,
+   1 `kai-gtm`).
+5. **All 214 declaration sites still present and in-vocabulary.** `^tools:` /
+   `^requires_tools:` across `agents/`, `skills/`, `packs/` resolves to **214
+   files** — 56 root agents + 51 root skills + 56 agent mirrors + 51 skill
+   mirrors — carrying 214 `tools:` lines plus 12 `requires_tools: [execute]`
+   lines (6 root + 6 mirror). Repo-wide search for a
+   `tools:`/`requires_tools:`/`allowed-tools:` line containing
+   `bash|shell|view|create|grep|glob|task|web_fetch` under `agents/`, `skills/`,
+   `packs/`, `test/`, `examples/` returns **zero**. `web_search` returns exactly
+   **six** — the three roots and their three mirrors.
+6. **The vocabulary now equals a measured probe row.** `SUPPORTED_TOOLS` (14
+   names) is set-equal to `REPO_TOOLS` in `scripts/lib/tool-conformance.mjs:15-23`
+   — i.e. exactly the `R8-repo-current` matrix row, recorded **valid, direct and
+   delegated, on both `1.0.79` and `1.0.81`** with capabilities exercised
+   (decision §12.2). At `9b98143` the 13-name set matched **no** measured row.
+   This commit therefore *improves* the binding between the guard and the
+   evidence, which is the opposite of what a re-admitted legacy name usually
+   does, and it is the strongest single reason I endorse rather than defer.
+   `tool-conformance.mjs` is **not** mirrored into `packs/` (`packs/**/lib/*.mjs`
+   is six files, none of them it), so the hand-sync surface is still two copies,
+   not three.
+7. **Both `SUPPORTED_TOOLS` copies are byte-identical**, including comment text
+   and element order (`scripts/lib/loader-contract.mjs:13-25` ==
+   `packs/kai-core/scripts/lib/loader-contract.mjs:13-25`). The guard still
+   rejects a missing `tools` key, a non-inline array, an empty array and any
+   out-of-vocabulary token; wildcard and omission remain structurally
+   unavailable.
+8. **Specialized least privilege is preserved and unmoved.** `workflow-issue-analysis`
+   is `["execute", "read", "search", "ask_user", "web", "skill"]` — still no
+   file-write token, the design `validate-plugin.mjs:620-623` exists to protect.
+   Spot-checked file-family declarations `instructor-teacher`,
+   `principal-product-manager`, `workflow-self-check`, `skills/build-diagrams`,
+   `skills/pr-sizing` — all still carry the same unchanged `edit`, no `create`
+   equivalent added anywhere. `playwright`, `session_store_sql`,
+   `read_agent`/`write_agent`, `ask_user`, `skill` are untouched by this commit.
+9. **`requires_tools` inheritance closure holds trivially for the delta** — all
+   three changed agents declare `execute`, so no inherited-skill requirement can
+   be broken by this commit regardless of what they inherit.
+10. **The two P2-2 prose fixes landed and are correct.**
+    `docs/workspaces.md:90` now reads *"Copilot CLI's background
+    `agent`/`write_agent` messaging"*; `scripts/validate-plugin.mjs:616` now reads
+    *"impossible without `execute`"*. `docs/proposals/pack-architecture.md` is
+    correctly left alone as a historical record.
+11. **P2-3 landed.** The conformance decision §12.4 now carries *"Superseded
+    stop, 2026-08-28"* naming scope-brief A28 and the steward ruling, and
+    restating that interactive warning silence stays post-install operator
+    evidence. A reader who opens the canonical decision no longer sees an
+    unlifted stop beside a shipped migration.
+12. **Packs and version metadata remain aligned.** Lockstep `1.0.6` across
+    `package.json:3`, `plugin.json:4`, `.github/plugin/marketplace.json` (all six
+    version fields), and all five packs' `package.json` / `plugin.json` /
+    `package-lock.json`. `CHANGELOG.md` `[1.0.6]` section present with its
+    `:3106` compare link. No pack carries its own `README.md`/`CHANGELOG.md` and
+    `pack-plan` mirrors neither `docs/` nor `CHANGELOG.md`, so the prose edits in
+    this commit cannot disturb mirror parity. No new version was minted, which is
+    right — `1.0.6` is unreleased and this is a fix inside it.
+13. **A11 carve-out still clean at this ref.** This commit touches no `PACKS`,
+    `PACK_ORDER`, `PACKS_DIR`, `MARKETPLACE`, `SKILL_OWNER_OVERRIDES`, plugin
+    identity, marketplace name, or any of the three injected contract blocks
+    (`preflight`/`degraded`/`inherits`-`block.txt` contain no tool token at all).
+14. **Test fixtures unchanged and still isolating.**
+    `unsupported-tool.agent.md` = `[read, teleport]` — and `teleport` is still
+    outside the widened vocabulary, so adding `web_search` did not defuse the
+    fixture. `tools-not-array` scalar `read`; `name-mismatch` and
+    `skill-key-on-agent` `[read]`; `argument-hint-array` `[read, search]`.
+
+### 5. Warning claims — still honest, with one exception
+
+The three separately-labelled warning claims are intact and **unaffected** by
+this commit: `create` and `grep` appear in zero kai declarations (`observed`,
+re-checked above); `edit` is retained deliberately and may still warn;
+interactive-startup silence remains `unobserved` and operator-owned. `web_search`
+is **not** in the operator's reported warned set (`create`/`edit`/`grep`), so
+retaining it introduces no new warning claim and cannot falsify the existing
+ones. `CHANGELOG.md:16-17` and `README.md:44` still say silence is unverified
+because prompt mode does not expose that channel. Nothing here overclaims.
+
+**The exception is a vocabulary claim, not a warning claim** — `README.md:41-42`,
+see P1-2(c).
+
+### 6. What remains `reported`, stated rather than absorbed
+
+This session has **no shell**; `git`, `node` and `npm` are not bound to it.
+
+- **The commit diff was not read.** My independent bound is the state of the
+  tree: every declaration in all 214 files is in the migrated vocabulary, every
+  mirror line equals its root, the web family partitions exactly by name against
+  the `main` baseline, and both contract copies are identical.
+- **No gate was run by me.** `validate-plugin`, `host-contract --self-test`, the
+  four `pack-preview --gate`s, `pack-preview --check`, `release-guard` and
+  `npm test` at this ref are `reported` green **by the dispatch packet only** —
+  see P1-1, because unlike `9b98143` there is *no durable evidence entry in this
+  thread for `4db3c907`*. The preconditions I can check independently all hold:
+  every token is in `SUPPORTED_TOOLS`; the malformed fixtures still isolate their
+  target errors; both mirrors of the changed files equal their roots; the golden
+  inventory counts (56/51) are unmoved because no entry was added or removed;
+  release metadata is lockstep with a compare link. That is why I find the
+  reported greens credible — not a substitute for them.
+- **PR-body content is unverifiable from here**, including whether the disclosure
+  table carried into it has been corrected for the three rows in P1-2(a).
+- **`git status` cleanliness is unverified.** HEAD matches the reviewed ref by
+  ref-file read.
+
+### 7. P1 — two, both records-only, neither requiring a code change
+
+**P1-1 — the item record is now two commits stale, and this ref has no evidence
+entry at all.** `kai/coordination/items/area-plugins-tool-allowlist-fix.md` still
+carries `change_ref: f093c5a…` and a single `completed_reviews` entry with
+`verdict: changes-requested` / `satisfies_requirement: false` against that same
+superseded commit, at `version: 5`. Neither the `9b98143` **APPROVED**
+(architecture, 0141) nor the `9b98143` **APPROVED/conditional** (security, 0157)
+verdict was ever recorded, so `review_requirements[0]` still reads unmet against a
+commit that no longer describes the tree. Separately, **this thread contains no
+`IMPLEMENTATION EVIDENCE` block and no `HANDOFF` for the `4db3c907` pass** — the
+gate runs, the preserved-declaration rationale, and the two out-of-`touches`
+edits exist only in the dispatch packet. No lease covered either the `9b98143` or
+the `4db3c907` remediation pass (all five lease fields null). `BOARD.md:48-49`
+still shows this item `ready` with an unmet dependency.
+**Owner:** `director-chief-of-staff` / `principal-product-manager` under a lease.
+I hold none and edited no frontmatter.
+
+**P1-2 — three durable claims now contradict the tree.** All three were true at
+`9b98143` and were falsified by `4db3c907`; each is a one-line correction.
+
+- **(a) The 113-row disclosure table.** Rows 1100, 1102 and 1114 of this thread
+  read `web_search->web` for `instructor-path-mentor`, `instructor-tutor` and
+  `principal-engineer-career-mentor`. At this ref that mapping did not happen.
+  The `capability loss: none` column is still correct, but the table is the
+  item's *only* guard against a capability change — acceptance box 3 says so in
+  the mandated sentence — and a guard that misdescribes three of its rows is not
+  a guard. **The same three rows are in the PR body** and must be corrected
+  there too.
+- **(b) The item Outcome.** It asserts every declaration *"uses the documented
+  primary-alias vocabulary plus explicit specialized Kai tools."* `web_search` is
+  neither: it is absent from the published alias table (decision §1.1) and it is
+  not a specialized Kai tool. The honest amendment is a third clause — *plus one
+  retained legacy narrow name, `web_search`, on three agents, to avoid a
+  declared-authority widening nobody accepted*. `CHANGELOG.md:13-14` files it
+  under "Specialized Kai tools", which is the same mislabel one layer down.
+- **(c) `README.md:41-42`** — *"Agents and skills now use the documented primary
+  aliases for shell, file, search, delegation, and web capabilities."* False for
+  3 of the 28 web-capable agents. The `CHANGELOG` states the exception; the
+  user-facing README does not. This is the one place a reader is told something
+  the tree disproves.
+
+**Bounded carry-forward, so a prose fix does not cost a fourth exact-ref pass.**
+This approval binds to `4db3c907`. It **also carries** to a successor ref whose
+only difference from `4db3c907` is confined to `README.md` prose, `CHANGELOG.md`
+prose, `kai/coordination/**` and `kai/initiatives/**`. **Any** change to a
+declaration line, a generated mirror, `scripts/**`, `test/**`, `docs/**`, or any
+manifest/version file **voids it** and requires a fresh exact-ref review. I am
+not waiving the exact-ref discipline; I am stating its boundary precisely so
+records honesty and review economy do not fight each other.
+
+### 8. P2 — three, none blocking
+
+**P2-1 — two files were edited outside the item's declared `touches`, with
+correct content and no recorded authority.** `docs/workspaces.md` and
+`kai/initiatives/area-plugins/artifacts/decisions/area-plugins-host-tool-conformance.md`
+appear in neither `touches` nor `context_artifacts` as writable targets, and
+`REVIEW 2026-08-28-0141` routed both away from this item explicitly —
+*"do not widen this item for them; file as a follow-on nit"* (P2-2) and
+*"Steward's artifact, steward's edit"* (P2-3). Both edits are one line, both are
+correct, and both close open findings, so **I recommend ratification, not
+reversion** — reverting costs more than it protects. But the ratification is the
+steward's, not mine and not the implementer's: name both paths in `touches` when
+recording the ref. Flagging it because absorbing scope quietly is the pattern
+P0-3 was raised about earlier in this same item, at a larger size.
+
+**P2-2 — the contract file encodes an asymmetry it does not explain.**
+`SUPPORTED_TOOLS` now admits `web_search` and rejects `web_fetch`. That is the
+right asymmetry — narrow name in, broad legacy name out, and nothing is stranded
+because no declaration ever held fetch alone — but nothing beside the set says
+so. A future author declaring `web_fetch` gets *"not in kai's tool vocabulary"*
+with no hint the answer is `web`, and a future tidier may "finish the migration"
+by folding `web_search` into `web`, silently re-creating the widening this commit
+removed. `principal-security`'s SEC-2(b) asked for one comment line naming the
+coarsened families; at this ref it needs a second clause naming the retained
+narrow one. Two comment lines, beside the existing *"lint heuristic, not a host
+allowlist"* caveat. **Follow-on, not at this ref** — touching that file
+re-triggers mirror parity and voids the carry-forward in §7.
+
+**P2-3 — `web_search`'s grant is `inferred`, not `observed`, and the residue
+needs a named trigger.** `tool-conformance.mjs` classifies the whole web family
+`not-testable` without `--allow-network`, so what §12.2 establishes for
+`R8-repo-current` is that a declaration *containing* `web_search` launches valid
+and does not disturb the other grants on both CLI builds — not that `web_search`
+grants web search. Under the published *"unrecognized names are ignored"* rule
+it may grant nothing, in which case those three agents have no declared web
+capability. **That is residue, not regression: it was equally true on `main`, and
+this commit is the option that adds no new unknown.** The contract file's header
+caveat already covers it and the `// search-only web access` comment is intent in
+the same idiom as `// session store`, so no correction is required — but the
+trigger should be recorded with the shipped-gate observation: *if the operator
+finds these three cannot search the web post-install, the disposition is `web`
+plus a recorded three-declaration acceptance* (`principal-security` §4.2 supplies
+the mechanism and the mitigations). Owner: steward, alongside the existing
+post-install warning observation.
+
+### 9. Carried findings — final disposition
+
+| # | origin | disposition at `4db3c907` |
+|---|---|---|
+| P0-1 / P0-2 / P0-3 | 0112 | **Closed** at `9b98143`, re-verified unmoved here (§4.10–4.13, §5). |
+| P1-1 (0141) item lifecycle | 0141 | **Still open, and worse** — now two commits stale. Restated as P1-1. |
+| P1-2 / P1-3 / P1-4 | 0112 | **Closed** at `9b98143`. The 113-row table needs three row corrections — P1-2(a). |
+| P2-1 (19-declaration widening) | 0141 | **Closed, and my framing corrected.** The 16 never widened (SEC-1, accepted in full); the 3 are resolved by preservation. **Residual widening: zero.** |
+| P2-2 retired-name prose | 0141 | **Fixed** — `docs/workspaces.md:90`, `validate-plugin.mjs:616`. Authority to touch the first is P2-1 above. |
+| P2-3 unannotated §12.4 stop | 0141 | **Fixed** — §12.4 carries the supersede note. Authority is P2-1 above. |
+| P2-4 thread/board hygiene | 0141 | **Still open**, folded into P1-1. |
+| SEC-1 (19:3 correction) | 0157 | **Accepted and closed here.** My P2-1's file-family half was wrong; stated plainly in §1. |
+| SEC-2 (3-declaration acceptance) | 0157 | **Moot — no acceptance is owed.** The widening was removed, not accepted. The comment-line half survives as P2-2. |
+| SEC-3 (pinned no-write guard) | 0157 | **Untouched and still parked** — `expands-scope`, steward's ruling, not this item. |
+
+### 10. Why this is APPROVED
+
+Three things had to be true and each is checkable at this ref rather than
+asserted. **The vocabulary is still one vocabulary, and it is now better
+evidenced than it was** — 14 names, two byte-identical copies, retired spellings
+rejected by the guard, and the set is exactly the `R8-repo-current` row measured
+valid on both CLI builds. **Capability was replaced, never deleted, and now never
+broadened either** — 214 declaration sites intact, the web family partitions
+exactly by name against the `main` baseline, specialized tools 1:1, the write-less
+agent still cannot write, and the declared-authority delta is zero in both
+directions. **The claim still matches the evidence on the channel that matters** —
+the warning claims are unchanged and honest; the one place the tree now
+outruns the record is a vocabulary sentence in `README`, which is P1-2(c) and a
+one-line fix.
+
+What I am **not** clearing: `shipped`. That still needs the operator to deploy and
+read the startup warnings, a residual `edit` warning still routes to §7.2 B2 plus
+an upstream report rather than another declaration change, and the milestone-2
+PR-3 ordering constraint is untouched by this pass.
+
+---
+
+## HANDOFF 2026-08-28-0207 — principal-swe-architect -> director-chief-of-staff / principal-product-manager (steward)
+
+- did:       Final independent-architecture review bound to `4db3c907142ea510b4d5ec7f02668029d616d1c2`. Verified the three preserved `web_search` declarations and their mirrors against the `main` baseline token-by-token; proved the web family partitions exactly by name (25 `web` = the 25 that held `web_fetch`; 3 `web_search` = the 3 that held it alone; 0 held `web_fetch` alone, so rejecting it strands nothing); re-counted all 214 declaration sites and confirmed zero retired spellings repo-wide; confirmed both `SUPPORTED_TOOLS` copies byte-identical and set-equal to the measured `R8-repo-current` probe row; re-checked specialized least privilege and the write-less agent; confirmed the `docs/workspaces.md` and `validate-plugin.mjs` prose fixes and the §12.4 supersede annotation; confirmed lockstep `1.0.6` across all packs and manifests, the A11 carve-out, and the malformed fixtures. Accepted `principal-security`'s SEC-1 correction of my own prior P2-1 in full. Edited no implementation file, no item frontmatter, and ran no command.
+- state:     **APPROVED** — P0 **0** / P1 **2** / P2 **3**; `satisfies_requirement: true`, bound to `4db3c907` with the bounded carry-forward in §7. **Residual declared-authority widening: zero.** Zero implementation changes requested.
+- needs:     **`director-chief-of-staff` / steward, under a lease** — (1) set `change_ref -> 4db3c907142ea510b4d5ec7f02668029d616d1c2` and append the three missing `completed_reviews` entries (architecture 0141 `approved`@`9b98143`, security 0157 `approved`@`9b98143`, architecture 0207 `approved`@`4db3c907` / `satisfies_requirement: true`); (2) reconcile `BOARD.md:48-49` (P1-1). **Steward** — (3) correct the three `web_search->web` rows in the 113-row table here **and in the PR body**, amend the item Outcome's vocabulary sentence and `CHANGELOG.md:13-14` to name `web_search` as a retained legacy narrow name rather than a specialized Kai tool, and fix `README.md:41-42` (P1-2); (4) ratify the two out-of-`touches` edits by naming `docs/workspaces.md` and the conformance decision in `touches` (P2-1); (5) record the P2-3 trigger alongside the post-install warning observation. **`principal-swe-infra`, follow-on, NOT at this ref** — two comment lines beside `SUPPORTED_TOOLS` naming the coarsened families and the retained narrow one (P2-2). **`principal-security`** — SEC-1 accepted; SEC-2 is moot, nothing is owed for acceptance.
+- artifacts: this thread entry is the durable review record. `kai/coordination/items/area-plugins-tool-allowlist-fix.md` **not edited** — no lease held. No run directory created; nothing here needs local-only handling.
+- evidence:  `observed` — first-hand file reads at `C:\src\kai` at HEAD `4db3c907…`, enumerated in §4, plus `.git/refs`, `.git/HEAD` and `.git/logs/HEAD:535-538` for the ref binding and branch shape. `reported` — every gate at this ref (`validate-plugin`, `host-contract --self-test`, four `pack-preview --gate`s, `pack-preview --check`, `release-guard`, `npm test`), from the dispatch packet only, since no evidence block exists in this thread for `4db3c907`; also the 0140 disclosure table beyond the rows I cross-read, and the §12.2 probe results. `inferred` — that `web_search` confers search-only web access (medium confidence; the probe classifies the web family `not-testable`, so R8 establishes launch-safety and non-interference, not the grant). **Not run:** every gate, `git`, `node`, `npm` — this session has no shell, so the commit diff was not read and no gate result is claimed as mine.
+- questions: none blocking. No acceptance decision is owed on authority widening, because there is none at this ref.
+- next:      Steward/CoS record the ref and the three verdicts under a lease and close the P1-2 record corrections, then the existing `workflow-pull-request` / `workflow-ship` path. **This review does not clear `shipped`** — the interactive startup-warning observation remains the operator's alone, and the milestone-2 PR-3 ordering constraint (this item `shipped` before PR-3 opens) is untouched by this pass.

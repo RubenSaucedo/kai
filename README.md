@@ -38,10 +38,12 @@ Everything is indexed in **[docs/](docs/README.md)**.
 `v1.0.6` — all **56 agents and 51 skills** are published across five packs for
 the **Copilot CLI** and the **Copilot coding agent** (cloud).
 
-Agents and skills now use the documented primary aliases for shell, file,
-search, delegation, and web capabilities. Live probes on CLI 1.0.79 and 1.0.81
-exercised the replacement capabilities in both direct and delegated launches;
-the noninteractive probe cannot observe interactive startup warnings.
+Agents and skills now use documented primary aliases for shell, file, search,
+delegation, and combined web capabilities. Three search-only roles retain the
+accepted `web_search` name to avoid widening them to fetch access. Live probes
+on CLI 1.0.79 and 1.0.81 exercised the replacement capabilities in both direct
+and delegated launches; the noninteractive probe cannot observe interactive
+startup warnings.
 
 > **`v1.0.0` changes the install surface.** The published monolith `kai` is
 > retired. Install required `kai-core` plus the personal, product, engineering,
