@@ -5,11 +5,11 @@ title: Live host-tool conformance probe — measure the real allowlist vocabular
 initiative: area-plugins
 milestone: allowlist-repair
 delivery_class: product-change
-state: in-progress
+state: in-review
 resume_state: null
 priority: 1
 owner: null
-next_role: principal-swe-architect
+next_role: workflow-ship
 target: A reproducible probe that measures what the live Copilot CLI accepts and grants, replacing hand-maintained guesswork
 artifact_target: kai/initiatives/area-plugins/artifacts/decisions/area-plugins-host-tool-conformance.md
 context_artifacts:
@@ -22,6 +22,7 @@ touches:
   - kai/coordination/items/area-plugins-host-tool-conformance.md
   - kai/coordination/threads/area-plugins-host-tool-conformance.md
   - kai/initiatives/area-plugins/artifacts/decisions/area-plugins-host-tool-conformance.md
+  - kai/initiatives/area-plugins/log.md
   - scripts/host-tool-probe.mjs
   - scripts/lib/tool-conformance.mjs
   - test/fixtures/host-tool-probe/**
@@ -57,15 +58,25 @@ completed_reviews:
     satisfies_design_gate: true
     satisfies_requirement: false
     requires_exact_ref_confirmation: true
-change_ref: null
-version: 9
+  - role: principal-swe-architect
+    kind: independent-architecture
+    phase: implementation
+    change_ref: 4d711779408c8f675a740b5e243686d9e66a5ce4
+    verdict: approved
+    evidence: kai/coordination/threads/area-plugins-host-tool-conformance.md (REVIEW 2026-08-28-0112)
+    record_revision: kai/initiatives/area-plugins/artifacts/decisions/area-plugins-host-tool-conformance.md revised 2026-08-28-0112
+    timestamp: 2026-08-28-0112
+    satisfies_design_gate: true
+    satisfies_requirement: true
+change_ref: 4d711779408c8f675a740b5e243686d9e66a5ce4
+version: 13
 lease:
   holder: null
   token: null
   version_at_grant: null
   acquired: null
   expires: null
-updated: 2026-08-28-0055
+updated: 2026-08-28-0115
 ---
 
 ## Outcome
@@ -205,9 +216,11 @@ kind that would have produced a confidently wrong result:
 | `R8-repo-current` | valid, direct **and** delegated; same capabilities exercised successfully |
 | `R9-control` | valid; `read` and `search` worked, `write` / `execute` / `agent` did not — exactly consistent with only `read` plus bogus names being effective |
 
-`R9-control` is the load-bearing one: it confirms the documented
-**"unrecognized names are ignored"** rule on the live binary, in both
-directions, rather than accepting it from documentation.
+`R9-control` is the load-bearing runtime control: bogus names granted no tested
+capability while the real `read` declaration remained effective. This
+corroborates the documented **"unrecognized names are ignored"** rule, but does
+not independently prove validator treatment: because the validator channel was
+unobserved, `findings.bogus_ignored` correctly remains `null`.
 
 **Validator channel — honestly `unobserved`.** Neither noninteractive prompt
 path emitted validator warnings, *including for the bogus controls*. Prompt
@@ -224,8 +237,8 @@ warnings is **not** claimed.
 **Exact reports (session files, not committed):**
 `host-tool-probe-targeted-1.0.81.json` (current) and
 `host-tool-probe-targeted-1.0.79.json` (retained), the latter launched through
-`C:\Users\senrique\AppData\Local\copilot\pkg\win32-x64\1.0.79\index.js` with the
-report self-identifying CLI `1.0.79`. **No live baseline is committed** — the
+`<redacted>/1.0.79/index.js` with the report self-identifying CLI `1.0.79`.
+**No live baseline is committed** — the
 design's separation of synthetic parser fixtures from live host evidence holds.
 
 **Operational note:** full runs showed occasional model/delegated transcript
@@ -236,15 +249,11 @@ without relaunching the full matrix.
 answered by measurement; `waiting_on_questions` is empty and the item is no
 longer `blocked`.
 
-**Why this is `in-progress` and not `in-review`.** The implementation exists in
-the working tree but has **no commit SHA**, so `change_ref` is still `null`.
-The declared `principal-swe-architect` / `independent-architecture` review is a
-product-change review that must bind to an exact ref — the recorded design
-review already carries `satisfies_requirement: false` and
-`requires_exact_ref_confirmation: true`. `next_role` is
-`principal-swe-architect`, and **dispatch is gated on the main agent committing
-the working tree**. Until that SHA exists there is nothing for a reviewer to
-bind to.
+**Exact-ref review complete.** `principal-swe-architect` approved implementation
+commit `4d711779408c8f675a740b5e243686d9e66a5ce4` at 2026-08-28-0112. The item is
+`in-review`, the implementation review satisfies the declared requirement, and
+`next_role` is `workflow-ship` for fresh PR-head CI and publication preparation.
+This is not a shipped claim.
 
 ### Wildcard fact — status of the correction
 

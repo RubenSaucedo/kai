@@ -285,11 +285,11 @@ row yields `grant_direct` and `grant_delegated`. `--deep` adds R10.
 | `R5 edit-family` | `Edit`, `MultiEdit`, `Write` | " |
 | `R6 search-family` | `Grep`, `Glob` | **`Grep` is documented and reportedly warns** — the sharpest drift probe |
 | `R7 agent-family` | `custom-agent`, `Task` | " , plus it is the delegation transport itself |
-| `R8 repo-current` | the 15 identifiers the repo declares today | reproduces the live defect exactly; the before-picture of any diff |
+| `R8 repo-current` | the 16 identifiers the repo declares today | reproduces the live defect exactly; the before-picture of any diff |
 | `R9 control` | `read` + `kai-not-a-tool` + `zzz_bogus_42` | **confirms "unrecognized names are ignored" on the live binary** — bogus must warn while `read` still works |
 | `R10 singleton` (`--deep`) | exactly ONE identifier, one run each | clean attribution: a grant observed here is attributable to that one name |
 
-The 15 repo identifiers R8 must carry, `observed` from
+The 16 repo identifiers R8 must carry, `observed` from
 `scripts/lib/loader-contract.mjs:14-28`: `view`, `create`, `edit`, `grep`,
 `glob`, `bash`, `shell`, `ask_user`, `skill`, `task`, `read_agent`,
 `write_agent`, `web_fetch`, `web_search`, `session_store_sql`, `playwright`
@@ -943,9 +943,12 @@ answer rather than a visible failure:
 | `R8-repo-current` | valid | valid | same capabilities exercised successfully |
 | `R9-control` | valid | — | `read` + `search` worked; `write` / `execute` / `agent` did not |
 
-`R9-control` matches "only `read` plus bogus names are effective" exactly,
-confirming the documented **unrecognized-names-are-ignored** rule against the
-live binary in both directions instead of inheriting it from §1.1.
+`R9-control` matches "only `read` plus bogus names are effective" at runtime:
+bogus names granted no tested capability while the real `read` declaration
+remained effective. This corroborates the documented
+**unrecognized-names-are-ignored** rule, but does not independently prove
+validator treatment; with that channel unobserved,
+`findings.bogus_ignored` correctly remains `null`.
 
 ### 12.3 Validator channel — `unobserved`
 
@@ -972,8 +975,8 @@ evidence that prompt mode structurally cannot provide.
 
 `host-tool-probe-targeted-1.0.81.json` (current) and
 `host-tool-probe-targeted-1.0.79.json` (retained; launched through
-`C:\Users\senrique\AppData\Local\copilot\pkg\win32-x64\1.0.79\index.js`, report
-self-identifying CLI `1.0.79`). Both are **session files**.
+`<redacted>/1.0.79/index.js`, report self-identifying CLI `1.0.79`). Both are
+**session files**.
 
 **No live baseline is committed**, preserving §4's separation of synthetic
 parser fixtures from live host evidence.
@@ -1016,3 +1019,44 @@ read/write/search operations but no process runner, so it could not execute
 therefore the live probe was correctly not attempted. Syntax, self-test,
 generator parity, pack gates, and full `npm test` remain mandatory before this
 implementation can receive a `change_ref` or exact-ref architecture review.
+
+---
+
+## 13. Exact-ref architecture conformance review — 2026-08-28 01:12 local
+
+- **Disposition:** Endorse
+- **Change ref:** `4d711779408c8f675a740b5e243686d9e66a5ce4`
+- **Verdict:** **APPROVED**
+- **Findings:** P0 `0`, P1 `0`, P2 `2` — both record-only corrections applied
+  below; no implementation revision requested.
+
+The implementation matches the approved seam: qualified local-plugin agent
+names; outer `--allow-all-tools`; isolated temp plugins/workspaces; separate
+validator and runtime channels; direct and delegated launch plans; exact
+`--copilot-entry`; bounded `--rows`; deterministic redacted JSON; synthetic
+offline fixtures/self-tests; and no default network probe or committed live
+baseline. Fixed argv with `shell: false`, caller-explicit output/baseline paths,
+credential-variable filtering, transcript non-retention, and repository
+snapshots expose no command-injection, implicit path-escape, or silent
+repository-mutation path in the reviewed shape.
+
+Two P2 record defects were corrected during review:
+
+1. Durable records had reintroduced an absolute user-home path that the probe
+   itself redacts. It is now `<redacted>/1.0.79/index.js`; version attribution
+   remains anchored by `host.copilot_version` and the versioned entry basename.
+2. The record overstated R9 as independent proof that bogus names were ignored
+   even though the validator channel was unobserved, and called R8 a 15-name set
+   despite its 16 entries. R9 is now classified as runtime corroboration,
+   `findings.bogus_ignored` remains `null`, and R8 is correctly counted as 16.
+
+The targeted `1.0.79` and `1.0.81` JSON reports remain session-only evidence.
+They support runtime safety for R2/R8 and the stated R9 runtime control, not a
+warning fix. The interactive warning remains unobserved in prompt mode and
+unfixed. `tools: ["*"]` remains documented host syntax and rejected only by
+Kai's explicit least-privilege policy.
+
+The branch ref and worktree HEAD resolve to the reviewed SHA. Full `npm test`,
+including probe self-test and generated-pack parity, is prior-run evidence
+reported by the operator; it was not rerun in this review environment.
+`workflow-ship` must obtain fresh CI at the PR head before publication.

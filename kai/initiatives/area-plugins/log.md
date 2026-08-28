@@ -119,3 +119,26 @@ survives at
 deliberately left intact — it is corrected in the same thread at line 422 and
 again in the item and decision artifact, and erasing it would hide that the
 correction happened.
+
+## 2026-08-28-0112 — Exact-ref host-tool architecture review approved
+
+`principal-swe-architect` approved implementation commit
+`4d711779408c8f675a740b5e243686d9e66a5ce4` with disposition **Endorse**.
+The review found P0 `0`, P1 `0`, P2 `2`; both P2s were record-only and were
+corrected without changing implementation code.
+
+The approved shape uses qualified local-plugin agents, outer
+`--allow-all-tools`, OS-temp isolation, direct/delegated channels, exact
+`--copilot-entry`, bounded `--rows`, redaction, deterministic JSON, and offline
+synthetic self-tests. No live baseline or report is committed, no declaration
+migration is present, and version surfaces remain `1.0.5`.
+
+The corrections remove an absolute user-home path from durable evidence and
+narrow the R9 claim: read/search-only runtime behavior corroborates the
+documented ignored-name rule, but with validator warnings unobserved,
+`findings.bogus_ignored` remains `null`. The R8 set is also correctly counted
+as 16 identifiers, not 15.
+
+The item is `in-review`, exact-ref review is complete, and `next_role` is
+`workflow-ship` / main agent for fresh PR-head CI and publication preparation.
+Nothing is called shipped.
