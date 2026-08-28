@@ -9,7 +9,7 @@ state: in-review
 resume_state: null
 priority: 40
 owner: principal-swe-infra
-next_role: principal-sre
+next_role: principal-swe-architect
 target: pack-split staged department publish — kai-engineering
 artifact_target: null
 context_artifacts:
@@ -47,16 +47,22 @@ review_requirements:
     kind: independent-reliability
   - role: principal-swe-architect
     kind: independent-architecture
-completed_reviews: []
+completed_reviews:
+  - role: principal-sre
+    kind: independent-reliability
+    change_ref: 27804defe2f5f7fa16c2f5373884691203d21974
+    verdict: approved
+    evidence: "kai/initiatives/pack-split/artifacts/reliability/pack-split-release-12c-3-engineering.md"
+    timestamp: 2026-08-27-1720
 change_ref: 27804defe2f5f7fa16c2f5373884691203d21974
-version: 5
+version: 7
 lease:
   holder: null
   token: null
   version_at_grant: null
   acquired: null
   expires: null
-updated: 2026-08-27-1716
+updated: 2026-08-27-1720
 ---
 
 ## Outcome
@@ -135,6 +141,12 @@ engineering-owned through the existing overrides, committed, and published to
   `principal-swe-architect`, independently, against this exact ref.
   No review approval, final-head CI, merge, tag, release, publication, or
   production verification is claimed.
+- Independent SRE review approved exact ref
+  `27804defe2f5f7fa16c2f5373884691203d21974` with verdict **READY** and
+  P0/P1/P2 = 0/0/0. Evidence:
+  `kai/initiatives/pack-split/artifacts/reliability/pack-split-release-12c-3-engineering.md`.
+  Architecture, final-head CI, merge, production probe, tag, and release remain
+  pending; the item stays `in-review`.
 
 ## Notes
 

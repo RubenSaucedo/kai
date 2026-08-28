@@ -79,3 +79,40 @@ Append-only communication log mirroring
 - questions: none
 - next:      principal-sre — approve or return blocking reliability findings;
              architecture review is separately required at the same ref.
+
+## REVIEW 2026-08-27-1720 — principal-sre
+
+- ref:       `27804defe2f5f7fa16c2f5373884691203d21974`
+- verdict:   approved — READY; P0/P1/P2 = 0/0/0.
+- evidence:  Exact branch ref inspected; the four-pack generated slice,
+             committed-tree drift gate, empty engineering runtime dependency
+             projection and CI leg, marketplace/rollback derivation, `1.0.3`
+             version surfaces, migration copy, and preserved runtime-dispatched
+             review lenses are coherent.
+- boundary:  The supplied exact-content `npm test` pass was not re-executed.
+             Architecture, final-head CI, merge, marketplace probe, tag, and
+             release are pending. No production action was performed.
+- artifact:  `kai/initiatives/pack-split/artifacts/reliability/pack-split-release-12c-3-engineering.md`
+
+## HANDOFF 2026-08-27-1720 — principal-sre -> principal-swe-architect
+
+- did:       Completed the independent reliability review at exact change ref
+             `27804defe2f5f7fa16c2f5373884691203d21974`; verdict READY,
+             P0/P1/P2 = 0/0/0. Recorded revision-bound evidence and released
+             the reviewer lease.
+- state:     in-review; SRE review complete; architecture review unmet
+- needs:     Independent architecture review of the generated engineering tree
+             and preserved DO NOT BIND obligation at this same exact ref.
+             After both reviews, workflow-ship must still prove reviewed
+             ancestry, records-only equivalence, and fresh final-head CI before
+             any merge or publication.
+- workspace: C:\src\kai
+- artifacts: `kai/initiatives/pack-split/artifacts/reliability/pack-split-release-12c-3-engineering.md`;
+             `kai/coordination/items/pack-split-release-12c-3-engineering.md`;
+             `kai/coordination/threads/pack-split-release-12c-3-engineering.md`
+- evidence:  `kai/initiatives/pack-split/artifacts/reliability/pack-split-release-12c-3-engineering.md`;
+             local detail at
+             `.kai/runs/eng/2026-08-27/02-sre-pack-split-release-12c-3-engineering/reliability-assessment.md`
+- questions: none
+- next:      principal-swe-architect — complete the remaining exact-ref review;
+             do not move release state.
