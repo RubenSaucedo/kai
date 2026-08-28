@@ -613,7 +613,7 @@ const ASSESSOR_ROLES = [
 //
 // A skill whose procedure is mandatory can require a capability the agent must
 // actually hold: `kai-core-work-activity` tells an agent to run `scripts/activity.mjs`,
-// which is impossible without `bash`. Nothing otherwise connects the two, so a
+// which is impossible without `execute`. Nothing otherwise connects the two, so a
 // well-meant tool removal ("assessors should not hold shell") can silently
 // break a contract the same agent is required to follow.
 //

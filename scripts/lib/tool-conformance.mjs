@@ -17,6 +17,7 @@ export const REPO_TOOLS = [
   'ask_user',
   'skill',
   'read_agent', 'write_agent',
+  'web_search',
   'session_store_sql',
   'playwright',
 ];

@@ -1233,3 +1233,558 @@ Disclosure total: 113 changed declaration fields across 107 root files; every re
 **Regression guard:** `SUPPORTED_TOOLS` now contains the primary and specialized vocabulary only, and `loaderErrors()` rejects every retired spelling in both agent and skill declarations. The malformed fixtures now use accepted aliases for their non-target fields, so each fixture isolates the intended defect.
 
 **Warning evidence:** runtime capability preservation is `observed` in the canonical host-tool conformance decision §12.2 for CLI 1.0.79 and 1.0.81, direct and delegated. Interactive startup warning silence remains `unobserved` by design (§12.3) and is an operator post-install observation, not a merge claim.
+
+---
+
+## REVIEW 2026-08-28-0141 — principal-swe-architect · independent-architecture (exact ref, re-review after remediation)
+
+- **verdict:** **APPROVED** — P0 **0** / P1 **1** / P2 **4**
+- **change_ref reviewed:** `9b98143c7b7ac46bdd0db88f9cf51ee5956da030`
+  (`.git/refs/heads/fix/area-plugin-tool-aliases`; `.git/HEAD` →
+  `refs/heads/fix/area-plugin-tool-aliases`). `.git/logs/HEAD` records the branch
+  from `main` at `71ee251`, then `f093c5a` *fix(host): use portable tool aliases*,
+  then `9b98143` *docs(review): resolve alias migration findings*.
+- **satisfies_requirement:** `true` — **bound to `9b98143` and to no other ref.**
+  The item record still names `f093c5a`; see P1-1. If a tracked file changes
+  again, this approval does not travel with it.
+- **Disposition: Endorse.** Zero code changes requested. The prior review
+  endorsed the shape and blocked the ship on authorization, an efficacy claim,
+  and missing records. The steward lifted and amended what was hers to lift and
+  amend; `principal-swe-infra` produced the disclosure, the carve-out claim, the
+  gate evidence, and the four P2 corrections. Nothing structural is left open.
+
+### The seam, at this ref
+
+```text
+                 DECLARATION VOCABULARY                     HOST
+  agents/*.agent.md:4    ──┐                     ┌── validator channel (startup warnings)
+  skills/*/SKILL.md:4    ──┤  tools: [...]       │      status: UNOBSERVED — post-install,
+  (+6 requires_tools:)     ├────────────────────►┤              operator-only (§12.3)
+  packs/**/ (107 mirrors)──┘                     └── runtime channel  (granted capability)
+                           │                            status: OBSERVED 1.0.79 / 1.0.81
+                           │                                    direct + delegated (§12.2)
+             SUPPORTED_TOOLS — 2 copies, lockstep, byte-identical
+             scripts/lib/loader-contract.mjs:15-24
+             packs/kai-core/scripts/lib/loader-contract.mjs:15-24
+                           │
+                           └── loaderErrors() now REJECTS: bash shell view create
+                               grep glob task web_search web_fetch
+                               ACCEPTS: execute read edit search agent web todo
+                                        + ask_user skill read_agent write_agent
+                                          session_store_sql playwright
+```
+
+Unchanged from the prior review: the change is measured against the right-hand
+channel and ships for its effect on the left-hand one. What changed is that the
+record now says exactly that, in the item Outcome, acceptance box 7, `CHANGELOG`
+and `README`, instead of promising a silence nobody has seen.
+
+### Prior findings — disposition verified at this ref
+
+| # | prior finding | disposition | evidence checked this pass |
+|---|---|---|---|
+| P0-1 | `edit` survives; Outcome promised the warnings stop | **Resolved by amendment, not by claim.** | Item Outcome + acceptance box 7 carry three separately-labelled claims; `CHANGELOG.md:11-17` says warning silence "remains unverified because prompt mode does not expose that startup channel"; `README.md:41-44` says the same. No warning-free claim anywhere. |
+| P0-2 | migration authored against §12.4's stop | **Lifted by the steward on recorded operator authority, with bounds** (`STEWARD RULING 2026-08-28-0125`, scope-brief A28). Not a reviewer's call to re-litigate; I verify only that it is recorded, provenanced and bounded — it is. | Residual: the stop still reads absolute in the artifact it lives in — P2-3. |
+| P0-3 | P5 scope applied without promotion | **Resolved.** | `kai/initiatives/area-plugins/backlog.md:245-320` carries the P5(a) promotion and keeps P5(b) parked; item `touches` now names `skills/`, `scripts/lib/loader-contract.mjs`, `scripts/host-contract.mjs`, `test/fixtures/host-loader/`, `docs/host-capabilities.md`. |
+| P1-1 | item lifecycle bypassed | **Partly resolved.** `state: in-review`, `change_ref` set, `changes-requested` recorded with `satisfies_requirement: false`. Still open: `change_ref` names the superseded ref and no lease covered the remediation pass — see P1-1 below. |
+| P1-2 | carve-out unclaimed, gates unrun | **Resolved.** All three A11 clauses named explicitly in the 0140 evidence block; ten commands reported green. `reported`, corroborated below. |
+| P1-3 | §7.3 capability-loss table missing | **Resolved.** 113 rows = 56 agents + 51 skills + 6 `requires_tools`, per file and per field, with the mandated sentence *"CI cannot catch a capability loss here; this table is the only guard."* I recounted the rows: complete, no file omitted. |
+| P1-4 | expand→migrate→contract collapsed | **Recorded as an accepted deviation with its cost stated** (steward, 0125). Consistent with what I found: one revertible commit, lockstep versioning, no dual-vocabulary window. |
+| P2-1 | `docs/host-capabilities.md:16` said `task` | **Fixed.** Now `` (`agent` / `write_agent` / `read_agent`) ``. |
+| P2-2 | fixtures failed for extra reasons | **Fixed.** `unsupported-tool.agent.md:4` is `[read, teleport]` → isolates `teleport`; `tools-not-array.skill.md:4` scalar `read`; `name-mismatch`/`skill-key-on-agent` `[read]`; `argument-hint-array` `[read, search]`. Each fixture now yields exactly its target error under `INVALID_FIXTURES` (`scripts/host-contract.mjs:174-199`). |
+| P2-3 | regression guard | **Resolved as dispositioned.** The cheap guard is real and I read it: `SUPPORTED_TOOLS` holds only primary + specialized names, `loaderErrors()` (`loader-contract.mjs:88-92`) rejects retired spellings for agents *and* skills, `validate-plugin.mjs:650` rejects them in `requires_tools`. The guard kai still does **not** have — contract-vs-host conformance — is named honestly and parked, not pretended. |
+| P2-4 | evidence cited to session-only JSON | **Fixed.** `CHANGELOG.md:14-16` cites the conformance decision §12.2 as the durable landing place. |
+
+### What I verified first-hand this pass (`observed` — file reads at `C:\src\kai`, HEAD `9b98143`)
+
+1. **All 56 root agent declarations** re-read at `agents/*.agent.md:4` and mapped
+   against the pre-change baseline enumerated in this thread's §2a. Every array
+   is the order-preserving, de-duplicated image of its predecessor under
+   `bash|shell→execute`, `view→read`, `edit|create→edit`, `grep|glob→search`,
+   `task→agent`, `web_search|web_fetch→web`. **Zero drops, zero token additions.**
+2. **All 51 root skill declarations** map the same way against the independently
+   installed pre-change tree at
+   `C:\Users\senrique\.copilot\installed-plugins\_direct\RubenSaucedo--kai\skills`
+   (a `0.64.0` snapshot — older than the merge base, so corroborating rather than
+   authoritative, and it agrees row-for-row with the 113-row table's retired-token
+   column). `requires_tools:` is exactly six files, each `[execute]`.
+3. **Specialized tools remain explicit, none folded into a family alias:**
+   `skill` 56/56 agents, `ask_user` 52/56 agents + 13/51 skills, `playwright`
+   9 agents + 5 skills, `read_agent`/`write_agent` 5/5 agents,
+   `session_store_sql` 1 (`skills/extract-writing-style/SKILL.md:4`).
+4. **Mirror parity at every declaration site:** `grep '^(tools|requires_tools):'`
+   under `packs/` returns **113 matches across 107 files** — 56 agents + 51 skills
+   + 6 `requires_tools:` — and each equals its root line including quoting style
+   and element order. `packs/kai-core/scripts/lib/loader-contract.mjs:15-24`
+   equals `scripts/lib/loader-contract.mjs:15-24`. Mirrors still carry their
+   injected preflight block (checked `packs/kai-engineering/agents/principal-swe-infra.agent.md:1-30`).
+5. **No retired spelling survives anywhere.** Repo-wide search for a
+   `tools:`/`requires_tools:`/`allowed-tools:` line containing
+   `bash|shell|view|create|grep|glob|task|web_search|web_fetch` returns **two**
+   hits, both historical quotations inside coordination threads
+   (`area-plugins-tool-allowlist-fix.md:148`, `pack-split-preflight-compat.md:111`).
+   Zero under `agents/`, `skills/`, `packs/`, `test/`, `examples/`, `scripts/`.
+6. **The `requires_tools` inheritance closure holds.** `validate-plugin.mjs:656-670`
+   demands every agent inheriting a `requires_tools` skill declare each named
+   tool. The only two agents without `execute` — `principal-ai-applied-engineer`,
+   `principal-ai-researcher` — inherit none of the six (`**Inherits:**` lines read).
+   `principal-swe-infra` inherits `kai-core-work-activity` and declares `execute`.
+7. **A11 carve-out, clause by clause.** Clause 1: `pack-plan.mjs:49` `PACKS_DIR`,
+   `:63` `PACKS` (core 7 / engineering 20 / product 9 / gtm 11 / personal 9 —
+   matching on-disk mirror counts), `:99` `PACK_ORDER`, `:104`
+   `SKILL_OWNER_OVERRIDES` — same identifiers at the same line numbers cited
+   before the change. Clause 2: `plugin.json:2` `kai`,
+   `.github/plugin/marketplace.json:2` `kai-plugins`, five pack names unchanged;
+   `validate-plugin.mjs:680-682` still pins `kai-plugins`/`kai`. Clause 3:
+   `scripts/lib/{preflight,degraded,inherits}-block.txt` contain **no**
+   tool-vocabulary token at all, so the migration had nothing to strand there.
+8. **Validator rejects retired aliases** — read, not assumed:
+   `SUPPORTED_TOOLS` = `{execute, read, edit, search, agent, web, todo, ask_user,
+   skill, read_agent, write_agent, session_store_sql, playwright}` in both copies;
+   all nine retired spellings absent. Only these two copies exist repo-wide
+   (`grep SUPPORTED_TOOLS **/*.mjs`), so the hand-sync surface did not grow.
+9. **Release metadata is lockstep `1.0.6`:** `package.json:3`, `plugin.json:4`,
+   `marketplace.json:9,17,40,63,86,109`, all five packs'
+   `package.json`/`plugin.json`/`package-lock.json`, root `package-lock.json:3,9`,
+   `README.md:38`, `CHANGELOG.md:7` with the `:3105` compare link.
+10. **Gate preconditions I could check independently all hold**, which is why I
+    find the reported green runs credible: golden `test/fixtures/inventory.json`
+    counts 56/51 and carries no tool names (host-contract inventory is insensitive
+    to this migration); README status stamp says 56 agents / 51 skills;
+    `[1.0.6]` section + compare link exist (release hygiene); every declaration
+    is in `SUPPORTED_TOOLS` (validate-plugin); every mirror declaration equals its
+    root (`--check` parity at the only lines this change touches); each malformed
+    fixture isolates one error (`--self-test`).
+
+### What remains `reported`, stated rather than absorbed
+
+This session has **no shell** — `git`, `node`, `npm` are not bound to it.
+Therefore:
+
+- **The commit diff was not read.** The claim *"all 214 changed root/mirror files
+  differ only in `tools:` or the six `requires_tools:` lines"* is `reported` from
+  `principal-swe-infra`'s diff verifier. My independent bound is: every
+  `tools:`/`requires_tools:` line in all 214 files is in the migrated vocabulary,
+  every mirror line equals its root, and the mirrors' injected blocks are intact.
+- **No gate was run by me.** `validate-plugin`, `host-contract --self-test`, the
+  four `pack-preview --gate`s, `pack-preview --check`, `release-guard`, `npm test`
+  are `reported` green at 0140 and corroborated only as in point 10 above.
+- **PR-body content is unverifiable from here.** Acceptance requires the three
+  carve-out clauses and the disclosure table in the PR body; both exist in this
+  thread and are transcribable, but no PR was read.
+- **`git status` cleanliness is unverified.** HEAD matches the reviewed ref by
+  ref-file read.
+
+### P1 — one finding, records-only
+
+**P1-1 — the item record is still bound to the superseded ref.**
+`kai/coordination/items/area-plugins-tool-allowlist-fix.md` carries
+`change_ref: f093c5a…` and `completed_reviews[0].change_ref: f093c5a…` at
+`version: 5`, while the implementation under review — including the four P2
+corrections in `docs/host-capabilities.md` and `test/fixtures/host-loader/invalid/*`
+— is `9b98143`. The steward's own 0125 handoff set this precondition: *"If any
+tracked file changes, update `change_ref` and re-dispatch the architecture review
+against the new ref."* The re-dispatch happened; the `change_ref` update did not.
+Related: no lease covered the 0140 remediation pass (all five lease fields null)
+and no `HANDOFF` block closes it — this thread ends at the evidence entry.
+
+**This is not a code defect and needs no further architecture pass.** It is the
+bookkeeping that makes this approval attach to the right commit. Until a
+lease-holding role sets `change_ref: 9b98143…` and records this verdict, the item
+record asserts a `changes-requested` review against a commit that no longer
+describes the tree. Owner: `director-chief-of-staff` / `principal-product-manager`
+under a lease. I hold none and did not edit the record.
+
+### P2 — four, all non-blocking, none requiring a code change to the migration
+
+**P2-1 — the disclosure table guards one direction only; the widenings are
+undisclosed. Disclosed here, so the gap is closed by publication, not by a diff.**
+Every row correctly reads `capability loss: none`. But collapsing a family onto
+its primary alias *broadens* authority wherever a declaration previously held
+only part of the family, and the documented vocabulary makes the finer grain
+inexpressible (A23: primary aliases only; the compatible aliases that would
+preserve it — `Write`, `Grep`, `Glob` — carry unknown validator behaviour, which
+is exactly what this milestone refuses to bet on). Derived from the implementer's
+own retired-token column plus the post-change declarations:
+
+- **File family — 16 declarations gain create authority** (held `edit`, never
+  `create`; now hold `edit`, which covers both): agents `instructor-teacher`,
+  `principal-product-manager`, `principal-product-strategist`,
+  `workflow-course-to-audio`, `workflow-product-explore`, `workflow-self-check`;
+  skills `build-diagrams`, `coding-style`, `extract-writing-style`,
+  `kai-core-content-grounding`, `kai-core-initiative-stewardship`,
+  `kai-core-web-content-extraction`, `kai-core-web-evaluation`,
+  `onboard-to-codebase`, `pr-sizing`, `product-exploration`.
+- **Web family — 3 agents gain fetch authority** (held `web_search` only):
+  `instructor-path-mentor`, `instructor-tutor`, `principal-engineer-career-mentor`.
+- **No widening on `execute`** (`bash`+`shell` were always paired, 54/54),
+  **none on `search`** (`grep` and `glob` absent on exactly the same declarations),
+  **none on `read`/`agent`**.
+- **The one deliberate read-only design survives intact:** `workflow-issue-analysis`
+  held neither `create` nor `edit` and still declares no file-write token — the
+  design `validate-plugin.mjs:620-623` exists to protect.
+
+On the measured hosts the practical delta is likely zero (unrecognized names are
+ignored and the file tools appear base-granted), so this is a change to *declared*
+least privilege, not to observed behaviour. **No code change requested** — the
+alternative is inventing undocumented spellings, which is the defect being fixed.
+The acceptance call ("is a 19-declaration widening of declared authority
+acceptable?") is the steward's, and `principal-security` is the role to opine if
+the operator wants a control judgment. I do not accept residual risk here.
+
+**P2-2 — two live prose references still name retired spellings.**
+`docs/workspaces.md:90` ("Copilot CLI's background `task`/`write_agent`
+messaging") is the same defect class as the fixed `host-capabilities.md:16`, and
+`scripts/validate-plugin.mjs:616` says a skill's procedure is *"impossible without
+`bash`"* where the contract now says `execute`. Both are cosmetic.
+`docs/proposals/pack-architecture.md:459-461` also names `task` and should be left
+alone — it is a historical proposal record. Neither live file is in this item's
+`touches`; **do not widen this item for them.** File as a follow-on nit.
+
+**P2-3 — the lifted stop is not annotated where the stop lives.**
+`kai/initiatives/area-plugins/artifacts/decisions/area-plugins-host-tool-conformance.md`
+§12.4 still reads *"no declaration migration may be authored on this evidence"*
+with no cross-reference to the 0125 lift. The lift is durable in this thread,
+scope-brief A28 and `northstar.md:487` — but a reader who opens the canonical
+decision sees an unlifted stop and a shipped migration. One sentence with a
+pointer fixes it. Steward's artifact, steward's edit.
+
+**P2-4 — thread/board hygiene.** No `HANDOFF` block closes the 0140 remediation
+pass (see P1-1), and `BOARD.md:48-49` still shows this item `ready` with an unmet
+dependency and `host-tool-conformance` `in-progress`. BOARD is derived and
+reconciled by `director-chief-of-staff`; the steward already recorded it at 0125.
+Restated here only so this review's counts are complete.
+
+### Why this is APPROVED rather than held
+
+Three things had to be true, and each is now checkable rather than asserted.
+**The vocabulary is one vocabulary** — 214 declaration sites, two contract copies,
+one set of names, with retired spellings rejected by the guard rather than merely
+absent. **Capability was replaced, never deleted** — 113 disclosed fields, zero
+drops, zero token additions, specialized tools 1:1, and the one agent designed
+not to write still cannot write. **The claim matches the evidence** — the item
+promises what the runtime channel measured and explicitly refuses to promise what
+only an interactive launch can show. That last one is the real remediation: the
+prior block was never about the diff, it was about a record that promised a
+silence nobody had observed. Shrinking the promise to fit the evidence closed it.
+
+What I am **not** clearing: `shipped`. That still needs the operator to deploy
+and read the startup warnings, and a residual `edit` warning routes to §7.2 B2
+documentation plus an upstream report — not to another declaration change.
+
+---
+
+## HANDOFF 2026-08-28-0141 — principal-swe-architect -> director-chief-of-staff / principal-product-manager (steward)
+
+- did:       Re-ran the independent-architecture review bound to `9b98143c7b7ac46bdd0db88f9cf51ee5956da030`. Re-verified all 56 root agent and 51 root skill declarations against the pre-change baselines, the six `requires_tools:` migrations, declaration parity across all 107 generated mirrors, both `SUPPORTED_TOOLS` copies, the `requires_tools` inheritance closure, the 113-row disclosure table's completeness, all three A11 carve-out clauses, the four P2 corrections, lockstep `1.0.6` metadata, and the warning-claim wording in the item, `CHANGELOG` and `README`. Derived and disclosed the previously-unstated authority widenings. Edited no implementation file, no item frontmatter, and ran no command.
+- state:     **APPROVED** — P0 0 / P1 1 / P2 4; `satisfies_requirement: true`, **bound to `9b98143` only**.
+- needs:     **`director-chief-of-staff` / steward, under a lease** — record this approval on the item: `change_ref -> 9b98143c7b7ac46bdd0db88f9cf51ee5956da030`, append the `completed_reviews` entry (`principal-swe-architect` / `independent-architecture` / `implementation` / `approved` / `satisfies_requirement: true` / this thread entry), and reconcile `BOARD.md:48-49` (P1-1, P2-4). **Steward** — accept or route the P2-1 widening disclosure (19 declarations; `principal-security` if a control opinion is wanted) and annotate the conformance decision §12.4 with the 0125 lift (P2-3). **Follow-on, not this item** — `docs/workspaces.md:90` and `scripts/validate-plugin.mjs:616` retired-name prose (P2-2).
+- artifacts: this thread entry (the durable review record). `kai/coordination/items/area-plugins-tool-allowlist-fix.md` **not edited** — no lease held.
+- evidence:  `observed` — first-hand file reads at `C:\src\kai` at HEAD `9b98143…`, enumerated in the review above, plus the independently-installed `0.64.0` tree as a corroborating pre-change baseline. `reported` — the 0140 gate runs (`validate-plugin`, `host-contract --self-test`, four `pack-preview --gate`s, `pack-preview --check`, `release-guard`, `npm test`, the diff verifier) and the §12.2 probe results. **Not run:** every gate, `git`, `node`, `npm` — this session has no shell, so the commit diff was not read and no gate result is claimed as mine.
+- questions: none blocking. One owed observation, still the operator's alone: after deployment, launch a kai agent interactively and read the startup warnings (acceptance box 7). No noninteractive proxy may be manufactured.
+- next:      Record the approval against `9b98143`, then `workflow-pull-request` / `workflow-ship`. `shipped` requires operator deployment and verification. The milestone-2 PR-3 ordering constraint still stands: `area-plugins-m2-mode-selection` does not open while this item is open.
+
+---
+
+## REVIEW 2026-08-28-0157 — principal-security · independent-security (exact ref, bounded to P2-1)
+
+- **verdict:** **APPROVED** — **CONDITIONAL** in security terms — P0 **0** / P1 **0** / P2 **3**
+- **change_ref reviewed:** `9b98143c7b7ac46bdd0db88f9cf51ee5956da030` (`.git/HEAD`
+  → `refs/heads/fix/area-plugin-tool-aliases`; that ref file reads `9b98143c…`).
+  Bound to this ref only.
+- **Scope, bounded as dispatched:** the residual declared-authority widening in
+  `REVIEW 2026-08-28-0141` P2-1 — the 16 file-family declarations and the 3
+  web-family agents. **Everything else in this migration is explicitly excluded**
+  and is not re-reviewed here: enumeration completeness, mirror parity, the A11
+  carve-out, gate results, the §12.4 lift, the warning-claim wording, release
+  metadata, and the four architecture P2s.
+- **Authorization:** read-only. No command run, no gate run, no host probe, no
+  network action against any kai or operator system. One public-documentation
+  fetch (GitHub Docs, custom-agents configuration) carrying no repo content.
+- **Zero implementation changes requested at this ref.** All three findings are
+  records/ownership items belonging to other roles.
+- **No local run directory was created.** This session has no shell to make one,
+  and nothing in this assessment needs local-only handling — there is no secret,
+  no customer data, no private topology and no exploit material in it. This
+  thread section is the complete durable record.
+
+### 1. The bounded conclusion, stated before the reasoning
+
+**The dispatched question was "is a 19-declaration widening of declared authority
+acceptable?" The honest answer is that it is not a 19-declaration widening.**
+
+- **File family — 16 declarations, authority delta zero.** The token `edit` is
+  **unchanged** in all 16. It was there before the migration and it is there
+  after, same token, same position in the family. Nothing conferring file
+  authority was added to any of the 16.
+- **Web family — 3 agents, authority delta real.** `web_search` → `web` is a
+  genuine broadening on the live binary, and it is the only item in the set that
+  warrants a human acceptance.
+
+So the set to accept is **3 declarations, not 19**, and the reason the other 16
+are safe is not the reason P2-1 gives. That distinction is finding SEC-1 and it
+matters more than it looks — an accepted risk recorded against the wrong
+mechanism is a risk nobody can re-audit later.
+
+### 2. What I verified first-hand (`observed` — file reads at `C:\src\kai`, HEAD `9b98143`)
+
+1. **The 19 declarations at this ref.** Six file-family agents —
+   `instructor-teacher`, `principal-product-manager`, `principal-product-strategist`,
+   `workflow-course-to-audio`, `workflow-product-explore`, `workflow-self-check` —
+   and ten skills — `build-diagrams`, `coding-style`, `extract-writing-style`,
+   `kai-core-content-grounding`, `kai-core-initiative-stewardship`,
+   `kai-core-web-content-extraction`, `kai-core-web-evaluation`,
+   `onboard-to-codebase`, `pr-sizing`, `product-exploration`. Three web-family
+   agents — `instructor-path-mentor`, `instructor-tutor`,
+   `principal-engineer-career-mentor`. Line 4 of each read directly.
+2. **`edit` is not in the retired-token column for any of the 16.** Cross-read the
+   0140 disclosure table row by row for those files: each lists only
+   `bash|shell|view|grep|glob → …`. `edit` passes through untouched. Combined
+   with the post-change lines, the 16 declarations' file-family token is
+   **byte-identical across this migration**.
+3. **The write-less design holds.** `agents/workflow-issue-analysis.agent.md:4` is
+   `["execute", "read", "search", "ask_user", "web", "skill"]` — no `edit`,
+   confirmed independently of the architecture pass.
+4. **All nine widened *agents* already declare `execute`** — the six file-family
+   and the three web-family, checked individually. This is the fact that bounds
+   the whole question, and it is why neither family's coarsening creates a
+   capability the same declaration did not already reach.
+5. **No second-order widening leaked in.** `web` appears on exactly **28** root
+   agents, matching the pre-change `web_search` count of 28 — so no agent that
+   held neither web token acquired one. `agent` on exactly **5**, matching the
+   pre-change `task` count. `todo` on **0**. `execute` absent on exactly the two
+   agents that lacked `bash`/`shell` before (`principal-ai-applied-engineer`,
+   `principal-ai-researcher`) — both still `["web", "read", "edit", "search",
+   "ask_user", "skill"]`, no shell acquired. `search` still absent on exactly the
+   four that lacked `grep`/`glob`. The widening surface is closed at 19, and
+   within it the only real item is 3.
+6. **The declaration guards the dispatch names as retained are real, not assumed.**
+   `scripts/lib/loader-contract.mjs` `loaderErrors()` rejects a missing `tools`
+   key, a non-inline-array value, an empty array, and any token outside
+   `SUPPORTED_TOOLS`. `SUPPORTED_TOOLS` is the seven primaries plus six
+   specialized names — no `*`, no retired spelling. **Wildcard and omission
+   remain structurally unavailable**, which is the control that actually carries
+   least privilege here.
+7. **The repo already knows tool tokens cannot express behavioural constraints,
+   and already compensates.** `scripts/validate-plugin.mjs:569-604` pins eleven
+   assessor roles to inherit `kai-core-no-self-remediation`, with the comment:
+   *"a `tools` grant is a capability, so it cannot be expressed in frontmatter —
+   one `edit` grant covers both sides of the line. Pinning the roster here is what
+   stops the contract from silently falling off a role."* Two of the declarations
+   in scope — `workflow-self-check` and `workflow-issue-analysis` — are on that
+   roster and the pin is untouched by this change. **This is the strongest
+   compensating control in the set and the correct pattern for anything the new
+   coarse vocabulary can no longer say.**
+
+### 3. Documentation, read first-hand this pass (`observed` — public GitHub Docs)
+
+I opened the published tool-alias table directly rather than relying on the
+transcription in decision §1.1. It agrees, and it adds three facts the thread did
+not carry — each of which changes the analysis:
+
+| documented fact | why it matters here |
+|---|---|
+| Primary aliases are exactly `execute`, `read`, `edit`, `search`, `agent`, `web`, `todo` | Confirms **no finer-grained primary alias exists**. The dispatch's premise holds. |
+| `edit`'s compatible aliases are `Edit`, `MultiEdit`, `Write`, `NotebookEdit` — **aliases of one primary**, not narrower grants | `Write` is not a separate "create" tool. Declaring `Edit` without `Write` is **not documented to narrow anything**. Option C cannot express the grain it was proposed to preserve. |
+| `web`'s purpose is stated as *"fetching content from URLs and performing a web search"*; compatible aliases `WebSearch`, `WebFetch` | One grant, two capabilities, **by design**. The web coarsening is inherent to the documented vocabulary, not an implementation choice. |
+| **"All aliases are case insensitive"** | `Grep` and `grep` are the same alias — so the live binary warning on lowercase `grep` is genuine drift, and `Grep` would be expected to warn identically. Option C's candidates inherit the exact defect being fixed. |
+| **"All unrecognized tool names are ignored"** | An ignored token grants nothing. A declaration that names an ignored token is not narrower — it only *reads* narrower. |
+| `create`, `web_search`, `web_fetch` appear **nowhere** in the alias table | `create` was never a grant-conferring token under the published contract. |
+
+### 4. Finding-by-finding: is this acceptable residual risk?
+
+#### 4.1 File family — 16 declarations — **no widening occurred**
+
+P2-1 frames these as *"held `edit`, never `create`; now hold `edit`, which covers
+both."* Both halves of that sentence describe the same token. Under the review's
+own premise — that `edit` covers the family — those 16 **already covered the
+family before the migration**, because they already declared `edit` and still do.
+
+Test it against every host model on the table:
+
+| host model | pre-change grant for the 16 | post-change grant | delta |
+|---|---|---|---|
+| Published contract: `edit` is the family primary, `create` unrecognized → ignored | full edit family | full edit family | **none** |
+| Live binary: both `edit` and `create` are warned, i.e. outside its validator vocabulary | whatever the runtime base-grants | same | **none** |
+| Hypothetical: host honours a narrow lowercase `create` distinct from `edit` | edit-only | edit-only (no `create` added) | **none** |
+
+There is no reading in which those 16 gained authority, because **no token was
+added to them**. What changed is that 49 *sibling* declarations stopped naming
+`create`. The 16 look coarser only in comparison. That is a property of the
+frequency table, not of the declarations.
+
+**Security consequence: none. Not a finding.** And the corollary matters for the
+record: *the finer grain was never held*, so it cannot have been lost, and no
+option — A, B or C — could have preserved it.
+
+The ten skills in this set are the same story with an extra bound: a skill's
+`tools:` is what the skill may use once loaded into an agent that already holds
+its own allowlist, so a skill declaration cannot exceed its host agent. Five of
+the ten (`extract-writing-style`, `kai-core-initiative-stewardship`,
+`kai-core-web-content-extraction`, `kai-core-web-evaluation`,
+`onboard-to-codebase`) declare `execute` in their own right; the other five
+(`build-diagrams`, `coding-style`, `kai-core-content-grounding`, `pr-sizing`,
+`product-exploration`) hold `edit` and nothing more dangerous. Unchanged either
+way.
+
+#### 4.2 Web family — 3 agents — **the one real widening. P2. Acceptable, with a named accepter.**
+
+This one is real, and it is real for a reason the architecture review did not
+have: **the live binary's validator does *not* warn on `web_search` or
+`web_fetch`** — only on `create`, `edit`, `grep` (`reported`, operator, §1.2). A
+name the validator accepts is a name it distinguishes. So on the live binary the
+finer grain here was expressible and was in fact being expressed:
+`instructor-path-mentor`, `instructor-tutor` and `principal-engineer-career-mentor`
+declared search and not fetch. Post-change they declare `web`, which the
+documentation defines as fetch **and** search. **Declared authority broadens.**
+
+The threat this touches is the one worth naming plainly: **`web_fetch` on an agent
+that can also read local files is an egress and exfiltration channel, and an
+SSRF-adjacent one** — content is read, encoded into a URL, and sent outbound;
+internal or link-local addresses may be reachable depending on host behaviour.
+Prompt injection from fetched content is the realistic initiator. That is exactly
+the abuse case a search-only grant partially withholds.
+
+Why it is nonetheless **P2 and acceptable**, with each mitigation labelled:
+
+1. **All three already declare `execute`** (`observed`). The probe harness itself
+   uses `execute` to write files via `node -e` (`reported`, decision §4.2), and
+   the working environment provides `curl`. Arbitrary outbound egress was already
+   inside these agents' declared authority. The new token adds a *more convenient*
+   path, not a *new* one. (`inferred`, medium-high confidence, basis: probe §4.2
+   plus environment tooling.)
+2. **The host permission layer sits above the allowlist and is untouched.** The
+   probe had to add outer `--allow-all-tools` precisely because *"host permission
+   policy could masquerade as an inner agent-allowlist denial"* (`reported`,
+   §12.1 defect 2). In ordinary operator use the declaration is the inner of at
+   least two gates; this change moves the inner one only.
+3. **Blast radius is the right shape.** All three are `kai-personal` mentoring
+   roles — no credential handling, no production authority, no
+   `read_agent`/`write_agent` transport, no `agent` delegation token. They hold
+   `execute`, `read`, `edit`, `search`, `ask_user`, `web`, `skill` and nothing
+   else. The roles that *do* handle sensitive material — `principal-security`,
+   `principal-privacy-compliance` — held both web tokens before and gained
+   nothing.
+4. **Fleet baseline is unchanged.** 25 agents already legitimately held fetch and
+   54 hold shell. Three more declared-fetch agents does not change the fleet's
+   exposure class.
+5. **Agents run only when selected or delegated**, and every other explicit bound
+   on these three is retained (`observed`, item 5 above).
+6. **No documented alternative exists.** `web` is one grant by published design.
+   `WebSearch`/`WebFetch` are aliases of that same primary, not narrower grants.
+
+**Residual risk: three `kai-personal` agents hold a declared web-fetch grant they
+did not previously declare. I do not accept it.** It is the steward's or the
+operator's call, and it should be recorded as a three-declaration acceptance with
+the mechanism above, not folded into a nineteen-declaration one.
+
+### 5. The three options, compared on control grounds
+
+| | **A — accept coarse documented primaries** *(what ships at this ref)* | **B — retain warned/retired legacy spellings** | **C — undocumented/compatible spellings** |
+|---|---|---|---|
+| Expresses the finer grain? | No — and for the file family there was never any grain to lose | **Only apparently.** `create` and `edit` are both in the live binary's *warned* set; an ignored token grants nothing | **Probably not at all.** `Write`/`Edit`/`MultiEdit` are documented aliases of one primary; nothing says they narrow it |
+| Documented? | Yes, entirely | `create`/`web_search`/`web_fetch` appear nowhere in the published table | Documented as aliases — but **not** as narrower grants; behaviour `unknown` |
+| Measured runtime-safe? | Yes — `R2-primary` valid direct and delegated on `1.0.79` and `1.0.81` (`reported`, §12.2) | Yes for the runtime, but it is the configuration the host complains about | **No.** The `R5 edit-family` and `R6 search-family` rows were specified and are **not** in the §12.2 results |
+| Capability-loss exposure | None — replacement, never deletion; disclosed in 113 rows | **Real.** `R9-control` shows undeclared write/execute/agent were *denied*; keeping ignored tokens risks the §7.3 hard stop if the host tightens | **Real and unmeasured**, on the same mechanism |
+| Effect on the record's honesty | Coarse **and accurate** | **Fine-looking and false** — a least-privilege claim with no enforcement behind it | Unknowable |
+| Passes the guard at this ref | Yes | No — `loaderErrors()` rejects retired spellings | Yes only if `SUPPORTED_TOOLS` is widened to admit unmeasured names |
+
+**Option B is the worst of the three on security grounds, not the safest.** Its
+appeal is that the declarations keep looking narrow. But `create` is unrecognized
+under the published contract and warned by the live binary, so retaining it
+preserves the *appearance* of least privilege while the host enforces nothing —
+and a control that is believed and not enforced is worse than a coarse control
+that is accurately described. It also re-admits the exact defect class the guard
+now rejects, and risks genuine capability loss if the host ever tightens to its
+published vocabulary.
+
+**Option C pays unmeasured capability-loss risk for a least-privilege gain that
+is unprovable.** Aliases are documented case-insensitive, and the live binary
+already warns on `grep` — so `Grep` should be expected to warn identically. There
+is no security upside worth that bet.
+
+**Option A is the recommended disposition.** It is the only option that is
+documented, measured runtime-safe on both CLI versions, compatible with the
+retained guard, and — decisively — the only one whose record is *true*. The
+controls that actually carry least privilege here survive it intact: explicit
+non-empty arrays, wildcard and omission forbidden, retired spellings rejected,
+the assessor-roster contract pin, and the unchanged host permission layer.
+
+### 6. Findings
+
+**P0 — none.** No cross-boundary break, no secret exposure, no privilege
+escalation path, nothing to route to `workflow-incident-response`.
+
+**P1 — none.** Nothing here is release-blocking. The one real widening is bounded
+by a capability the same declarations already hold.
+
+**P2-SEC-1 — the widening disclosure overstates the delta 19:3, and attributes the
+16 to the wrong mechanism.** P2-1 records *"16 declarations gain create
+authority"* on the premise that `edit` covers both — but those 16 declared `edit`
+before the migration and declare the same token after. There is no delta. P2-1
+also grounds its downgrade in *"the file tools appear base-granted"*, while the
+sharpest evidence row, `R9-control`, shows the opposite for the write family:
+declaring `read` plus two bogus names left **write, execute and agent
+unavailable** (search was still granted). Write is gated, not base-granted. The
+16 are safe because **their token never changed**, not because writes are free.
+Accepting a phantom sixteen buries the one that matters and sets a precedent
+("we accepted an authority widening") against a mechanism that never occurred.
+**Owner:** `principal-swe-architect` (its finding) or the steward when recording
+acceptance. **Records-only; no code change.**
+
+**P2-SEC-2 — the one real widening has no named accepter and no note in the
+contract.** Three `kai-personal` agents move from a validator-recognized
+search-only declaration to `web` (fetch + search). Acceptable per §4.2, but it
+needs (a) an explicit three-declaration acceptance by the steward or operator,
+and (b) one comment line beside `SUPPORTED_TOOLS` in
+`scripts/lib/loader-contract.mjs` naming the two families whose grain is now
+inexpressible — **`edit` covers create/write; `web` covers fetch *and* search** —
+so the next author does not read a coarse token as a narrow one. That file
+already carries the *"lint heuristic, not a host allowlist"* caveat; this belongs
+in the same place. **Explicitly a follow-on, not a change at this ref** — editing
+it now would invalidate the architecture approval and re-trigger mirror parity for
+a comment. **Owner:** steward (acceptance) + `principal-swe-infra` (the comment,
+as a follow-on).
+
+**P2-SEC-3 — a coarse token cannot express a no-write posture, and the repo's only
+working answer to that is already in `validate-plugin.mjs`.** Worth stating
+plainly so nobody cites the wrong thing as a control: `workflow-issue-analysis`'s
+"cannot write" design is a **declared posture, not an enforced boundary** — it
+declares `execute`, and `execute` writes files (the probe harness does exactly
+that). That is **pre-existing and unchanged at this ref** — it held `bash`/`shell`
+before — and is out of this item's scope; I raise it only because the coarsened
+vocabulary makes it easier to mistake a token for a boundary. If the steward wants
+declared least privilege to be *enforceable* after this coarsening, the pattern is
+the existing assessor-roster pin (`validate-plugin.mjs:569-604`), not a new tool
+token: a small pinned list asserting that named read-only roles must not declare
+`edit`, ~15 lines, offline, no host needed. **`expands-scope` — a proposal to the
+steward, not something I add or require.**
+
+### 7. What I did not review, and what I do not decide
+
+- **Excluded by dispatch and not re-reviewed:** enumeration completeness, mirror
+  byte parity, gate results, the A11 carve-out, the §12.4 lift, release metadata,
+  the warning-claim wording, and architecture P1-1 / P2-1..P2-4 dispositions.
+- **`reported`, not verified by me:** every gate run, the diff verifier, the
+  113-row table's per-file accuracy beyond the 19 rows I cross-read, the §12.2
+  probe results, and the operator's original warning text. This session has no
+  shell; **the commit diff was not read** and no command was run.
+- **`unknown`:** whether the host enforces a skill's `tools:` list at all;
+  whether `web` is base-granted (the probe records the web family as
+  `not-testable` without `--allow-network`); whether any compatible alias narrows
+  its primary; and the validator channel, which remains `unobserved`.
+- **I do not accept residual risk, and this review does not clear `shipped`.**
+  The interactive startup-warning observation remains owed by the operator and is
+  untouched by this pass.
+
+---
+
+## HANDOFF 2026-08-28-0157 — principal-security -> principal-product-manager (steward) / director-chief-of-staff
+
+- did:       Bounded independent-security review at `9b98143c7b7ac46bdd0db88f9cf51ee5956da030`, scoped to the `REVIEW 2026-08-28-0141` P2-1 residual authority widening only. Verified the 19 declarations first-hand, cross-read them against the 0140 disclosure table's retired-token column, checked for second-order widening across `web`/`agent`/`todo`/`execute`/`search` (none), read the declaration guards and the assessor-roster pin, and opened the published GitHub tool-alias table directly. Compared the three dispositions on control grounds. **Edited no implementation file, no item record, and ran no command.**
+- state:     **APPROVED** — security verdict **CONDITIONAL**, conditions records-only — P0 **0** / P1 **0** / P2 **3**. **Zero implementation changes requested at this ref.** Recommended disposition: **Option A — accept the coarse documented primary aliases.** Corrected scope of the acceptance: **3 declarations, not 19.**
+- needs:     **Steward** — (1) record the acceptance as a **three-declaration** web-family widening (`instructor-path-mentor`, `instructor-tutor`, `principal-engineer-career-mentor`) with the mechanism in §4.2, **not** as nineteen; the 16 file-family declarations kept an unchanged `edit` token and have no delta (SEC-1). (2) Accept or route that residual risk — **`principal-security` does not accept it** (SEC-2). (3) Optionally rule on the pinned no-write guard proposal (SEC-3, `expands-scope`). **`principal-swe-infra`, follow-on** — one comment line beside `SUPPORTED_TOOLS` naming the two coarsened families; **not at this ref.** **`principal-swe-architect`** — SEC-1 corrects P2-1's count and its stated basis.
+- artifacts: this thread section is the complete durable record. No local run directory was created — this session has no shell to make one, and nothing in the assessment requires local-only handling (no secret, no customer data, no private topology, no exploit material). `kai/coordination/items/area-plugins-tool-allowlist-fix.md` **not edited** — no lease held.
+- evidence:  `observed` — file reads at `C:\src\kai` at HEAD `9b98143…` (the 19 declarations, `workflow-issue-analysis`, `SUPPORTED_TOOLS` and `loaderErrors()`, the assessor roster pin, and the `web`/`agent`/`todo`/`execute`/`search` counts), plus the published GitHub custom-agents tool-alias table fetched this pass. `reported` — the 0140 disclosure table, the §12.2/§12.1 probe records, and the operator's warning text. `inferred` — that retained `execute` already subsumes file creation and outbound egress for the widened agents (medium-high; basis: probe §4.2 and available environment tooling). **Not run:** every gate, `git`, `node`, `npm`; the commit diff was not read.
+- questions: none blocking. One decision is owed and it is not mine: whether the three-agent web-fetch widening is accepted.
+- next:      Steward records the corrected three-declaration acceptance, then the existing `workflow-pull-request` / `workflow-ship` path. **This review does not clear `shipped`** — the interactive startup-warning observation remains the operator's alone, and the milestone-2 PR-3 ordering constraint is untouched by this pass.

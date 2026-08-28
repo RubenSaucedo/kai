@@ -19,6 +19,7 @@ export const SUPPORTED_TOOLS = new Set([
   'ask_user',                                // operator interaction
   'skill',                                   // inherited skill loading
   'read_agent', 'write_agent',               // peer transport
+  'web_search',                              // search-only web access
   'session_store_sql',                       // session store
   'playwright',                              // browser MCP
 ]);
