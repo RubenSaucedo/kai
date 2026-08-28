@@ -9,7 +9,7 @@ state: in-review
 resume_state: null
 priority: 40
 owner: principal-swe-infra
-next_role: principal-swe-architect
+next_role: workflow-ship
 target: pack-split staged department publish — kai-engineering
 artifact_target: null
 context_artifacts:
@@ -54,15 +54,21 @@ completed_reviews:
     verdict: approved
     evidence: "kai/initiatives/pack-split/artifacts/reliability/pack-split-release-12c-3-engineering.md"
     timestamp: 2026-08-27-1720
+  - role: principal-swe-architect
+    kind: independent-architecture
+    change_ref: 27804defe2f5f7fa16c2f5373884691203d21974
+    verdict: approved
+    evidence: "kai/initiatives/pack-split/artifacts/decisions/pack-split-release-12c-3-engineering-architecture-review.md"
+    timestamp: 2026-08-27-1735
 change_ref: 27804defe2f5f7fa16c2f5373884691203d21974
-version: 7
+version: 9
 lease:
   holder: null
   token: null
   version_at_grant: null
   acquired: null
   expires: null
-updated: 2026-08-27-1720
+updated: 2026-08-27-1735
 ---
 
 ## Outcome
@@ -145,8 +151,17 @@ engineering-owned through the existing overrides, committed, and published to
   `27804defe2f5f7fa16c2f5373884691203d21974` with verdict **READY** and
   P0/P1/P2 = 0/0/0. Evidence:
   `kai/initiatives/pack-split/artifacts/reliability/pack-split-release-12c-3-engineering.md`.
-  Architecture, final-head CI, merge, production probe, tag, and release remain
-  pending; the item stays `in-review`.
+  Architecture, final-head CI, merge, production probe, tag, and release were
+  pending at that review.
+- Independent architecture review approved exact ref
+  `27804defe2f5f7fa16c2f5373884691203d21974` with disposition **Endorse** and
+  P0/P1/P2 = 0/0/0. It independently inspected the 20-agent/15-skill
+  engineering partition, canonical-root generation and drift gate, cross-pack
+  provider rules, four-pack marketplace/version shape, and the byte-unchanged
+  **DO NOT BIND** seam. Evidence:
+  `kai/initiatives/pack-split/artifacts/decisions/pack-split-release-12c-3-engineering-architecture-review.md`.
+  Both required reviews now match `change_ref`; the item remains `in-review`
+  for final-head CI, merge, production probe, tag, and release.
 
 ## Notes
 

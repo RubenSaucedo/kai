@@ -3357,3 +3357,28 @@ assigned to engineering and the lenses remain runtime-dispatched.
 published, and GTM remains proposed behind engineering `shipped`. No review
 approval, final-head CI run, merge, tag, release, publication, production
 verification, milestone closure, or initiative closure is claimed.
+
+## 2026-08-27-1735 - engineering 1.0.3 architecture review approved
+
+`principal-swe-architect` completed the independently required architecture
+review for `pack-split-release-12c-3-engineering`, bound strictly to exact
+implementation ref `27804defe2f5f7fa16c2f5373884691203d21974`.
+Disposition **Endorse**; verdict **APPROVED**; P0/P1/P2 = **0/0/0**.
+
+The review independently inspected the locked 20-agent/15-skill engineering
+partition, canonical-root/generated-copy seam, regenerate-and-diff guard,
+cross-pack provider and reference rules, empty engineering runtime dependency
+projection, and exact four-pack `1.0.3` marketplace/version surface.
+
+The ratified **DO NOT BIND** obligation holds: the implementation has zero diff
+to canonical `agents/workflow-doc-review.agent.md`; the byte-unchanged
+`review-dependencies`, `review-performance-scale`, and
+`review-success-metrics` override entries remain assigned to engineering; and
+all three lenses remain runtime-dispatched rather than inherited.
+
+Both required reviews now match the exact `change_ref`. The item remains
+`in-review` and routes to `workflow-ship` for reviewed ancestry, records-only
+equivalence, and fresh final-head CI. Merge, isolated-home production probe,
+tag, and release remain pending human execution. Engineering is not yet
+published, GTM remains proposed, and `five-pack-split-shipped` stays open at
+6 of 8; no milestone or initiative closure is claimed.

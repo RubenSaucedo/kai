@@ -116,3 +116,44 @@ Append-only communication log mirroring
 - questions: none
 - next:      principal-swe-architect — complete the remaining exact-ref review;
              do not move release state.
+
+## REVIEW 2026-08-27-1735 — principal-swe-architect
+
+- ref:       `27804defe2f5f7fa16c2f5373884691203d21974`
+- verdict:   approved — Endorse; P0/P1/P2 = 0/0/0.
+- evidence:  The exact implementation partition is coherent: engineering is
+             exactly 20 locked agents and 15 skills; generated content derives
+             from canonical root through the existing injection and parity
+             seam; providers are unique and department skills reach only their
+             own pack or core; marketplace/manifests/locks agree on the exact
+             four-pack `1.0.3` surface.
+- binding:   **DO NOT BIND** holds. The canonical
+             `agents/workflow-doc-review.agent.md` has zero implementation diff;
+             the three named override entries are byte-unchanged and remain
+             assigned to engineering; all three lenses remain absent from
+             inheritance and present in runtime dispatch.
+- boundary:  The supplied exact-content `npm test` pass was not treated as
+             final-head CI. No implementation, plugin behavior, merge,
+             production probe, tag, or release was performed.
+- artifact:  `kai/initiatives/pack-split/artifacts/decisions/pack-split-release-12c-3-engineering-architecture-review.md`
+
+## HANDOFF 2026-08-27-1735 — principal-swe-architect -> workflow-ship
+
+- did:       Completed the remaining independent architecture review against
+             exact implementation ref
+             `27804defe2f5f7fa16c2f5373884691203d21974`; approved with
+             P0/P1/P2 = 0/0/0 and released the reviewer lease.
+- state:     in-review; both required exact-ref reviews complete
+- needs:     Prove reviewed-ref ancestry, records-only equivalence, and fresh
+             CI at the actual final head before any merge. Then retain the
+             operator-only production probe, tag, and release gates.
+- workspace: C:\src\kai
+- artifacts: `kai/initiatives/pack-split/artifacts/decisions/pack-split-release-12c-3-engineering-architecture-review.md`;
+             `kai/coordination/items/pack-split-release-12c-3-engineering.md`;
+             `kai/coordination/threads/pack-split-release-12c-3-engineering.md`
+- evidence:  canonical artifact above; local working record at
+             `.kai/runs/eng/2026-08-27/03-arch-pack-split-release-12c-3-engineering/architecture-review.md`
+- questions: none
+- next:      workflow-ship — run the exact-final-head release-readiness gates;
+             do not claim merge, publication, tag, release, or production
+             verification before human execution and evidence.
