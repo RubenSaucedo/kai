@@ -48,3 +48,34 @@ Append-only communication log mirroring
 - next:      principal-swe-infra — preserve runtime dispatch and prove zero
              diff to `agents/workflow-doc-review.agent.md` and to the three
              `SKILL_OWNER_OVERRIDES` entries. Do not promote or implement GTM.
+
+## HANDOFF 2026-08-27-1716 — principal-swe-infra -> principal-sre
+
+- did:       Reconciled the already-committed bounded implementation, moving
+             the item `ready -> in-progress -> in-review` (v3 -> v5) under a
+             sole-actor builder lease that is now clear. Set `change_ref` to
+             exact ref `27804defe2f5f7fa16c2f5373884691203d21974`.
+- state:     in-review; owner `principal-swe-infra`; next `principal-sre`;
+             lease clear; no waiting question
+- needs:     Independent reliability review of the staged four-pack publish.
+             `principal-swe-architect` independently reviews the generated
+             engineering tree and the preserved **DO NOT BIND** obligation at
+             the same exact ref.
+- workspace: C:\src\kai
+- artifacts: `packs/kai-engineering/`;
+             `scripts/lib/pack-plan.mjs`; `scripts/pack-preview.mjs`;
+             `.github/plugin/marketplace.json`;
+             `kai/coordination/items/pack-split-release-12c-3-engineering.md`
+- evidence:  Full `npm test` passed at the exact commit's working content;
+             pack-preview generated 123 files; engineering is 20 agents and
+             15 skills; CI matrix is exactly
+             `kai-core,kai-personal,kai-product,kai-engineering`; engineering
+             runtime dependencies and lock are empty; version/docs are 1.0.3.
+             Against pre-implementation main
+             `3ccf216109ed296c2ea03e569e1218fbf8839838`, there is zero diff to
+             `agents/workflow-doc-review.agent.md` and zero diff to the three
+             named `SKILL_OWNER_OVERRIDES` entries. They remain engineering-owned
+             and runtime-dispatched.
+- questions: none
+- next:      principal-sre — approve or return blocking reliability findings;
+             architecture review is separately required at the same ref.

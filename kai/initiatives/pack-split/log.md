@@ -3327,3 +3327,33 @@ entries. `pack-split-release-12c-4-gtm` remains `proposed` behind engineering
 `five-pack-split-shipped` remains **open at 6 of 8** and the initiative remains
 `active`. No implementation, generated pack, marketplace, plugin behavior,
 version, tag, release, publication, or dispatch occurred.
+
+## 2026-08-27-1716 - engineering 1.0.3 implementation routed to review
+
+`principal-swe-infra` reconciled the committed implementation for
+`pack-split-release-12c-3-engineering` and moved the item
+`ready -> in-progress -> in-review` (v3 -> v5). The exact review binding is
+`27804defe2f5f7fa16c2f5373884691203d21974`; owner remains
+`principal-swe-infra`, the builder lease is clear, and review routes first to
+`principal-sre`. The already-declared `principal-swe-architect` review remains
+independently required at the same ref.
+
+The implementation fits the staged department-publish scope. Full `npm test`
+passed at the exact commit's working content; pack-preview generated 123 files;
+`kai-engineering` contains 20 agents and 15 skills; the CI matrix is exactly
+`kai-core,kai-personal,kai-product,kai-engineering`; engineering's generated
+runtime dependency manifest and lock are empty; and marketplace, docs, and
+version surfaces agree at `1.0.3`.
+
+The ratified **DO NOT BIND** boundary is preserved. Relative to
+pre-implementation main `3ccf216109ed296c2ea03e569e1218fbf8839838`,
+the cumulative implementation has zero diff to
+`agents/workflow-doc-review.agent.md` and zero diff to the
+`review-dependencies`, `review-performance-scale`, and
+`review-success-metrics` entries in `SKILL_OWNER_OVERRIDES`. The entries remain
+assigned to engineering and the lenses remain runtime-dispatched.
+
+`five-pack-split-shipped` remains **open at 6 of 8**. Engineering is not
+published, and GTM remains proposed behind engineering `shipped`. No review
+approval, final-head CI run, merge, tag, release, publication, production
+verification, milestone closure, or initiative closure is claimed.
