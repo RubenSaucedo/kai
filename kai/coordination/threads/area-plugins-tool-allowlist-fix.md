@@ -615,3 +615,621 @@ Not absorbed unilaterally.
 - evidence:  **`observed`** (first-hand file reads + this session's own bound toolset): 56 root `agents/*.agent.md` and 56 `packs/*/agents/*.agent.md` each declare `tools:` at line 4, arrays enumerated in §2a, all 56 mirrors byte-identical to root; 51 root + 51 mirrored `SKILL.md` also declare `tools:`; frequency table §2c; `principal-swe-infra` declares 8 tools and this session bound exactly `view, create, edit, grep, glob` — the three warned names present and functional, `bash`/`shell`/`skill` absent; `grep` and `view` executed successfully throughout; six skills declare `requires_tools`, all `[bash, shell]` (`SKILL.md:5`); enforcement at `loader-contract.mjs:14,94`, `validate-plugin.mjs:650,648-672,838-870`, `host-contract.mjs` `unsupported-tool.agent.md` fixture; `test/README.md:41-45`; CHANGELOG 0.49.1 (`bash`->`view, skill, sql` on Windows) and 0.63.1 (delegated agents receive only declared tools). **`reported`, not observed:** the warning text itself (never seen by me — no host log access), dispatch observation (i) `create` working, dispatch observation (ii) built-in agents lacking shell. **Not run:** `npm test`, `pack-preview --check`, any gate, `node`, `git`, `gh` — this session has no shell.
 - questions: `Q-area-plugins-tool-allowlist-fix-01` (open, blocking, kind `action`, -> `@operator`).
 - next:      `@operator` answers `Q-...-01`. Then `principal-swe-infra` resumes and applies the indicated branch — **Branch B (change nothing in the 112 files) is what current evidence favours**, and it needs the steward's PROPOSAL-2 ruling before it can be called done, because it contradicts the item's committed Outcome. `principal-swe-architect` independent-architecture review still applies to whatever ships. The PR-3 ordering constraint holds until the branch is known; under Branch B it dissolves and milestone 2 unblocks early.
+
+---
+
+## REVIEW 2026-08-28-0112 — principal-swe-architect · independent-architecture (exact ref)
+
+- **verdict:** **CHANGES REQUESTED** — P0 **3** / P1 **4** / P2 **4**
+- **change_ref reviewed:** `f093c5a2678ee1ecf9c25a88015110a1fbd057cd`
+  (`.git/refs/heads/fix/area-plugin-tool-aliases`), branch
+  `fix/area-plugin-tool-aliases`, branched from `main` at `71ee251`, single
+  commit `fix(host): use portable tool aliases` (`.git/logs/HEAD:535-536`).
+- **satisfies_requirement:** `false` — `review_requirements[0]` stays open.
+- **zero code changes are requested in the 214 declaration files.** The
+  structural call is right; what is missing is authorization, an efficacy check,
+  and the records the initiative's own rules make binding.
+
+### Disposition: Endorse the shape, block the ship
+
+One declaration vocabulary, primary aliases for the mapped families, specialized
+names left explicit, mirrors byte-derived from root, both contract copies moved
+together. That is the smallest structure that resolves the vocabulary drift, and
+I would not reshape it. The blockers below are about whether this may ship, not
+about how it is built.
+
+### The seam this turns on
+
+```text
+                 DECLARATION VOCABULARY            HOST
+  agents/*.agent.md:4   ──┐                 ┌── validator channel  (startup warnings)
+  skills/*/SKILL.md:4   ──┤   tools: [...]  │      status: UNOBSERVED
+                          ├───────────────► ┤
+  packs/**/ (generated) ──┘                 └── runtime channel    (granted tools)
+                          │                        status: OBSERVED 1.0.79 / 1.0.81
+                          │
+             SUPPORTED_TOOLS (2 copies, hand-synced)
+             scripts/lib/loader-contract.mjs:15-24
+             packs/kai-core/scripts/lib/loader-contract.mjs:15-24
+
+  retired here:  bash shell view create grep glob task web_search web_fetch
+  RETAINED here: edit   <-- one of the three names the host was reported to warn on
+```
+
+The change is measured against the right-hand channel and shipped for its
+effect on the left-hand one. That gap is P0-1 and P0-2.
+
+### P0-1 — `edit` survives the migration, and `edit` is one of the warned names
+
+The item's Outcome is that
+`Unknown tool name in the tool allowlist: "create" / "edit" / "grep"` **stops**
+(`kai/coordination/items/area-plugins-tool-allowlist-fix.md`, Outcome). Scope
+brief **A23** records the operator's live CLI warning on lowercase `create`,
+`edit` **and** `grep` *"even though `edit` and `Grep` are documented aliases"*
+(`kai/coordination/threads/area-plugins-scope-brief.md:1807-1812`).
+
+The migrated vocabulary drops `create` and `grep` and **keeps `edit`**, which is
+now declared by 55 of 56 agents and ~30 skills. If the host's warning behaviour
+is unchanged, the user-visible symptom persists on nearly the whole fleet after a
+214-file diff. `CHANGELOG.md:14-16` labels warning silence "unverified", which is
+honest but understates it: on the initiative's own recorded evidence this change
+is **predicted not to silence the warnings**.
+
+**Ask (Spike, ~1 minute, no code):** launch any kai agent interactively on the
+migrated tree and read the startup warnings — the validator channel prompt mode
+structurally cannot reach (decision §12.3). Then record the result under
+acceptance box 7 with its observation method. If `edit` still warns, milestone
+0's amended Outcome is unmet and that is a steward re-scope (PROPOSAL-2 again),
+not a reviewer's call.
+
+### P0-2 — the migration is authored against a stop condition recorded three times
+
+The conformance decision states, at §12.4: *"no §7.2 branch (B1/B2/B3) may be
+selected and no declaration migration may be authored on this evidence"* —
+because `findings.warning_free_spelling_exists` is `null`
+(`kai/initiatives/area-plugins/artifacts/decisions/area-plugins-host-tool-conformance.md`
+§12.2-12.4). The same sentence is repeated by the director handoff
+(`kai/coordination/threads/area-plugins-host-tool-conformance.md:559`), by infra
+(`:320`), and by my own prior review (`:693`, `:717`). Steward ruling **A23**
+permits the fix only *"via a replacement proven safe by the probe"*
+(`area-plugins-scope-brief.md:1817-1820`) — the probe proved **runtime safety**,
+which this change has, and did not prove the warning outcome, which this change
+needs.
+
+`f093c5a` **is** that declaration migration. Either the operator lifted the stop
+condition — in which case it must be recorded here as an answer with provenance —
+or it stands violated. A reviewer cannot self-clear a stop condition the steward
+wrote and a prior architecture review re-asserted.
+
+### P0-3 — steward-parked P5 scope was applied without a promotion record
+
+`kai/initiatives/area-plugins/backlog.md:188-238` parks the **102 skill
+declarations and the third `SUPPORTED_TOOLS` copy** as **PROPOSAL P5**, with the
+2026-08-27-2210 grooming pass concluding *"Stays parked until the probe
+reports"* and *"Nothing is promoted this pass. The one-way valve stays closed."*
+(`:254-261`). A23 repeats the deferral (`area-plugins-scope-brief.md:1841-1849`).
+
+`f093c5a` changes all 102 skill sites and both contract copies. The probe
+reporting **fires P5's trigger**; it does not **promote** P5 — that is the
+steward's act, and no promotion record exists. Two corroborating signals: the
+item is still `version: 4` with `touches:` naming only `agents/`, `packs/`,
+`scripts/validate-plugin.mjs`, `CHANGELOG.md`, `package.json`,
+`package-lock.json` (`items/area-plugins-tool-allowlist-fix.md:24-30`) — neither
+`skills/**` nor `scripts/lib/loader-contract.mjs` — and P5's trigger text says
+the probe's evidence *"decides whether the 102 skill sites carry the same defect
+at all"*, which it never measured.
+
+Note the mirror copy at `packs/kai-core/scripts/lib/loader-contract.mjs` is
+forced collateral of any root contract edit under byte parity, so it is not an
+independent scope choice. `skills/**` is.
+
+### P1
+
+1. **Item lifecycle bypassed.** `state: ready`, `owner: null`, all five lease
+   fields null, `change_ref: null`, `completed_reviews: []`
+   (`items/area-plugins-tool-allowlist-fix.md:8,11,37,38`), and this thread
+   carries no implementation handoff — yet the implementation is committed. Per
+   `kai-core-work-coordination` the item should be `in-review` at the ref, under
+   a held lease. I did not edit it: no lease, and a CHANGES REQUESTED verdict
+   completes nothing.
+2. **Carve-out clause 3 is unclaimed and unverified.** The three-clause
+   topology-neutral carve-out must be named explicitly in the PR, and clause 3
+   requires **observed** green gates with `--check` byte parity re-established.
+   Nothing in the durable record claims a run. See "What I could not verify".
+3. **The binding capability-loss disclosure table is missing.** Design §7.3 makes
+   it mandatory for whichever branch runs and states plainly that *"CI cannot
+   catch a capability loss here … the disclosure table is the only guard, and the
+   PR body must say so"*
+   (`threads/area-plugins-host-tool-conformance.md:236-243`). Remedy is cheap: my
+   verification below is the equivalent content for all 107 root files and can be
+   transcribed.
+4. **Expand → migrate → contract collapsed into one commit.** §7.2 specified
+   PR-A1..A4 so each step is independently green and revertible, with the
+   retired spellings removed only at A4. Here the contract step lands with the
+   migration, so there is no window in which both vocabularies validate: any
+   in-flight branch whose declarations predate `f093c5a` now fails
+   `validate-plugin` after merge, and reverting the vocabulary costs a second
+   214-file diff. Defensible as an operator preference — but the four-step shape
+   existed for this reason and the deviation should be stated, not absorbed.
+
+### P2
+
+1. `docs/host-capabilities.md:16` still names the peer sub-agent tool as
+   `` `task` ``; the declaration alias is now `agent`.
+2. `test/fixtures/host-loader/invalid/*` still declare retired tokens
+   (`view`, `grep`), so four of five fixtures now fail for an unintended extra
+   reason and `unsupported-tool.agent.md:4` no longer isolates `teleport`. The
+   self-test still passes because `scripts/host-contract.mjs:194` matches with
+   `errs.some(re)`. Cheap fix: `view`→`read`, `grep`→`search`.
+3. **Regression guard still absent** (item box 8). Nothing binds
+   `SUPPORTED_TOOLS` to measured host behaviour, so this defect class can return
+   silently — exactly how it reached users at 1.0.4 with CI green. `todo` is now
+   in the vocabulary with zero declarers, which is the same shape of drift in
+   miniature.
+4. **Cited evidence is unretrievable.** `CHANGELOG.md:11-13` cites live 1.0.79 /
+   1.0.81 probes whose JSON is session-only by ratified design. Cite decision
+   §12.2 in the record so a reader has a durable landing place.
+
+### What I verified first-hand (`observed`, file reads at `C:\src\kai`)
+
+1. **Mapping, all 56 root agents** (`agents/*.agent.md:4`) against two
+   independent pre-change baselines — this thread's §2a enumeration and the
+   separately-installed pre-change plugin copy. Every array is the
+   order-preserving, de-duplicated image of its predecessor under
+   `bash|shell→execute`, `view→read`, `edit|create→edit`, `grep|glob→search`,
+   `task→agent`, `web_search|web_fetch→web`. **Zero drops, zero additions.**
+2. **Specialized capabilities preserved exactly where they were present:**
+   `ask_user` 52→52, `skill` 56→56, `playwright` 9→9, `read_agent`/`write_agent`
+   5→5 (creative-video-director, director-chief-of-staff,
+   director-executive-assistant, principal-linkedin-strategist,
+   workflow-incident-response), `session_store_sql` 1→1
+   (`skills/extract-writing-style/SKILL.md:4`). None was folded into a family
+   alias.
+3. **All 51 root skills** map the same way; `requires_tools:` is exactly six
+   files, each `[bash, shell]` → `[execute]`
+   (`skills/{create-product-demo,demo-capture,demo-narrate,demo-zoom,kai-core-fleet-observation,kai-core-work-activity}/SKILL.md:5`).
+4. **The inheritance requirement stays closed.** `validate-plugin.mjs:657-672`
+   demands every agent inheriting a `requires_tools` skill declare each named
+   tool; every agent that held the `bash`+`shell` pair now declares `execute`, so
+   no new violation is introduced.
+5. **Mirror parity at the declaration line:** 107 generated files under
+   `packs/*/{agents,skills}` (56 + 51) plus the six `requires_tools:` lines are
+   identical to their roots, including quoting style and element order.
+   `packs/kai-core/scripts/lib/loader-contract.mjs:15-24` matches
+   `scripts/lib/loader-contract.mjs:15-24`.
+6. **Loader validation now rejects the retired aliases.** `SUPPORTED_TOOLS` =
+   `{execute, read, edit, search, agent, web, todo, ask_user, skill, read_agent,
+   write_agent, session_store_sql, playwright}`; all nine retired spellings are
+   absent, so `loaderErrors()` rejects them for agents and skills and
+   `validate-plugin.mjs:650` rejects them in `requires_tools`. Repo-wide search:
+   **no** `tools:`/`requires_tools:` line under `agents/`, `skills/`, `packs/`,
+   `examples/`, `scripts/` carries a retired spelling.
+7. **Topology neutrality corroborated** (not diff-proven): `pack-plan.mjs:49`
+   `PACKS_DIR`, `:63` `PACKS` (core 7 / engineering 20 / product 9 / gtm 11 /
+   personal 9 — matching on-disk mirror counts), `:99` `PACK_ORDER`, `:104`
+   `SKILL_OWNER_OVERRIDES` — same line numbers the steward cited on
+   2026-08-27-2210, membership unchanged from the locked partition.
+   `plugin.json:2` `kai`; `.github/plugin/marketplace.json:2` `kai-plugins`; five
+   pack identities unchanged. `scripts/lib/{preflight,degraded,inherits}-block.txt`
+   contain no tool-vocabulary token at all, so the migration strands nothing
+   there.
+8. **Release metadata is consistently 1.0.6:** `package.json:3`, `plugin.json:4`,
+   `marketplace.json:9,17,40,63,86,109`, all five packs'
+   `package.json`/`plugin.json`/`package-lock.json`, `README.md:38`,
+   `CHANGELOG.md:7` with the `:3104` compare link.
+
+### What I could not verify — stated, not assumed
+
+This session has **no shell**: `git`, `node`, `npm` are unavailable to it.
+Therefore the **commit diff itself was not read**. Acceptance item 3 ("each of
+the 214 files differs only in `tools:` and, for six skills, `requires_tools:`")
+and the byte-parity half of item 4 are **unverified** by this review; my claim is
+bounded to *every `tools:`/`requires_tools:` line in the 214 files is in the
+migrated vocabulary, and every mirror line equals its root*. **Not run and not
+claimed:** `pack-preview --check`, `--gate partition|collision|partial-install|version-skew`,
+`validate-plugin`, `release-guard`, `npm test`. HEAD matches the reviewed ref by
+ref-file read; `git status` cleanliness is unverified.
+
+### What must happen before this ships
+
+1. Operator/steward: record the authorization that lifts the §12.4 stop
+   condition, **or** stand it up and stop.
+2. Steward: promote P5 (or narrow the commit to agents), and widen the item's
+   `touches` to the surface actually changed.
+3. Implementer: the §7.3 capability-loss disclosure table, the three carve-out
+   clauses named explicitly, and **observed** gate output including
+   `--check` byte parity.
+4. Operator: the one interactive launch that answers P0-1.
+5. Then re-dispatch this review at the same ref; items 1-3 are records and item 4
+   is an observation, so a records-only re-check is expected to close it.
+
+---
+
+## HANDOFF 2026-08-28-0112 — principal-swe-architect -> @operator / principal-product-manager (steward)
+
+- did:       Independent-architecture review of `f093c5a` bound to the exact ref. Verified the alias mapping for all 56 root agents and 51 root skills against two independent pre-change baselines, specialized-capability preservation, six `requires_tools` migrations, declaration-line parity across all 107 generated mirrors, both `SUPPORTED_TOOLS` copies, the `requires_tools` inheritance closure, topology/identity constants, and 1.0.6 release metadata. Edited no implementation file, no item frontmatter, and ran no command.
+- state:     CHANGES REQUESTED — P0 3 / P1 4 / P2 4; `satisfies_requirement: false`; the item's `review_requirements[0]` stays open.
+- needs:     **@operator** — (a) the recorded authorization that lifts the conformance decision's §12.4 stop condition, and (b) one interactive launch on the migrated tree to see whether `edit` still warns (P0-1). **principal-product-manager (steward)** — promote backlog P5 or narrow the commit to agents, and widen the item's `touches` (P0-3). **principal-swe-infra** — the §7.3 capability-loss disclosure table, the three carve-out clauses named, and observed gate output including `--check` (P1-2, P1-3); the four P2s are cheap and optional-before-ship.
+- artifacts: this thread entry (the durable review record). `kai/coordination/items/area-plugins-tool-allowlist-fix.md` **not edited** — no lease held, and a CHANGES REQUESTED verdict completes no requirement.
+- evidence:  `observed` — first-hand file reads at `C:\src\kai` at HEAD `f093c5a2678ee1ecf9c25a88015110a1fbd057cd`, enumerated in the review above. `reported` — the live 1.0.79/1.0.81 probe results (session-only JSON, summarized in decision §12.2) and the operator's original warning text. **Not run:** `npm test`, `pack-preview --check`, any `--gate`, `validate-plugin`, `release-guard`, `git`, `node` — this session has no shell, so the commit diff was not read and no gate result is claimed.
+- questions: none new; P0-2 needs an operator answer with provenance, P0-3 a steward ruling.
+- next:      `@operator` / steward on P0-1..P0-3, then `principal-swe-infra` on P1-2/P1-3, then re-dispatch this review at the same ref. The milestone-2 PR-3 ordering constraint still holds — this item is not `shipped`, and `shipped` still requires operator deployment and verification.
+
+---
+
+## STEWARD RULING 2026-08-28-0125 — principal-product-manager (steward)
+
+Adjudicating the CHANGES REQUESTED review of
+`f093c5a2678ee1ecf9c25a88015110a1fbd057cd`. The three P0s were routed to
+`@operator` and to me; I answer all three.
+
+**What this ruling does NOT do, stated first so it cannot be misread.** It does
+not clear P1-2 (carve-out clauses named + **observed** gate output including
+`--check` byte parity), P1-3 (the §7.3 capability-loss disclosure table), or any
+of the four P2s. Those belong to `principal-swe-infra` and remain open.
+`review_requirements[0]` stays unmet, the recorded review verdict stays
+`changes-requested`, and `satisfies_requirement` stays `false`. A steward may
+lift a scope stop; a steward may not mark an engineering review satisfied.
+
+### Verified first-hand before ruling (`observed` — file reads at `C:\src\kai`)
+
+I did not take the reviewer's word for the load-bearing facts.
+
+- `.git/refs/heads/fix/area-plugin-tool-aliases` reads
+  `f093c5a2678ee1ecf9c25a88015110a1fbd057cd`. The ref exists and matches.
+- `scripts/lib/loader-contract.mjs:15-24` — `SUPPORTED_TOOLS` is
+  `{execute, read, edit, search, agent, web, todo, ask_user, skill, read_agent,
+  write_agent, session_store_sql, playwright}`. All nine retired spellings
+  absent.
+- Repo-wide search of root `agents/*.agent.md`: **zero** declarations carry
+  `create`, `grep`, `view`, `glob`, `bash`, `shell`, or `task`.
+- **55 of 56** root agents declare `edit`. **29 of 51** root skills declare
+  `edit`. All **51** root skills carry a `tools:` line. All **six**
+  `requires_tools:` lines read `[execute]`.
+
+**P0-1's premise is confirmed, not merely alleged.** `edit` — one of the three
+names the operator's live CLI was reported to warn on — survives on nearly the
+whole fleet, by design.
+
+**Not run and not claimed by this pass:** `npm test`, `pack-preview --check`,
+any `--gate`, `validate-plugin`, `release-guard`, `git`, `node`. This session has
+no shell; the commit diff was not read.
+
+---
+
+### P0-2 — the §12.4 stop condition is **LIFTED**, on recorded operator authority
+
+The stop reads: *"no §7.2 branch (B1/B2/B3) may be selected and no declaration
+migration may be authored on this evidence"*, because
+`findings.warning_free_spelling_exists` is `null`.
+
+**Provenance of the lift, recorded as the reviewer demanded.** The operator, in
+session, after brainstorming the area-plugin architecture: *"Yes I like that,
+lets use actually 'plugins' for the folder naming I wanted to suggest that
+also, the rest I like. Please proceed"* — then explicitly directed that the tool
+warnings be fixed and that the work proceed one by one; and the implementation
+sequence recorded **after the probe shipped as v1.0.5** directs migrating the
+root agents and skills **while preserving capabilities**. That instruction was
+given *downstream* of the evidence that raised the stop, not in ignorance of it.
+
+**Why this is a lift and not a bypass.** Four reasons, and the third decides it.
+
+1. **A23 — my own ruling — conditioned the fix on a replacement "proven safe by
+   the probe."** *Safe*, not *effective*. The probe closed the safety question
+   on both `1.0.79` and `1.0.81`, direct **and** delegated (decision §12.2).
+   `f093c5a` replaces and never deletes: zero drops, zero additions,
+   specialized capabilities preserved 1:1. A23's actual condition is met.
+2. **A23's constraint 1 — "no `agents/**` or `packs/**` body is edited before it
+   reports" — is satisfied.** The probe reported and shipped first, as
+   `[1.0.5]`. The sequencing this milestone exists to enforce held.
+3. **The stop is structurally unliftable by engineering.** Decision §12.3 is
+   explicit: prompt mode cannot reproduce the interactive startup warning
+   surface. No further measurement any agent can run will produce
+   `warning_free_spelling_exists`. Only an operator, on an interactive launch,
+   can see that channel — and only *after* an install. A gate that can only be
+   cleared by observing the deployed result of the change it blocks is a
+   deadlock, and holding a correct, capability-safe, revertible change inside it
+   would be process theatre, not restraint.
+4. **The residual risk actually being accepted is bounded and is the operator's
+   to accept.** It is **efficacy** (a warning may persist), not **safety**
+   (capability loss) — the latter was measured and closed. Only the operator may
+   accept residual risk; the operator did, by direction, with the evidence on the
+   record.
+
+**The lift is bounded to this.** It authorizes the declaration migration to the
+documented primary aliases. It authorizes nothing about topology, identity,
+marketplace, or the milestone-1 bar, all of which remain governed by the A11
+three-clause carve-out that P1-2 still owes.
+
+---
+
+### P0-1 — the Outcome was wrong. **AMENDED, not waived.** No warning-free claim is invented.
+
+The reviewer is right that `CHANGELOG.md`'s "unverified" understates it. On this
+initiative's own recorded evidence the change is **predicted not to silence the
+`edit` warning**. I am not going to let that sit under a hedge.
+
+**The arithmetic, stated plainly.** Three names were reported warned:
+
+| reported warned name | after `f093c5a` | status |
+|---|---|---|
+| `create` | folded into `edit`; **zero declarations remain** | `observed` — repo-wide search |
+| `grep` | replaced by `search`; **zero declarations remain** | `observed` — repo-wide search |
+| `edit` | **retained deliberately** on 55/56 agents and 29/51 skills | may still warn — `unobserved` |
+
+Two of the three warning spellings are eliminated as a matter of fact I checked
+myself. The third is retained **because it is the documented primary alias for
+the file-editing family**. That is not an oversight in the diff; it is the
+correct spelling.
+
+**The ruling that matters most, and it is a pre-commitment against a bad reflex:
+if `edit` still warns after install, the disposition is NOT another declaration
+change.** Re-spelling `edit` to chase a quiet log would mean declaring an
+undocumented name to satisfy a validator that disagrees with its own
+documentation — which is precisely the defect this milestone exists to end. The
+disposition is §7.2 **B2 applied to the residue**: document the benign drift with
+its evidence, the way `0.49.1` and `0.63.1` were documented, and file the bug
+upstream against the CLI. That is a follow-on, not a reopening of this item.
+
+**Amended Outcome** (carried into the item record and into scope-brief **A28**);
+the superseded wording is left in the record above, not rewritten:
+
+1. Every kai declaration — agents and skills, root and generated mirror — uses
+   the documented primary-alias vocabulary plus explicit specialized Kai tools,
+   **measured runtime-safe on live CLI `1.0.79` and `1.0.81`, direct and
+   delegated**.
+2. **No capability is lost.** Replacement, never deletion.
+3. Root and mirrors share one vocabulary and `--check` byte parity holds.
+4. **Warning behaviour is recorded at the precision the channels permit, and no
+   further.** `create` and `grep` are eliminated from the source — `observed`.
+   Interactive-startup warning silence is **`unobserved` and remains so**: it is
+   evidence for the `shipped` gate, collected by the operator after deployment,
+   and it is **not** a merge-gate condition. **No noninteractive proxy for it is
+   required, because none is possible.**
+5. A residual `edit` warning does not falsify this item; it routes to B2
+   documentation plus an upstream report.
+
+**What this costs, named rather than buried.** Milestone 0's original promise
+was "the warnings stop." It now promises "the declarations are correct, capability
+is intact, and two of three warning spellings are gone." That is a smaller
+promise. It is the one the evidence supports, and shrinking the promise to fit
+the evidence is the honest move available — the alternatives were to claim a
+silence nobody has seen, or to block indefinitely on an observation that cannot
+be made until after we ship.
+
+---
+
+### P0-3 — backlog **P5(a) is PROMOTED** into this item. **P5(b) stays parked.**
+
+The reviewer is right that the probe *firing* P5's trigger is not the same as me
+*promoting* it, and that no promotion record existed. It exists now.
+
+**P5(a) — the 102 skill declaration sites (51 root + 51 mirrors): PROMOTED into
+`area-plugins-tool-allowlist-fix`.** Four grounds:
+
+1. The operator's post-probe implementation sequence **names skills explicitly**.
+2. The trigger fired: the probe reported, and its runtime evidence covers the
+   replacement vocabulary wherever it is declared — a skill's `tools:` line is
+   parsed by the same loader as an agent's.
+3. The north star's milestone-0 acceptance **already names 214 declaration sites
+   as the complete surface**, "not the 112 first assumed." Migrating 112 of 214
+   would leave half the surface defective while an acceptance box read satisfied.
+4. **Part of it was never an independent scope choice.** Agents dropped the
+   `bash`+`shell` pair for `execute`; `validate-plugin.mjs:657-672` requires every
+   agent inheriting a `requires_tools` skill to declare each named tool, so the
+   six `requires_tools:` lines had to move in the same change or the gate goes
+   red. And once `SUPPORTED_TOOLS` retires the old spellings, `loaderErrors()`
+   rejects them for skills as well as agents.
+
+**P5(b) — deriving the third `SUPPORTED_TOOLS` copy instead of hand-syncing it:
+STAYS PARKED.** It is a mechanism addition and `expands-scope` on its face.
+`f093c5a` does not do it — it edits both copies in lockstep, which is forced
+collateral of byte parity, exactly as the reviewer noted. Promoting (a) does not
+open (b), and nobody may cite this ruling to do so.
+
+**The valve moved once, deliberately, and by the only role that may move it.**
+
+---
+
+### Deviations I am recording rather than absorbing
+
+- **P1-4 — expand/migrate/contract collapsed into one commit.** §7.2 specified
+  PR-A1..A4 so each step is independently green and revertible. `f093c5a` lands
+  all four at once, so there is no window in which both vocabularies validate:
+  any in-flight branch whose declarations predate it fails `validate-plugin`
+  after merge, and reverting the vocabulary costs a second 214-file diff. The
+  four-step shape existed for a reason and the deviation is real. I accept it as
+  consistent with the operator's "proceed one by one" pacing at the *item*
+  granularity, and I record the cost rather than pretending it was free. The
+  change remains revertible as one commit, and lockstep versioning holds.
+- **`shipped` is not near.** Verification is unrun, the disclosure table is
+  unwritten, and the interactive observation is uncollected. Nothing in this
+  ruling advances this item toward `shipped`.
+
+### Item record changes made by this pass
+
+`state: ready -> in-review` · `change_ref: null -> f093c5a…` ·
+`next_role: principal-swe-infra` · `version: 4 -> 5` · `touches` widened to the
+authorized surface · the `changes-requested` review recorded in
+`completed_reviews` with `satisfies_requirement: false` · Outcome amended ·
+acceptance boxes 1, 2 and 7 rewritten to the truth · the stale
+`artifact_target_status` corrected (`kai/initiatives/area-plugins/` exists).
+
+**`in-review` here means "implementation is committed at a bound ref and
+verification is outstanding." It does not mean the review passed.** It did not.
+
+### Steward findings for the director (not blockers on this item)
+
+1. `kai/coordination/BOARD.md:48-49` is stale on both milestone-0 rows — it shows
+   this item `ready` with an unmet dependency, and shows
+   `area-plugins-host-tool-conformance` as `in-progress` when its record is
+   `in-review` at `4d71177`. BOARD is derived and reconciled by
+   `director-chief-of-staff`; I did not hand-edit it.
+2. The north star requires `area-plugins-host-tool-conformance` to reach
+   `shipped` for milestone 0 to close, but the probe already released as
+   `[1.0.5]` while its item sits `in-review` with `next_role: workflow-ship`.
+   That gap is `workflow-ship`'s to close with real deployment evidence; it is
+   not mine to assert.
+
+---
+
+## HANDOFF 2026-08-28-0125 — principal-product-manager (steward) -> principal-swe-infra
+
+- did:       Adjudicated the CHANGES REQUESTED review at `f093c5a`. **P0-2 lifted** the conformance decision's §12.4 measure-before-migrate stop on recorded operator authority, with provenance and bounds. **P0-1 amended** the item Outcome and milestone-0 acceptance to what the evidence supports — `create` and `grep` eliminated (`observed`), interactive warning silence `unobserved` and deferred to post-install operator observation, and a standing pre-commitment that a residual `edit` warning routes to B2 documentation plus an upstream report rather than to another declaration change. **P0-3 promoted backlog P5(a)** (102 skill declaration sites) into this item and **kept P5(b)** (deriving the third `SUPPORTED_TOOLS` copy) parked. Widened `touches`, set `state: in-review` with `change_ref: f093c5a…`, recorded the `changes-requested` verdict, and corrected the stale `artifact_target_status`.
+- state:     in-review — implementation committed at a bound ref; **one required review is unmet and verification is unrun.** Not approved, not `release-ready`, not `shipped`.
+- needs:     `principal-swe-infra`, under a lease granted by the director: (1) **P1-3** — the §7.3 capability-loss disclosure table, per agent and per token, in the PR body, with the "CI cannot catch a capability loss here" sentence stated explicitly; the reviewer's verification block is the equivalent content for all 107 root files and may be transcribed. (2) **P1-2** — name all three A11 carve-out clauses explicitly and produce **observed** output for `pack-preview --check`, `--gate partition|collision|partial-install|version-skew`, `validate-plugin`, `host-contract --self-test`, `release-guard`, `npm test`. (3) The four **P2s** are now in `touches` and are cheap: `docs/host-capabilities.md:16` `task`->`agent`; `test/fixtures/host-loader/invalid/*` `view`->`read`, `grep`->`search` so `unsupported-tool.agent.md:4` isolates `teleport` again; the box-8 regression-guard sentence; and cite decision §12.2 in place of the session-only probe JSON. **If any tracked file changes, update `change_ref` and re-dispatch the architecture review against the new ref** — the recorded review is bound to `f093c5a` and does not survive it.
+- artifacts: this thread entry (durable ruling). `kai/coordination/items/area-plugins-tool-allowlist-fix.md` (v5). `kai/initiatives/area-plugins/backlog.md` (P5 promotion record). `kai/coordination/threads/area-plugins-scope-brief.md` (A28). `kai/initiatives/area-plugins/northstar.md` (milestone-0 outcome + acceptance). `kai/initiatives/area-plugins/log.md`.
+- evidence:  `observed` — first-hand file reads this pass: the branch ref file equals `f093c5a…`; `SUPPORTED_TOOLS` carries the migrated vocabulary with all nine retired spellings absent; zero root agents declare a retired token; 55/56 root agents and 29/51 root skills declare `edit`; all 51 root skills carry `tools:`; all six `requires_tools:` lines are `[execute]`. `reported` — the probe's `1.0.79`/`1.0.81` runtime results (decision §12.2), the operator's original warning text, and the operator's authorization quoted above. **Not run:** every gate, `git`, `node`, `npm`; the commit diff was not read.
+- questions: none blocking. One **owed observation**, and it is the operator's alone: after this deploys, launch a kai agent interactively and read the startup warnings. That is `shipped`-gate evidence for acceptance box 7. It is not required before merge and no substitute for it may be manufactured.
+- next:      `principal-swe-infra` on P1-2, P1-3 and the P2s, then re-dispatch `principal-swe-architect` at the ref that then obtains. The milestone-2 PR-3 ordering constraint stands: `area-plugins-m2-mode-selection` does not open while this item is open.
+
+---
+
+## IMPLEMENTATION EVIDENCE 2026-08-28-0140 — principal-swe-infra
+
+**Exact implementation ref before record-only corrections:** `f093c5a2678ee1ecf9c25a88015110a1fbd057cd`.
+
+**Capability-loss disclosure. CI cannot catch a capability loss here; this table is the only guard.**
+Each retired token is replaced by its documented primary family alias. A row marked `none` means the replacement token is present after migration; no row deletes a capability without replacement.
+
+| root declaration | field | retired token -> replacement | capability loss |
+|---|---|---|---|
+| `agents/creative-video-director.agent.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute`, `task->agent` | none |
+| `agents/director-chief-of-staff.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `task->agent` | none |
+| `agents/director-executive-assistant.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `task->agent` | none |
+| `agents/instructor-path-mentor.agent.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute`, `web_search->web` | none |
+| `agents/instructor-teacher.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `agents/instructor-tutor.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web` | none |
+| `agents/persona-professional-nutritionist.agent.md` | `tools` | `bash->execute`, `shell->execute`, `create->edit`, `view->read` | none |
+| `agents/persona-professional-trainer.agent.md` | `tools` | `bash->execute`, `shell->execute`, `create->edit`, `view->read` | none |
+| `agents/persona-self.agent.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute` | none |
+| `agents/persona-ux-first-time-user.agent.md` | `tools` | `bash->execute`, `shell->execute`, `create->edit`, `view->read` | none |
+| `agents/principal-ai-applied-engineer.agent.md` | `tools` | `web_search->web`, `web_fetch->web`, `view->read`, `create->edit`, `glob->search`, `grep->search` | none |
+| `agents/principal-ai-researcher.agent.md` | `tools` | `web_search->web`, `web_fetch->web`, `view->read`, `create->edit`, `glob->search`, `grep->search` | none |
+| `agents/principal-brand-designer.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-customer-success.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/principal-data-analytics.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/principal-data-engineer.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-demand-generation.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-engineer-career-mentor.agent.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute`, `web_search->web` | none |
+| `agents/principal-growth.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-linkedin-strategist.agent.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute`, `task->agent` | none |
+| `agents/principal-partnerships.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-pricing-monetization.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-privacy-compliance.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-product-designer.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/principal-product-manager.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `agents/principal-product-marketing.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-product-strategist.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-qa-ui.agent.md` | `tools` | `bash->execute`, `shell->execute`, `create->edit`, `view->read`, `grep->search`, `glob->search` | none |
+| `agents/principal-revenue-operations.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-sales.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-security.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-seo.agent.md` | `tools` | `bash->execute`, `shell->execute`, `create->edit`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-solutions-architect.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-sre.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-swe-architect.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/principal-swe-backend.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/principal-swe-frontend.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/principal-swe-infra.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/principal-swe-manager.agent.md` | `tools` | `bash->execute`, `shell->execute`, `create->edit`, `view->read`, `grep->search`, `glob->search` | none |
+| `agents/principal-technical-writer.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/workflow-course-to-audio.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read` | none |
+| `agents/workflow-customer-feedback.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/workflow-doc-review.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/workflow-experiment-review.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/workflow-incident-response.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `task->agent`, `web_search->web`, `web_fetch->web` | none |
+| `agents/workflow-initiative-init.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/workflow-issue-analysis.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/workflow-localization.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/workflow-proactive-scan.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/workflow-product-explore.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `agents/workflow-pull-request.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/workflow-self-check.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `agents/workflow-ship.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `agents/workflow-support-triage.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `agents/workflow-weekly-pulse.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_fetch->web`, `web_search->web` | none |
+| `agents/workflow-workspace-init.agent.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/build-diagrams/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search` | none |
+| `skills/coding-style/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search` | none |
+| `skills/create-product-demo/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/create-product-demo/SKILL.md` | `requires_tools` | `bash->execute`, `shell->execute` | none |
+| `skills/demo-capture/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/demo-capture/SKILL.md` | `requires_tools` | `bash->execute`, `shell->execute` | none |
+| `skills/demo-narrate/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/demo-narrate/SKILL.md` | `requires_tools` | `bash->execute`, `shell->execute` | none |
+| `skills/demo-zoom/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/demo-zoom/SKILL.md` | `requires_tools` | `bash->execute`, `shell->execute` | none |
+| `skills/doc-review-rigor/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/extract-writing-style/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read` | none |
+| `skills/generate-html-lesson/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search`, `create->edit` | none |
+| `skills/html-block-diagrams/SKILL.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-content-grounding/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-contract-v1/SKILL.md` | `tools` | `view->read` | none |
+| `skills/kai-core-decision-brief/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-definition-of-done/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/kai-core-design-grounding/SKILL.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-executive-consultation/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-fleet-observation/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-fleet-observation/SKILL.md` | `requires_tools` | `bash->execute`, `shell->execute` | none |
+| `skills/kai-core-generate-audio/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read` | none |
+| `skills/kai-core-initiative-stewardship/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-issue-analysis/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/kai-core-no-self-remediation/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-peer-communication/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-personal-agenda/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-pr-delivery/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-proactive-scan/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-pulse-digest/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-scope-discipline/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-team-operating-rules/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-web-content-extraction/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read` | none |
+| `skills/kai-core-web-evaluation/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read` | none |
+| `skills/kai-core-work-activity/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-work-activity/SKILL.md` | `requires_tools` | `bash->execute`, `shell->execute` | none |
+| `skills/kai-core-work-coordination/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-workspace-conventions/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search` | none |
+| `skills/kai-core-workspace-onboarding/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/linkedin-content/SKILL.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute` | none |
+| `skills/onboard-to-codebase/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute` | none |
+| `skills/pr-sizing/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search` | none |
+| `skills/product-exploration/SKILL.md` | `tools` | `view->read` | none |
+| `skills/product-marketing-intelligence/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `create->edit`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/research-before-coding/SKILL.md` | `tools` | `view->read`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute` | none |
+| `skills/review-alternatives/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-dependencies/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-performance-scale/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-rationale/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-risks-scope/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-rollout-operability/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-security-privacy/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-success-metrics/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/review-ux-accessibility/SKILL.md` | `tools` | `bash->execute`, `shell->execute`, `view->read`, `grep->search`, `glob->search`, `web_search->web`, `web_fetch->web` | none |
+| `skills/ui-mockup/SKILL.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search` | none |
+| `skills/video-direction/SKILL.md` | `tools` | `view->read`, `create->edit`, `grep->search`, `glob->search`, `bash->execute`, `shell->execute` | none |
+
+Disclosure total: 113 changed declaration fields across 107 root files; every retired token has its replacement and capability loss is zero. Generated mirrors are derived from these roots and were checked separately.
+
+**Milestone-1 A11 carve-out — all three clauses claimed explicitly:**
+
+1. **Topology is unchanged:** no edit to `PACKS`, `PACK_ORDER`, `PACKS_DIR`, `MARKETPLACE`, or `SKILL_OWNER_OVERRIDES`.
+2. **Identity is unchanged:** no plugin name, plugin identity, marketplace name, agent ownership, or skill ownership changes.
+3. **Injected contracts are unchanged:** `scripts/lib/preflight-block.txt`, `scripts/lib/degraded-block.txt`, and `scripts/lib/inherits-block.txt` are byte-unchanged.
+
+**Observed verification at the working tree containing the P2 corrections:**
+
+- `node scripts/validate-plugin.mjs` — valid, 56 agents and 51 skills.
+- `node scripts/host-contract.mjs --self-test` — 56 agents and 51 skills lint cleanly; inventory and malformed fixtures pass.
+- `node scripts/pack-preview.mjs --gate partition` — clean.
+- `node scripts/pack-preview.mjs --gate collision` — clean.
+- `node scripts/pack-preview.mjs --gate partial-install` — clean.
+- `node scripts/pack-preview.mjs --gate version-skew` — clean.
+- `node scripts/pack-preview.mjs --check` — committed packs match the generator.
+- `node scripts/release-guard.mjs --base origin/main` — behavior change is bumped and release-noted.
+- `npm test` — exit 0.
+- Diff verifier — all 214 changed root/mirror agent and skill files differ only in `tools:` or the six `requires_tools:` lines.
+- Repo-wide declaration search — zero retired family spellings remain.
+
+**Regression guard:** `SUPPORTED_TOOLS` now contains the primary and specialized vocabulary only, and `loaderErrors()` rejects every retired spelling in both agent and skill declarations. The malformed fixtures now use accepted aliases for their non-target fields, so each fixture isolates the intended defect.
+
+**Warning evidence:** runtime capability preservation is `observed` in the canonical host-tool conformance decision §12.2 for CLI 1.0.79 and 1.0.81, direct and delegated. Interactive startup warning silence remains `unobserved` by design (§12.3) and is an operator post-install observation, not a merge claim.

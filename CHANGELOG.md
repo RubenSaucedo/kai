@@ -12,7 +12,8 @@ minor bumps (`0.x`) carry features and patch bumps carry fixes.
   file, search, delegation, and web families now declare `execute`, `read`,
   `edit`, `search`, `agent`, and `web`. Specialized Kai tools remain explicit.
   Live CLI 1.0.79 and 1.0.81 probes exercised the replacement capabilities in
-  both direct and delegated launches. Interactive warning silence remains
+  both direct and delegated launches (see the area-plugin host-tool
+  conformance decision, section 12.2). Interactive warning silence remains
   unverified because prompt mode does not expose that startup channel.
 - **The validator now rejects retired spellings.** Root declarations and all
   generated pack mirrors share the same vocabulary and remain byte-aligned.
