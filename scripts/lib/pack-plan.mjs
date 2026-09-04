@@ -30,10 +30,10 @@ export const REFUSAL = 'KAI-CORE-MISSING';
 // prefix core alone may use removes that ambiguity; see namespaceErrors.
 export const CORE_SKILL_PREFIX = 'kai-core-';
 
-// The canonical fail-closed preflight, copied into every generated department
-// agent's own body. It lives in a file, not in this module, so the generator,
-// the preview and the CI byte-pin all assert on the same bytes — the same
-// reason scripts/lib/inherits-block.txt is a file.
+// The canonical fail-closed preflight retained by legacy department agents.
+// kai-agent-v1 agents check core just in time and carry no copied guard. This
+// lives in a file so the generator, preview and CI byte-pin assert the same
+// bytes throughout the staged migration.
 export const PREFLIGHT_BLOCK_REL = 'scripts/lib/preflight-block.txt';
 
 // The canonical degraded-mode refusal, carried on the same terms. It answers the
@@ -79,7 +79,7 @@ const MIGRATION_BASELINE_PACKS = {
     'principal-swe-infra', 'principal-swe-manager', 'principal-solutions-architect',
     'principal-sre', 'principal-security', 'principal-privacy-compliance',
     'principal-qa-ui', 'principal-data-engineer', 'principal-ai-applied-engineer',
-    'principal-ai-researcher', 'principal-technical-writer', 'workflow-pull-request',
+    'principal-ai-researcher', 'workflow-pull-request',
     'workflow-issue-analysis', 'workflow-incident-response', 'workflow-ship',
     'workflow-doc-review', 'workflow-localization',
   ],
@@ -103,7 +103,7 @@ const MIGRATION_BASELINE_PACKS = {
 
 export const NEW_AGENT_IDS = {
   core: [],
-  engineering: [],
+  engineering: ['eng-lead-technical-writing'],
   product: [],
   gtm: [],
   personal: [],
@@ -675,11 +675,10 @@ export const preflightBlock = (root = REPO_ROOT) => readBlock(root, PREFLIGHT_BL
 
 export const degradedBlock = (root = REPO_ROOT) => readBlock(root, DEGRADED_BLOCK_REL);
 
-// The guarantee blocks every generated department agent carries, in the order
-// they must appear. The order is the contract: the preflight is the first
-// executable instruction, and the refusal is what a session falls to only once
-// the preflight has passed. Defined once so the generator, the preview and the
-// validator cannot disagree about it.
+// The guarantee blocks every legacy department agent carries, in the order they
+// must appear. kai-agent-v1 agents use progressive skill routing and omit them.
+// Defined once so the generator, preview and validator cannot disagree during
+// the staged migration.
 export const guaranteeBlocks = (root = REPO_ROOT) => [preflightBlock(root), degradedBlock(root)];
 
 export const guaranteeRegion = (root = REPO_ROOT) => [
@@ -688,12 +687,15 @@ export const guaranteeRegion = (root = REPO_ROOT) => [
   GUARANTEE_REGION_CLOSE,
 ].join('\n\n');
 
-// Department agents carry one explicitly managed region. `--write` may replace
-// this region without treating the rest of the authoritative agent body as
-// generated output. Missing regions are inserted at the same safe anchor the
-// original pack generator used; malformed half-regions fail closed.
+// Legacy department agents carry one explicitly managed region. `--write` may
+// replace it without treating the rest of the authoritative body as generated
+// output. kai-agent-v1 agents have any stale region removed. Missing legacy
+// regions are inserted at the original safe anchor; malformed half-regions fail.
 export function syncGuaranteeRegion(body, root = REPO_ROOT) {
   const normalized = normalizeLF(body);
+  if (normalized.includes(`**Identity contract:** \`${ROLE_IDENTITY_CONTRACT}\``)) {
+    return removeGuaranteeRegion(normalized);
+  }
   const canonicalOpenAt = normalized.indexOf(GUARANTEE_REGION_OPEN);
   const legacyOpenAt = normalized.indexOf(LEGACY_GUARANTEE_REGION_OPEN);
   const openAt = canonicalOpenAt !== -1 ? canonicalOpenAt : legacyOpenAt;
@@ -734,6 +736,13 @@ export function syncGuaranteeRegion(body, root = REPO_ROOT) {
 
 export function removeGuaranteeRegion(body) {
   const normalized = normalizeLF(body);
+  const markerLines = normalized.split('\n');
+  const openCount = markerLines.filter((line) =>
+    line === GUARANTEE_REGION_OPEN || line === LEGACY_GUARANTEE_REGION_OPEN).length;
+  const closeCount = markerLines.filter((line) => line === GUARANTEE_REGION_CLOSE).length;
+  if (openCount > 1 || closeCount > 1) {
+    throw new Error('agent has more than one core dependency guard region');
+  }
   const canonicalOpenAt = normalized.indexOf(GUARANTEE_REGION_OPEN);
   const legacyOpenAt = normalized.indexOf(LEGACY_GUARANTEE_REGION_OPEN);
   const openAt = canonicalOpenAt !== -1 ? canonicalOpenAt : legacyOpenAt;
@@ -1059,6 +1068,13 @@ export function marketplaceSurfacePolicy({
 // most of the corpus a cross-pack dependency it is not.
 const DISPATCH_ENTRY = /^\s*[-*]\s+\*\*`([^`]+)`\*\*/;
 
+// A kai-agent-v1 body names its skills inside the instruction that needs them,
+// so the bullet shape above cannot be the only firing path. An imperative to
+// load a skill is still narrower than "any backticked mention": it is a
+// directive, not the editorial cross-reference ("the technical counterpart to
+// `ui-mockup`") the rule above deliberately ignores.
+const PROSE_DISPATCH = /\b(?:Load|Invoke|Apply|Run)\s+(?:the\s+)?`([a-z0-9][a-z0-9-]*)`/g;
+
 // Role ids carry a family prefix. A dispatch entry shaped like one that
 // resolves to nothing is a renamed or deleted role; a token that is not shaped
 // like one (`post-only`) is an output mode, not a reference. Baseline families
@@ -1175,6 +1191,83 @@ export function requiresCoordinatedRunContracts(id) {
   const [family, posture] = (id ?? '').split('-');
   if (['director', 'principal', 'workflow'].includes(family)) return true;
   return family in ROLE_FAMILY_PACK && ROLE_POSTURES.includes(posture);
+}
+
+// Conversational roles have no bounded run to report. Research-only roles lack
+// `execute`, so requiring the append-based activity contract would force a
+// broader sandbox solely for observability.
+export const ACTIVITY_EXEMPT = new Map([
+  ['director-executive-assistant', 'interactive routing and agenda assembly, not a bounded run'],
+  ['principal-engineer-career-mentor', 'open-ended mentoring conversation, not a bounded run'],
+  ['principal-ai-researcher', 'no shell by design; cannot append without gaining `execute`'],
+  ['principal-ai-applied-engineer', 'no shell by design; cannot append without gaining `execute`'],
+]);
+
+export function progressiveSkillRoutingErrors({
+  id, body, tools = [], knownSkills = [], activityExempt = false,
+}) {
+  const text = normalizeLF(body ?? '');
+  if (!text.includes(`**Identity contract:** \`${ROLE_IDENTITY_CONTRACT}\``)) return [];
+
+  const errors = [];
+  if (/^\*\*Inherits:\*\*/m.test(text)) {
+    errors.push(`${ROLE_IDENTITY_CONTRACT} agents route skills just in time and must not declare an eager \`**Inherits:**\` line`);
+  }
+
+  // A skill is routed wherever the instruction that needs it lives. Hoisting
+  // every route into one section reproduces the `**Inherits:**` manifest this
+  // contract removed, and forces a "do not preload" disclaimer that only exists
+  // to argue with its own list. So the checks below are semantic: the named
+  // skill must exist, the core probe and its fallback must be stated, and the
+  // agent must hold the tool that loads them. Where the sentence sits is the
+  // author's judgment. Line wrapping is an authoring choice, not a contract
+  // change, so the sentence checks run against a whitespace-collapsed copy.
+  const flat = text.replace(/\s+/g, ' ');
+  const available = knownSkills instanceof Set ? knownSkills : new Set(knownSkills);
+  const mentioned = new Set(
+    [...text.matchAll(/`([a-z0-9][a-z0-9-]*)`/g)].map((match) => match[1])
+  );
+  const routed = new Set([...mentioned].filter(
+    (name) => available.has(name) || name.startsWith(CORE_SKILL_PREFIX)
+  ));
+  for (const skill of routed) {
+    if (!available.has(skill)) errors.push(`names unknown skill \`${skill}\``);
+  }
+  if (!/`kai-core-contract-v1`[\s\S]{0,160}?\bfirst\b[\s\S]{0,80}?\bcore\b/i.test(flat)
+    && !/\bbefore\b[\s\S]{0,120}?\bfirst\b[\s\S]{0,120}?`kai-core-contract-v1`/i.test(flat)) {
+    errors.push(`must state that \`${CONTRACT_SKILL}\` runs before the first other core skill`);
+  }
+
+  const required = [
+    CONTRACT_SKILL,
+    'kai-core-team-operating-rules',
+    'kai-core-asset-lifecycle',
+  ];
+  if (requiresCoordinatedRunContracts(id)) {
+    required.push('kai-core-workspace-conventions');
+    if (!activityExempt) required.push('kai-core-work-activity');
+  }
+  for (const skill of required) {
+    if (!routed.has(skill)) {
+      errors.push(`must load \`${skill}\` at the step that needs it`);
+    }
+  }
+
+  const held = tools instanceof Set ? tools : new Set(tools);
+  if (routed.size > 0 && !held.has('skill')) {
+    errors.push('routes skills but its `tools` list omits `skill`');
+  }
+  if (activityExempt && routed.has('kai-core-work-activity')) {
+    errors.push('is activity-exempt but routes `kai-core-work-activity`; remove the exemption or the route');
+  }
+  // Line wrapping is an authoring choice, not a contract change, so these
+  // sentence checks run against the whitespace-collapsed copy above.
+  if (!/If core is unavailable or incompatible,[\s\S]{0,200}\bsingle-shot\b/i.test(flat)
+    || !/do not create `\.kai` state/i.test(flat)
+    || !/tell\s+the operator to install or update `kai-core`/i.test(flat)) {
+    errors.push('must state the non-blocking core fallback: continue single-shot, avoid `.kai` state, and tell the operator to install or update `kai-core`');
+  }
+  return errors;
 }
 
 export function agentIdentityContractErrors({ id, body, fm = {} }) {
@@ -1319,6 +1412,9 @@ export function dispatchedRefs(body) {
     if (/^\*\*Inherits:\*\*/.test(line)) continue;
     const m = line.match(DISPATCH_ENTRY);
     if (m && !out.includes(m[1])) out.push(m[1]);
+  }
+  for (const m of normalizeLF(body).matchAll(PROSE_DISPATCH)) {
+    if (!out.includes(m[1])) out.push(m[1]);
   }
   return out;
 }
@@ -2047,7 +2143,7 @@ export function contractPinErrors({
   }
 
   if (probe === null || probe === undefined) {
-    add(probeRel, 'missing — every generated department agent invokes this skill as its first action');
+    add(probeRel, 'missing — every legacy department agent invokes this skill as its first action');
     return errs;
   }
   const text = normalizeLF(probe);
@@ -2105,6 +2201,14 @@ export function guaranteeBlockErrors({
     if (entry.kind !== 'agent') continue;
     const copies = body.split(preflight).length - 1;
     const refusals = body.split(degraded).length - 1;
+    const progressive = body.includes(`**Identity contract:** \`${ROLE_IDENTITY_CONTRACT}\``);
+    if (progressive) {
+      if (copies !== 0 || refusals !== 0
+        || body.includes(GUARANTEE_REGION_OPEN) || body.includes(GUARANTEE_REGION_CLOSE)) {
+        add(key, `uses ${ROLE_IDENTITY_CONTRACT} progressive skill routing and must not carry the legacy core dependency guard`);
+      }
+      continue;
+    }
     if (entry.pack === 'core') {
       if (copies !== 0) {
         add(key, 'carries the core-preflight block; a core agent ships inside the pack that provides '

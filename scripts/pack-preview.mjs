@@ -47,9 +47,10 @@ import {
   generatedKeyErrors, generatedPackageErrors, generatedRuntimeErrors, hookAssetReferenceErrors,
   partitionErrors, namespaceErrors, providerCollisionErrors, contractPinErrors,
   guaranteeBlockErrors, availabilityErrors, parseGeneratedKey, agentShapedPattern, agentCandidatePattern,
-  agentTaxonomyErrors, requiresCoordinatedRunContracts, agentIdentityContractErrors,
+  agentTaxonomyErrors, requiresCoordinatedRunContracts, progressiveSkillRoutingErrors,
+  agentIdentityContractErrors,
   agentPromptLimitErrors, agentAuthoringReferenceErrors,
-  ROLE_PROFILE_MODELS,
+  ROLE_PROFILE_MODELS, ACTIVITY_EXEMPT,
   hookAssetsIn, DISPATCHING_ROLES, AVAILABILITY_RULES, agentSourceFile, skillSourceFile,
   sourceAgentFiles, sourceSkillFiles, skillCompanionFiles, sourceFileErrors, sourcePlacementErrors,
   syncGuaranteeRegion, removeGuaranteeRegion,
@@ -89,12 +90,9 @@ const declaredTools = (body) => {
 const frontmatter = (body) => normalizeLF(body).match(/^---\n[\s\S]*?\n---/)?.[0] ?? null;
 
 
-// The preflight is written into each pack agent's OWN body, never into an
-// inherited skill: an agent that cannot reach core also cannot reach a skill
-// that tells it what to do about core. That circularity is the whole reason
-// the block is duplicated per agent rather than referenced, and why the
-// canonical text and the injection both live in scripts/lib/pack-plan.mjs. The
-// degraded-mode refusal rides the same path, immediately after it.
+// Legacy agents carry the preflight in their own bodies. This evaluator keeps
+// their absence and skew behavior deterministic during staged migration;
+// kai-agent-v1 agents instead route the probe just before their first core skill.
 
 // Deterministic evaluation of the injected block's own rule against a built
 // preview: read what `kai-core-contract-v1` would return from the built core, if
@@ -489,22 +487,34 @@ function selfTest() {
       }
     }
     const departmentAgents = builtAgents.filter((a) => a.pack !== 'core');
+    const progressiveAgents = departmentAgents.filter((a) =>
+      a.body.includes('**Identity contract:** `kai-agent-v1`'));
+    const legacyDepartmentAgents = departmentAgents.filter((a) =>
+      !a.body.includes('**Identity contract:** `kai-agent-v1`'));
     const coreAgents = builtAgents.filter((a) => a.pack === 'core');
     ok(departmentAgents.length === Object.entries(PACKS)
       .filter(([pack]) => pack !== 'core').reduce((n, [, ids]) => n + ids.length, 0)
-      && departmentAgents.every((a) => a.body.split(degraded).length === 2
+      && legacyDepartmentAgents.every((a) => a.body.split(degraded).length === 2
         && a.body.indexOf(degraded) > a.body.indexOf(block) + block.length),
-    `all ${departmentAgents.length} department agents from --all carry the refusal once, after the preflight`);
+    `all ${legacyDepartmentAgents.length} legacy department agents from --all carry the refusal once, after the preflight`);
+    ok(progressiveAgents.length > 0
+      && progressiveAgents.every((a) => !a.body.includes(degraded)
+        && !a.body.includes(block)
+        && !a.body.includes(GUARANTEE_REGION_OPEN)
+        && !a.body.includes(GUARANTEE_REGION_CLOSE)),
+    `all ${progressiveAgents.length} kai-agent-v1 department agents omit the legacy dependency guard`);
     ok(coreAgents.length === PACKS.core.length
       && coreAgents.every((a) => !a.body.includes(degraded) && !a.body.includes(block)),
     'and no core agent carries either block: kai-core cannot be absent from itself');
     ok(builtAgents.every((a) => declaredTools(a.body).has('skill')),
-      `all ${builtAgents.length} generated agents declare skill access for delegated inherited-contract loading`);
+      `all ${builtAgents.length} generated agents declare skill access for on-demand contract loading`);
     ok(!declaredTools(builtAgents[0].body.replace(/,\s*"skill"/, '')).has('skill'),
       'removing skill access from a generated agent is detected rather than false-passing from workspace files');
     ok(builtAgents.every((a) => frontmatter(a.body) === frontmatter(readAgent(a.id))),
       'generated agent frontmatter is a byte-identical projection of canonical source');
-    const createAgentRefs = ['taxonomy.md', 'agent-template.md', 'model-selection.md', 'kai-repository.md'];
+    const createAgentRefs = [
+      'taxonomy.md', 'agent-template.md', 'model-selection.md', 'kai-repository.md',
+    ];
     ok(createAgentRefs.every((file) => existsSync(join(
       full, 'kai-core-preview', 'skills', 'kai-core-create-agent', 'references', file
     ))),
@@ -1330,6 +1340,28 @@ function selfTest() {
   ok(blockMsgs([departmentBody({ first: '', pack: 'fleet-ops' })], ['core', 'fleet-ops'])
     .some((m) => /kai-fleet-ops\/agents\/persona-x\.agent\.md/.test(m)),
   'and a hyphenated pack is held to the same guarantee, rather than skipped by a name pattern');
+  const progressiveBody = [
+    'kai-personal/agents/eng-builder-x.agent.md',
+    '---\nname: eng-builder-x\n---\n\n**Identity contract:** `kai-agent-v1`\n\nLoad `kai-core-contract-v1` first.\n',
+  ];
+  ok(blockMsgs([progressiveBody]).length === 0,
+    'a kai-agent-v1 department agent uses progressive skill routing without the legacy dependency guard');
+  ok(blockMsgs([[
+    progressiveBody[0],
+    progressiveBody[1].replace('Load `kai-core-contract-v1` first.', `${GUARANTEE_REGION_OPEN}\n\n${block}\n\n${degraded}\n\n${GUARANTEE_REGION_CLOSE}`),
+  ]]).some((m) => /must not carry the legacy core dependency guard/.test(m)),
+  'a kai-agent-v1 agent carrying the legacy dependency guard fails by name');
+  let duplicateV1GuardRejected = false;
+  try {
+    syncGuaranteeRegion(
+      `${progressiveBody[1]}\n${GUARANTEE_REGION_OPEN}\n\n${block}\n\n${degraded}\n\n${GUARANTEE_REGION_CLOSE}`
+      + `\n${GUARANTEE_REGION_OPEN}\n\n${block}\n\n${degraded}\n\n${GUARANTEE_REGION_CLOSE}\n`
+    );
+  } catch (error) {
+    duplicateV1GuardRejected = /more than one core dependency guard region/.test(error.message);
+  }
+  ok(duplicateV1GuardRejected,
+    'a kai-agent-v1 migration rejects duplicate legacy guard regions instead of removing only one');
   ok(blockMsgs([['kai-unknown/agents/persona-x.agent.md', 'body']]).length === 0,
     'the guarantee checker relies on the shared generated-key gate instead of deciding null keys again');
 
@@ -1350,7 +1382,7 @@ function selfTest() {
     .some((m) => /does not return the exact `KAI_CORE_READY` marker/.test(m)),
   'a probe whose marker drifted fails: every injected block matches on that exact line');
   ok(pinMsgs({ probe: null })
-    .some((m) => /missing — every generated department agent invokes this skill/.test(m)),
+    .some((m) => /missing — every legacy department agent invokes this skill/.test(m)),
   'a missing probe fails by name rather than by a crash in the generator');
   ok(pinMsgs({ block: `${block}\nReport \`contract: 9\` if unsure.` })
     .some((m) => /must demand exactly one contract version/.test(m)),
@@ -1404,7 +1436,7 @@ function selfTest() {
   ok(requiresCoordinatedRunContracts('eng-builder-frontend')
     && requiresCoordinatedRunContracts('core-coordinator-staff')
     && !requiresCoordinatedRunContracts('persona-ux-first-time-user'),
-  'new durable roles retain inherited workspace and activity obligations while personas do not');
+  'new durable roles retain routed workspace and activity obligations while personas do not');
   ok(agentIdentityContractErrors({
     id: 'eng-builder-frontend',
     body: '**Identity contract:** `kai-agent-v1`\n**Primary profile:** execution',
@@ -1462,6 +1494,77 @@ function selfTest() {
     fm: {},
   }).length === 0,
   'an existing kind-prefixed agent remains migration-safe without the new identity contract');
+  const progressiveSkillBody = [
+    '**Identity contract:** `kai-agent-v1`',
+    'Invoke `kai-core-contract-v1` before the first other core skill.',
+    'If core is unavailable or incompatible, continue only with direct, single-shot work; do not create `.kai` state.',
+    'State the limitation once and tell the operator to install or update `kai-core`.',
+    'Read `kai-core-team-operating-rules` before coordinated work.',
+    'Load `kai-core-asset-lifecycle` before durable output.',
+    'Load `kai-core-workspace-conventions` before touching workspace state.',
+    'Load `kai-core-work-activity` before recording a run.',
+  ].join('\n');
+  const progressiveSkillOptions = {
+    id: 'eng-builder-frontend',
+    body: progressiveSkillBody,
+    tools: ['read', 'skill'],
+    knownSkills: [
+      'kai-core-contract-v1',
+      'kai-core-team-operating-rules',
+      'kai-core-asset-lifecycle',
+      'kai-core-workspace-conventions',
+      'kai-core-work-activity',
+    ],
+  };
+  ok(progressiveSkillRoutingErrors(progressiveSkillOptions).length === 0,
+    'a kai-agent-v1 role that loads each contract inline at the step needing it passes');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    body: `${progressiveSkillBody}\n**Inherits:** \`kai-core-team-operating-rules\``,
+  }).some((m) => /must not declare an eager/.test(m)),
+  'a kai-agent-v1 role cannot restore eager inheritance');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    body: progressiveSkillBody.replace('Load `kai-core-asset-lifecycle` before durable output.\n', ''),
+  }).some((m) => /must load `kai-core-asset-lifecycle`/.test(m)),
+  'a kai-agent-v1 role cannot drop a required contract');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    body: progressiveSkillBody.replace('kai-core-asset-lifecycle', 'kai-core-asset-lifecyle'),
+  }).some((m) => /names unknown skill `kai-core-asset-lifecyle`/.test(m)),
+  'a mistyped skill name fails as an unknown route wherever it appears');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    body: progressiveSkillBody.replace(
+      'Invoke `kai-core-contract-v1` before the first other core skill.\n',
+      'Invoke `kai-core-contract-v1` whenever it seems useful.\n'
+    ),
+  }).some((m) => /runs before the first other core skill/.test(m)),
+  'the core probe must still be ordered before every other core skill');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    body: `${progressiveSkillBody}\n\n## Handoffs\n\nLoad \`kai-core-work-coordination\` before a handoff.`,
+    knownSkills: [...progressiveSkillOptions.knownSkills, 'kai-core-work-coordination'],
+  }).length === 0,
+  'a kai-agent-v1 role may load a skill from any section, because routing is inline by design');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    body: progressiveSkillBody.replace(
+      'If core is unavailable or incompatible, continue only with direct, single-shot work; do not create `.kai` state.\n',
+      ''
+    ),
+  }).some((m) => /non-blocking core fallback/.test(m)),
+  'a kai-agent-v1 role must state its non-blocking core fallback');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    tools: ['read'],
+  }).some((m) => /omits `skill`/.test(m)),
+  'a kai-agent-v1 role cannot route skills without skill tool access');
+  ok(progressiveSkillRoutingErrors({
+    ...progressiveSkillOptions,
+    activityExempt: true,
+  }).some((m) => /activity-exempt/.test(m)),
+  'an activity-exempt kai-agent-v1 role cannot retain the activity route');
   ok(new Set(Object.values(ROLE_PROFILE_MODELS)).size === APPROVED_AGENT_MODELS.size
     && [...APPROVED_AGENT_MODELS].every((model) => Object.values(ROLE_PROFILE_MODELS).includes(model)),
   'the approved model set and deterministic profile mapping contain the same identifiers');
@@ -1540,8 +1643,8 @@ function liveHookAssets() {
 }
 
 // A department installed with kai-core and nothing else: every reference
-// resolves, every invoked script travels with the pack that invokes it, the
-// hooks file has exactly one owner, and both guarantee blocks are in place.
+// resolves, every invoked script travels with the pack that invokes it, hooks
+// has one owner, legacy guards are present, and v1 agents carry no legacy guard.
 function gatePartialInstall() {
   const files = materializePacks({ root: ROOT, version: GATE_VERSION });
   const refs = collectReferences(ROOT);
@@ -1571,9 +1674,9 @@ function gatePartialInstall() {
   ].map((e) => `${e.file}: ${e.msg}`);
 }
 
-// The contract version, wherever it is stated, plus the two refusal paths a
-// department agent has to take: no core at all, and a core speaking a version
-// the injected block does not accept.
+// The contract version wherever it is stated. Legacy agents retain deterministic
+// absent/skew refusal arms; v1 agents must route the pinned probe first and state
+// their non-blocking single-shot fallback.
 function gateSkew() {
   const errs = contractPinErrors({
     block: preflightBlock(),
@@ -1581,6 +1684,21 @@ function gateSkew() {
       ? readFileSync(skillPath(CONTRACT_SKILL), 'utf8')
       : null,
   }).map((e) => `${e.file}: ${e.msg}`);
+
+  const knownSkills = new Set(rosterSkillIds());
+  for (const agent of sourceAgentFiles(ROOT)) {
+    const body = readFileSync(agent.path, 'utf8');
+    if (!body.includes('**Identity contract:** `kai-agent-v1`')) continue;
+    for (const msg of progressiveSkillRoutingErrors({
+      id: agent.id,
+      body,
+      tools: declaredTools(body),
+      knownSkills,
+      activityExempt: ACTIVITY_EXEMPT.has(agent.id),
+    })) {
+      errs.push(`${agent.rel}: ${msg}`);
+    }
+  }
 
   const dir = mkdtempSync(join(tmpdir(), 'kai-gate-skew-'));
   try {
